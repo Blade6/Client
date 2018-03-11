@@ -1,7 +1,8 @@
 package com.example.jianhong.note.ui;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.View;
@@ -20,6 +21,8 @@ import android.support.v4.app.FragmentTransaction;
 import com.example.jianhong.note.R;
 import com.example.jianhong.note.utils.SPUtils;
 import com.example.jianhong.note.fragment.ChangeBgFragment;
+import com.example.jianhong.note.fragment.AboutFragment;
+import com.example.jianhong.note.utils.SystemUtils;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -43,7 +46,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -51,11 +54,12 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        initBgPic();
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -101,14 +105,14 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_setting) {
 
         } else if (id == R.id.nav_about) {
+            setTitle("关于应用");
+            AboutFragment aboutAppFragment=new AboutFragment();
+            changeFragment(aboutAppFragment);
             fab.hide();
-            Intent intent = new Intent(MainActivity.this, AboutActivity.class);
-            startActivity(intent);
         } else if (id == R.id.nav_exit) {
             logout();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -120,12 +124,25 @@ public class MainActivity extends AppCompatActivity
         System.exit(0);
     }
 
-    protected   void changeFragment(Fragment fragment)
+    protected void changeFragment(Fragment fragment)
     {
         FragmentManager fm=getSupportFragmentManager();
         FragmentTransaction ft=fm.beginTransaction();
         ft.replace(R.id.main_fraglayout, fragment,null);
         //    ft.addToBackStack(fragment.toString());
         ft.commit();
+    }
+
+    private void initBgPic()
+    {
+        SystemUtils systemUtils=new SystemUtils(this);
+        String path=systemUtils.getPath();
+        if(path!=null) {
+            Bitmap bitmap = systemUtils.getBitmapByPath(this, path);
+            if (bitmap != null) {
+                drawer.setBackgroundDrawable(new BitmapDrawable(getResources(), bitmap));
+
+            }
+        }
     }
 }

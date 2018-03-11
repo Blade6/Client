@@ -31,59 +31,61 @@ public class ChangeBgFragment extends Fragment {
     private GridView mGridView;
     private BgPicGridAdapter mBgPicAdapter;
     private SystemUtils systemUtils;
+
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         baseView = inflater.inflate(R.layout.fragment_change_background, null);
         initBackgroundPic();
         initView();
         return baseView;
     }
-        private void initView()
-        {
 
-            mGridView = (GridView) baseView.findViewById(R.id.change_background_grid);
-            mBgPicAdapter = new BgPicGridAdapter(getActivity(),mBgPicList);
-            mGridView.setOnItemClickListener(gridItemClickListener);
-            mGridView.setAdapter(mBgPicAdapter);
+    private void initView()
+    {
 
-        }
-        private void initBackgroundPic()
-        {
-            AssetManager am = getActivity().getAssets();
-            try {
-                String[] drawableList = am.list("bkgs");
-                mBgPicList = new ArrayList<BgPic>();
-                for (String path : drawableList) {
-                    BgPic bg = new BgPic();
-                    InputStream is = am.open("bkgs/" + path);
-                    Bitmap bitmap = BitmapFactory.decodeStream(is);
-                    bg.path = path;
-                    bg.bitmap = bitmap;
-                    mBgPicList.add(bg);
-                    is.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-
-        AdapterView.OnItemClickListener gridItemClickListener=new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // TODO Auto-generated method stub
-                String path = ((BgPic) mBgPicAdapter.getItem(position)).path;
-
-                systemUtils = new SystemUtils(getActivity());
-                systemUtils.saveBgPicPath(path);
-                Bitmap bitmap = systemUtils.getBitmapByPath(getActivity(), path);
-                if (bitmap != null) {
-                    ((MainActivity) getActivity()).drawer.setBackgroundDrawable(new BitmapDrawable(getResources(), bitmap));
-                     mBgPicAdapter.notifyDataSetChanged();
-
-                }
-            }
-        };
-
+        mGridView = (GridView) baseView.findViewById(R.id.change_background_grid);
+        mBgPicAdapter = new BgPicGridAdapter(getActivity(),mBgPicList);
+        mGridView.setOnItemClickListener(gridItemClickListener);
+        mGridView.setAdapter(mBgPicAdapter);
 
     }
+    private void initBackgroundPic()
+    {
+        AssetManager am = getActivity().getAssets();
+        try {
+            String[] drawableList = am.list("bkgs");
+            mBgPicList = new ArrayList<BgPic>();
+            for (String path : drawableList) {
+                BgPic bg = new BgPic();
+                InputStream is = am.open("bkgs/" + path);
+                Bitmap bitmap = BitmapFactory.decodeStream(is);
+                bg.path = path;
+                bg.bitmap = bitmap;
+                mBgPicList.add(bg);
+                is.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    AdapterView.OnItemClickListener gridItemClickListener=new AdapterView.OnItemClickListener() {
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            // TODO Auto-generated method stub
+            String path = ((BgPic) mBgPicAdapter.getItem(position)).path;
+
+            systemUtils = new SystemUtils(getActivity());
+            systemUtils.saveBgPicPath(path);
+            Bitmap bitmap = systemUtils.getBitmapByPath(getActivity(), path);
+            if (bitmap != null) {
+                ((MainActivity) getActivity()).drawer.setBackgroundDrawable(new BitmapDrawable(getResources(), bitmap));
+                 mBgPicAdapter.notifyDataSetChanged();
+
+            }
+        }
+    };
+
+
+}
