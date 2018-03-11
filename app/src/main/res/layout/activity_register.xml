@@ -5,13 +5,11 @@
     android:orientation="vertical"
     >
 
-
     <RelativeLayout
         android:id="@+id/top_bar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@color/colorPrimary">
-
 
         <ImageButton
             android:id="@+id/img_back"
@@ -23,8 +21,6 @@
             android:layout_centerInParent="true"
             android:background="@color/colorPrimary"
             android:src="@drawable/back" />
-
-
 
         <TextView
             android:id="@+id/edit_sign_mine_sign"
@@ -39,13 +35,13 @@
 
     </RelativeLayout>
 
-
     <LinearLayout style="@style/Register_Input" >
 
         <TextView
             style="@style/Smile.TextView._Black"
             android:layout_height="match_parent"
-            android:gravity="center_vertical"
+            android:layout_width="100dp"
+            android:gravity="center_vertical|right"
             android:paddingLeft="10dp"
             android:text="@string/login_account"
             android:textStyle="bold" />
@@ -61,7 +57,8 @@
         <TextView
             style="@style/Smile.TextView._Black"
             android:layout_height="match_parent"
-            android:gravity="center_vertical"
+            android:layout_width="100dp"
+            android:gravity="center_vertical|right"
             android:paddingLeft="10dp"
             android:text="@string/login_pwd"
             android:textStyle="bold" />
@@ -79,16 +76,17 @@
         <TextView
             style="@style/Smile.TextView._Black"
             android:layout_height="match_parent"
-            android:gravity="center_vertical"
+            android:layout_width="100dp"
+            android:gravity="center_vertical|right"
             android:paddingLeft="10dp"
-            android:text="@string/login_email"
+            android:text="@string/reg_pwd"
             android:textStyle="bold" />
 
         <EditText
             android:id="@+id/et_email"
             style="@style/Register_Edit"
              android:inputType="textPassword"
-            android:hint="@string/login_email_hint" />
+            android:hint="@string/reg_pwd_hint" />
     </LinearLayout>
 
     <Button

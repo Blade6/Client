@@ -1,6 +1,7 @@
 package com.example.jianhong.note.ui;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -50,7 +51,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         initDrawableSize();
-
     }
 
 
@@ -102,7 +102,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 else {
                     progress.dismiss();
                     //将用户信息保存至本地
-                    SPUtils.put(LoginActivity.this,"user_name",name);
+                    SPUtils.put(LoginActivity.this, "user_name",name);
                     SPUtils.put(LoginActivity.this,"pwd", pwd);
                     //将登陆信息保存本地
                     AccountUtils.saveUserInfos(LoginActivity.this, user, pwd);

@@ -24,7 +24,8 @@ public class SPUtils {
     {
 
         SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
-                Context.MODE_PRIVATE);
+                //Context.MODE_PRIVATE);
+                Context.MODE_WORLD_WRITEABLE);
         SharedPreferences.Editor editor = sp.edit();
 
         if (object instanceof String)
@@ -61,7 +62,8 @@ public class SPUtils {
     public static Object get(Context context, String key, Object defaultObject)
     {
         SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
-                Context.MODE_PRIVATE);
+                //Context.MODE_PRIVATE);
+                Context.MODE_WORLD_WRITEABLE);
 
         if (defaultObject instanceof String)
         {
