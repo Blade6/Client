@@ -1,7 +1,6 @@
 package com.example.jianhong.note.ui;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -12,7 +11,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.jianhong.note.R;
 import com.example.jianhong.note.entity.Response;
@@ -63,6 +61,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loginName.setCompoundDrawables(accountDraw,null,null,null);
         loginPwd.setCompoundDrawables(passwordDraw,null,null,null);
     }
+
     @OnClick({R.id.btn_login, R.id.btn_register})
     public void onClick(View v) {
         switch (v.getId()) {
@@ -96,7 +95,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Response res = JSONUtils.handleResponse(response);
                 if (!res.getReturnCode()) {
                     progress.dismiss();
-                    //Toast.makeText(LoginActivity.this, "用户名或密码错误", Toast.LENGTH_LONG).show();
                     Snackbar.make(loginBtn,"用户名或密码错误",Snackbar.LENGTH_LONG).show();
                 }
                 else {
@@ -113,7 +111,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onError(Exception e) {
                 progress.dismiss();
                 Snackbar.make(loginBtn,"登录失败",Snackbar.LENGTH_LONG).show();
-                //Toast.makeText(LoginActivity.this, "登陆失败", Toast.LENGTH_LONG).show();
             }
         });
 

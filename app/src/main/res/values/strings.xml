@@ -25,6 +25,32 @@
     <string name="donate_developer">捐赠作者</string>
     <string name="use_feedback">使用反馈</string>
     <string name="comment">评价应用</string>
+    <string name="how_to_use">如何使用</string>
+    <string name="slogan">大道至简 记下您此刻的灵感</string>
+
+    <string name="before_minute" formatted="false">%d\u0020minutes ago</string>
+    <string name="before_hour" formatted="false">%d\u0020hours ago</string>
+    <string name="before_day" formatted="false">%d\u0020days ago</string>
+    <string name="before_month" formatted="false">%d\u0020months ago</string>
+    <string name="before_year" formatted="false">%d\u0020years ago</string>
+    <string name="just_now">moments ago</string>
+    <string name="before_half_hour">half hour ago</string>
+
+    <string name="mode_new">新建笔记</string>
+    <string name="mode_edit">编辑笔记</string>
+    <string name="mode_view">查看笔记</string>
+    <string name="write_something">写点什么...</string>
+
+    <string name="word_count">字数统计</string>
+    <string name="characters_no_spaces">字符数（不含空格）：</string>
+    <string name="characters_with_spaces">字符数：</string>
+    <string name="words">字数：</string>
+    <string name="menu_undo">撤销</string>
+    <string name="menu_redo">重做</string>
+    <string name="action_share">分享</string>
+
+
+
 
 
 
@@ -36,16 +62,11 @@
     <string name="add_notebook">添加记录</string>
 
     <string name="home">主页</string>
-
-    <string name="jia_mi">应用加密</string>
-    <string name="slogan">简道在手，天下我有</string>
     <string name="exit">退出</string>
     <string name="settran">应用透明背景</string>
     <string name="pop_photo">拍照</string>
     <string name="pop_choose">从相册中选择</string>
 
-    <string name="user_info">个人资料</string>
-    <string name="my_blog">http://blade6.top__欢迎大家访问</string>
     <string name="datetime_dialog_ok">设置</string>
     <string name="datetime_dialog_cancel">取消</string>
     <string name="notealert_look">查看详情</string>
@@ -55,5 +76,4 @@
     <string name="font_large">大</string>
     <string name="font_super">较大</string>
     <string name="create_folder">创建文件夹</string>
-    <string name="find">博客</string>
 </resources>

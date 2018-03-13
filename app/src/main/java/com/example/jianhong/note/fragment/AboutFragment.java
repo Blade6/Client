@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.jianhong.note.R;
-import com.example.jianhong.note.utils.CommonUtils;
+import com.example.jianhong.note.utils.PhoneUtils;
 
 /**
  * Created by jianhong on 2018/3/11.
@@ -26,7 +26,7 @@ public class AboutFragment extends Fragment implements View.OnClickListener  {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         TextView version = (TextView) view.findViewById(R.id.tv_version);
         mContext = this.getActivity().getApplicationContext();
-        version.setText(CommonUtils.getVersionName(mContext));
+        version.setText(PhoneUtils.getVersionName(mContext));
 
         View comment = view.findViewById(R.id.btn_comment);
         comment.setOnClickListener(this);
@@ -44,10 +44,13 @@ public class AboutFragment extends Fragment implements View.OnClickListener  {
                 // ignore
                 break;
             case R.id.btn_feedback:
-                // CommonUtils.feedback(mContext);
+                // PhoneUtils.feedback(mContext);
                 // ignore
                 break;
             case R.id.btn_donate:
+                // ignore
+                break;
+            case R.id.btn_how_to_use:
                 // ignore
                 break;
         }

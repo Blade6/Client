@@ -15,7 +15,7 @@ import com.example.jianhong.note.R;
 import com.example.jianhong.note.entity.HttpCallbackListener;
 import com.example.jianhong.note.entity.Response;
 import com.example.jianhong.note.entity.User;
-import com.example.jianhong.note.utils.CommonUtils;
+import com.example.jianhong.note.utils.PhoneUtils;
 import com.example.jianhong.note.utils.HttpUtils;
 import com.example.jianhong.note.utils.JSONUtils;
 import com.example.jianhong.note.utils.MD5Utils;
@@ -75,7 +75,7 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        boolean isNetConnected = CommonUtils.isNetworkAvailable(this);
+        boolean isNetConnected = PhoneUtils.isNetworkAvailable(this);
         if(!isNetConnected){
             Snackbar.make(registerBtn,"网络连接出错",Snackbar.LENGTH_LONG).show();
             return;

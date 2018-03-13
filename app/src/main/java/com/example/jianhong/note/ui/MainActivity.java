@@ -27,22 +27,24 @@ import com.example.jianhong.note.utils.SystemUtils;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    public static final String TAG = MainActivity.class.getSimpleName();
+
     protected FloatingActionButton fab;
     public DrawerLayout drawer;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                NoteActivity.writeTodayNewNote(MainActivity.this);
             }
         });
 
@@ -98,14 +100,14 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_mgr_note) {
 
         } else if (id == R.id.nav_change_bg) {
-            setTitle("更换壁纸");
+            setTitle(R.string.change_bg);
             ChangeBgFragment changeBgFragment=new ChangeBgFragment();
             changeFragment(changeBgFragment);
             fab.hide();
         } else if (id == R.id.nav_setting) {
 
         } else if (id == R.id.nav_about) {
-            setTitle("关于应用");
+            setTitle(R.string.about_app);
             AboutFragment aboutAppFragment=new AboutFragment();
             changeFragment(aboutAppFragment);
             fab.hide();

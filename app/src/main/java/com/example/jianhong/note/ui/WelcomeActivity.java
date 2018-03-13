@@ -8,7 +8,6 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.example.jianhong.note.R;
-import com.example.jianhong.note.utils.LogUtils;
 import com.example.jianhong.note.utils.SPUtils;
 
 public class WelcomeActivity extends AppCompatActivity {
@@ -48,13 +47,11 @@ public class WelcomeActivity extends AppCompatActivity {
         Intent intent=new Intent(WelcomeActivity.this,MainActivity.class);
         startActivity(intent);
         WelcomeActivity.this.finish();
-        LogUtils.d("WelcomeActivity", "Home");
     }
     private void goToLoginActivity()
     {
         Intent intent=new Intent(WelcomeActivity.this,LoginActivity.class);
         startActivity(intent);
         WelcomeActivity.this.finish();
-        LogUtils.d("WelcomeActivity", "Login");
     }
 }
