@@ -1,4 +1,4 @@
-package com.example.jianhong.note.db.provider;
+package com.example.jianhong.note.data.provider;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -10,9 +10,9 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import com.example.jianhong.note.db.model.Note;
-import com.example.jianhong.note.db.model.NoteDB;
-import com.example.jianhong.note.db.NoteOpenHelper;
+import com.example.jianhong.note.data.model.Note;
+import com.example.jianhong.note.data.db.NoteDB;
+import com.example.jianhong.note.data.db.NoteOpenHelper;
 
 public class NoteProvider extends ContentProvider {
     private static final int NOTE_DIR = 1;
@@ -20,7 +20,7 @@ public class NoteProvider extends ContentProvider {
     private static final int NOTEBOOK_DIR = 3;
     private static final int NOTEBOOK_ITEM = 4;
 
-    public static final String AUTHORITY = "com.example.jianhong.note.db.provider";
+    public static final String AUTHORITY = "com.example.jianhong.provider"; // 与AndroidManifest.xml中的一致
     public static final String TABLE_NOTE = NoteDB.TABLE_NOTE;
     public static final String TABLE_NOTEBOOK = NoteDB.TABLE_NOTEBOOK;
 
@@ -37,8 +37,7 @@ public class NoteProvider extends ContentProvider {
     public static final String[] STANDARD_SELECTION_ARGS = new String[]{"" + Note.TRUE};
 
     public static final String[] NOTEBOOK_PROJECTION = {NoteDB.ID + " AS _id", NoteDB.NAME,
-            NoteDB.SYN_STATUS, NoteDB.NOTEBOOK_GUID, NoteDB.DELETED, NoteDB.NOTES_NUM,
-            NoteDB.SELECTED};
+            NoteDB.SYN_STATUS, NoteDB.NOTEBOOK_GUID, NoteDB.DELETED, NoteDB.NOTES_NUM};
 
     private static UriMatcher uriMatcher;
 

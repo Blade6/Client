@@ -1,4 +1,4 @@
-package com.example.jianhong.note.fragment;
+package com.example.jianhong.note.ui.fragment;
 
 import android.support.v4.app.Fragment;
 import android.content.Context;

@@ -1,6 +1,10 @@
 package com.example.jianhong.note.utils;
 
-import com.example.jianhong.note.db.model.Note;
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+
+import com.example.jianhong.note.data.model.Note;
 
 /**
  * Created by jianhong on 2018/3/12.
@@ -83,6 +87,17 @@ public class CommonUtils {
         res[2] = str.length();
         res[1] = res[2] - spaceCnt;
         res[0] = engCnt + gbkCnt;
+    }
+
+    public static int getVersionCode(Context context) {
+        try {
+            PackageManager pm = context.getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(context.getPackageName(), PackageManager.GET_ACTIVITIES);
+            return pi.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return 1;
     }
 
 }

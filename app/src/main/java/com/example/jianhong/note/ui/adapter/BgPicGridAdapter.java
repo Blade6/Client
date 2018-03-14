@@ -1,4 +1,4 @@
-package com.example.jianhong.note.adapter;
+package com.example.jianhong.note.ui.adapter;
 
 import java.util.List;
 

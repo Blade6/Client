@@ -1,4 +1,4 @@
-package com.example.jianhong.note.widget;
+package com.example.jianhong.note.ui.widget;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

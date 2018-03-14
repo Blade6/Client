@@ -1,4 +1,4 @@
-package com.example.jianhong.note.widget;
+package com.example.jianhong.note.ui.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -15,8 +15,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
-import com.example.jianhong.note.R;
 
+import com.example.jianhong.note.R;
 
 /**
  * 圆形ImageView组件

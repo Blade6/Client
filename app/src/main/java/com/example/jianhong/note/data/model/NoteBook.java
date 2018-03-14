@@ -1,9 +1,10 @@
-package com.example.jianhong.note.db.model;
+package com.example.jianhong.note.data.model;
 
 import android.content.ContentValues;
-import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.example.jianhong.note.data.db.NoteDB;
 
 /**
  * Created by jianhong on 2018/3/12.
@@ -26,20 +27,7 @@ public class NoteBook implements Parcelable {
     private String name;
     private long notebookGuid;
     private int notesNum = 0;
-    private int selected = FALSE;
     private int deleted = FALSE;
-
-    public int getSelected() {
-        return selected;
-    }
-
-    public void setSelected(int selected) {
-        this.selected = selected;
-    }
-
-    public boolean isSelected() {
-        return selected == TRUE;
-    }
 
     public int getNotesNum() {
         return notesNum;
@@ -118,7 +106,6 @@ public class NoteBook implements Parcelable {
         parcel.writeLong(notebookGuid);
         parcel.writeInt(deleted);
         parcel.writeInt(notesNum);
-        parcel.writeInt(selected);
     }
 
     public ContentValues toContentValues() {
@@ -134,7 +121,6 @@ public class NoteBook implements Parcelable {
         values.put(NoteDB.NOTEBOOK_GUID, notebookGuid);
         values.put(NoteDB.DELETED, deleted);
         values.put(NoteDB.NOTES_NUM, notesNum);
-        values.put(NoteDB.SELECTED, selected);
         return values;
     }
 
@@ -148,7 +134,6 @@ public class NoteBook implements Parcelable {
             noteBook.notebookGuid = parcel.readLong();
             noteBook.deleted = parcel.readInt();
             noteBook.notesNum = parcel.readInt();
-            noteBook.selected = parcel.readInt();
             return noteBook;
         }
 

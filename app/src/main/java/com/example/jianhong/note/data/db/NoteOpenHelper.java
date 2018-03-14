@@ -1,10 +1,8 @@
-package com.example.jianhong.note.db;
+package com.example.jianhong.note.data.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
-import com.example.jianhong.note.db.model.NoteDB;
 
 public class NoteOpenHelper extends SQLiteOpenHelper {
 
@@ -12,14 +10,14 @@ public class NoteOpenHelper extends SQLiteOpenHelper {
             "create table " + NoteDB.TABLE_NOTE + " ("
                     + "id integer primary key autoincrement,"
                     + "time text,"
-                    + "content text,"
-                    + "created_time integer,"
-                    + "upd_time integer,"
                     + "syn_status integer,"
-                    + "guid text,"
-                    + "book_guid text,"
+                    + "content text,"
+                    + "create_time integer,"
+                    + "upd_time integer,"
+                    + "notebook_id integer,"
                     + "deleted integer,"
-                    + "notebook_id integer"
+                    + "guid text,"
+                    + "book_guid text"
                     + ")";
 
     public static final String CREATE_TABLE_NOTEBOOK =
@@ -27,10 +25,9 @@ public class NoteOpenHelper extends SQLiteOpenHelper {
                     + "id integer primary key autoincrement,"
                     + "name text,"
                     + "syn_status integer,"
-                    + "notebook_guid text,"
-                    + "deleted integer,"
                     + "num integer,"
-                    + "selected integer"
+                    + "deleted integer,"
+                    + "notebook_guid text"
                     + ")";
 
     public NoteOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory,

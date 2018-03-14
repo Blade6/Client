@@ -5,9 +5,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 
-import com.example.jianhong.note.db.model.Note;
-import com.example.jianhong.note.db.model.NoteBook;
-import com.example.jianhong.note.db.provider.NoteProvider;
+import com.example.jianhong.note.data.model.Note;
+import com.example.jianhong.note.data.model.NoteBook;
+import com.example.jianhong.note.data.provider.NoteProvider;
 
 
 public class ProviderUtils {

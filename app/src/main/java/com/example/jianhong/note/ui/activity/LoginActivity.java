@@ -1,4 +1,4 @@
-package com.example.jianhong.note.ui;
+package com.example.jianhong.note.ui.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;

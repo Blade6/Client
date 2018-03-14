@@ -1,4 +1,4 @@
-package com.example.jianhong.note.fragment;
+package com.example.jianhong.note.ui.fragment;
 
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -14,10 +14,10 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.example.jianhong.note.R;
-import com.example.jianhong.note.adapter.BgPicGridAdapter;
+import com.example.jianhong.note.ui.adapter.BgPicGridAdapter;
 import com.example.jianhong.note.entity.BgPic;
 import com.example.jianhong.note.utils.SystemUtils;
-import com.example.jianhong.note.ui.MainActivity;
+import com.example.jianhong.note.ui.activity.MainActivity;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,4 +1,4 @@
-package com.example.jianhong.note.db.model;
+package com.example.jianhong.note.data.model;
 
 import android.content.ContentValues;
 import android.os.Parcel;
@@ -6,6 +6,7 @@ import android.os.Parcelable;
 
 import java.util.Calendar;
 
+import com.example.jianhong.note.data.db.NoteDB;
 import com.example.jianhong.note.utils.CommonUtils;
 
 /**
@@ -23,7 +24,8 @@ public class Note implements Parcelable {
     public static final int DELETE = 3;
     private int synStatus = NOTHING; // 同步状态，确定执行同步操作时是否需要提交到服务器
 
-    private int id = -1; // note的本地编号
+    private int id = 0; // note的本地编号
+    private String time = "";
     private String content; // note的内容
     private long create_time; // 创建时间
     private long upd_time; // 最后编辑时间
@@ -32,7 +34,6 @@ public class Note implements Parcelable {
     private long guid; // 服务器创建的id，唯一确定一条note
     private long bookGuid; // 笔记所属笔记本在服务器的唯一id
 
-    private String time;
     private int deleted = FALSE;
 
     // 返回note的开头段落
@@ -120,16 +121,36 @@ public class Note implements Parcelable {
         return time;
     }
 
+    public long getGuid() {
+        return guid;
+    }
+
+    public void setGuid(Long guid) {
+        this.guid = guid;
+    }
+
+    public Long getBookGuid() {
+        return bookGuid;
+    }
+
+    public void setBookGuid(Long bookGuid) {
+        this.bookGuid = bookGuid;
+    }
+
     public static final Creator<Note> CREATOR = new Creator<Note>() {
         @Override
         public Note createFromParcel(Parcel parcel) {
             Note note = new Note();
             note.id = parcel.readInt();
             note.time = parcel.readString();
+            note.synStatus = parcel.readInt();
             note.content = parcel.readString();
             note.create_time = parcel.readLong();
             note.upd_time = parcel.readLong();
             note.noteBookId = parcel.readInt();
+            note.deleted = parcel.readInt();
+            note.guid = parcel.readLong();
+            note.bookGuid = parcel.readLong();
             return note;
         }
 
@@ -181,15 +202,17 @@ public class Note implements Parcelable {
 
     public ContentValues toInsertContentValues() {
         ContentValues values = new ContentValues();
+
         values.put(NoteDB.TIME, time);
-        values.put(NoteDB.CONTENT, content);
-        values.put(NoteDB.UPD_TIME, upd_time);
-        values.put(NoteDB.CREATE_TIME, create_time);
         values.put(NoteDB.SYN_STATUS, synStatus);
+        values.put(NoteDB.CONTENT, content);
+        values.put(NoteDB.CREATE_TIME, create_time);
+        values.put(NoteDB.UPD_TIME, upd_time);
+        values.put(NoteDB.NOTEBOOK_ID, noteBookId);
+        values.put(NoteDB.DELETED, deleted);
         values.put(NoteDB.GUID, guid);
         values.put(NoteDB.BOOK_GUID, bookGuid);
-        values.put(NoteDB.DELETED, deleted);
-        values.put(NoteDB.NOTEBOOK_ID, noteBookId);
+
         return values;
     }
 

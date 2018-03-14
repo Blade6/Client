@@ -28,13 +28,13 @@
     <string name="how_to_use">如何使用</string>
     <string name="slogan">大道至简 记下您此刻的灵感</string>
 
-    <string name="before_minute" formatted="false">%d\u0020minutes ago</string>
-    <string name="before_hour" formatted="false">%d\u0020hours ago</string>
-    <string name="before_day" formatted="false">%d\u0020days ago</string>
-    <string name="before_month" formatted="false">%d\u0020months ago</string>
-    <string name="before_year" formatted="false">%d\u0020years ago</string>
-    <string name="just_now">moments ago</string>
-    <string name="before_half_hour">half hour ago</string>
+    <string name="before_minute" formatted="false">%d\u0020分钟\u0020前</string>
+    <string name="before_hour" formatted="false">%d\u0020小时\u0020前</string>
+    <string name="before_day" formatted="false">%d\u0020天\u0020前</string>
+    <string name="before_month" formatted="false">%d\u0020个月\u0020前</string>
+    <string name="before_year" formatted="false">%d\u0020年\u0020前</string>
+    <string name="just_now">不久之前</string>
+    <string name="before_half_hour">半小时前</string>
 
     <string name="mode_new">新建笔记</string>
     <string name="mode_edit">编辑笔记</string>
@@ -48,8 +48,22 @@
     <string name="menu_undo">撤销</string>
     <string name="menu_redo">重做</string>
     <string name="action_share">分享</string>
+    <string name="action_move">移动</string>
+    <string name="action_trash">删除</string>
 
+    <string name="tip1">人生苦短，想做的事如果不迅速付诸行动，99% 都会无疾而终哦(・8・)</string>
+    <string name="tip2">我信了你的邪，红的像个番茄</string>
 
+    <string name="default_notebook">简记</string>
+    <string name="notebook_data">本子信息</string>
+    <string name="note_data">笔记信息</string>
+    <string name="all_notes">所有笔记</string>
+    <string name="delete_confirm">确认删除?</string>
+    <string name="delete_all_confirm">删除所有选中笔记？</string>
+    <string name="delete_select_nothing">未选中任何笔记</string>
+    <string name="select_all">选择全部</string>
+    <string name="selected_one_count">选择了%1$d个</string>
+    <string name="selected_more_count">选择了%1$d个</string>
 
 
 

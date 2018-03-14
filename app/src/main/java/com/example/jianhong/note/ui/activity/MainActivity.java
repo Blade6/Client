@@ -1,37 +1,68 @@
-package com.example.jianhong.note.ui;
+package com.example.jianhong.note.ui.activity;
 
+import android.os.Bundle;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.example.jianhong.note.R;
+import com.example.jianhong.note.data.model.Note;
+import com.example.jianhong.note.data.model.NoteBook;
+import com.example.jianhong.note.data.db.NoteDB;
+import com.example.jianhong.note.entity.Common;
+import com.example.jianhong.note.utils.CommonUtils;
+import com.example.jianhong.note.utils.LogUtils;
 import com.example.jianhong.note.utils.SPUtils;
-import com.example.jianhong.note.fragment.ChangeBgFragment;
-import com.example.jianhong.note.fragment.AboutFragment;
 import com.example.jianhong.note.utils.SystemUtils;
+import com.example.jianhong.note.utils.TimeUtils;
+import com.example.jianhong.note.ui.fragment.ChangeBgFragment;
+import com.example.jianhong.note.ui.fragment.AboutFragment;
+import com.example.jianhong.note.ui.view.NoteRecyclerView;
+
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
+
+    // version code
+    private int versionCode;
+    private Context mContext;
+    private Calendar today;
+
+    public static final int MODE_LIST = 0;
+    public static final int MODE_GRID = 1;
+    private int mode;
+
+    private NoteRecyclerView noteRecyclerView;
+    //private FiltratePage filtratePage;
 
     protected FloatingActionButton fab;
     public DrawerLayout drawer;
     Toolbar toolbar;
+
+    public int getMode() {
+        return mode;
+    }
+
+    public void setMode(int mode) {
+        this.mode = mode;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +88,22 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        today = Calendar.getInstance();
+        mContext = MainActivity.this;
+        versionCode = CommonUtils.getVersionCode(mContext);
+        boolean first = (Boolean) SPUtils.get(mContext, "first", true);
+        LogUtils.d(TAG, "first:" + first);
+        if (first) {
+            firstLaunch();
+            setVersionCode();
+        }
+
+        changeContent();
+
         initBgPic();
+
+        // 设置当前文件夹
+        Common.setNoteBookId(0);
     }
 
     @Override
@@ -137,14 +183,71 @@ public class MainActivity extends AppCompatActivity
 
     private void initBgPic()
     {
-        SystemUtils systemUtils=new SystemUtils(this);
+        SystemUtils systemUtils = new SystemUtils(this);
         String path=systemUtils.getPath();
         if(path!=null) {
             Bitmap bitmap = systemUtils.getBitmapByPath(this, path);
             if (bitmap != null) {
                 drawer.setBackgroundDrawable(new BitmapDrawable(getResources(), bitmap));
-
             }
         }
+    }
+
+    /*
+    标注版本号
+     */
+    private void setVersionCode() {
+        SPUtils.put(mContext, "version_code", versionCode);
+    }
+
+    private void firstLaunch() {
+        SPUtils.put(mContext, "first", false);
+
+        //如果是第一次启动应用，首先创建笔记本表，
+        NoteBook noteBook = new NoteBook();
+        noteBook.setName(getString(R.string.default_notebook));
+        noteBook.setNotesNum(0);
+        noteBook.setNotebookGuid(0L);
+        NoteDB.getInstance(mContext).saveNoteBook_initDB(noteBook);
+
+        // 然后在数据库中添加note
+        Note one = new Note();
+        one.setCalToTime(today);
+        one.setContent(getString(R.string.tip1));
+        one.setUpdTime(TimeUtils.getCurrentTimeInLong());
+        NoteDB.getInstance(mContext).saveNote(one);
+
+        Calendar tmpCal = (Calendar) today.clone();
+        tmpCal.add(Calendar.DAY_OF_MONTH, -1);
+
+        Note two = new Note();
+        two.setCalToTime(tmpCal);
+        two.setContent(getString(R.string.tip2));
+        two.setUpdTime(TimeUtils.getCurrentTimeInLong());
+        NoteDB.getInstance(mContext).saveNote(two);
+    }
+
+    public void changeContent() {
+        if (mode == MODE_LIST) {
+            if (null == noteRecyclerView) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_fraglayout, new NoteRecyclerView()).commit();
+            }
+            unlockDrawerLock();//打开手势滑动
+        } else if (mode == MODE_GRID) {//暂时弃用
+
+        }
+    }
+
+    public void lockDrawerLock() {
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);//关闭手势滑动
+    }
+
+    public void unlockDrawerLock() {
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);//关闭手势滑动
+    }
+
+    @Override
+    public void onRefresh() {
+        // todo 同步数据
     }
 }

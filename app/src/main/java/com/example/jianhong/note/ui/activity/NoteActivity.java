@@ -1,4 +1,4 @@
-package com.example.jianhong.note.ui;
+package com.example.jianhong.note.ui.activity;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -19,12 +19,13 @@ import java.lang.reflect.Field;
 import java.util.Calendar;
 
 import com.example.jianhong.note.R;
-import com.example.jianhong.note.db.model.Note;
-import com.example.jianhong.note.db.model.NoteDB;
+import com.example.jianhong.note.data.model.Note;
+import com.example.jianhong.note.data.db.NoteDB;
 import com.example.jianhong.note.entity.Common;
 import com.example.jianhong.note.entity.Originator;
 import com.example.jianhong.note.entity.Memo;
 import com.example.jianhong.note.utils.CommonUtils;
+import com.example.jianhong.note.utils.SPUtils;
 import com.example.jianhong.note.utils.TimeUtils;
 import com.example.jianhong.note.utils.ProviderUtils;
 import com.example.jianhong.note.utils.NoteBookUtils;
@@ -108,7 +109,12 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
     }
 
     private void updateAppBar() {
-        String stamp = TimeUtils.getConciseTime(note.getUpdTime(), mContext);
+        String stamp;
+        if ((Boolean) SPUtils.get(mContext, "CREATE_ORDER", true)) {
+            stamp = CommonUtils.timeStamp(note);
+        } else {
+            stamp = TimeUtils.getConciseTime(note.getUpdTime(), mContext);
+        }
         actionBar.setTitle(stamp);
     }
 
@@ -341,21 +347,18 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
         finish();
     }
 
-//    private void deleteNote() {
-//        // 物理数据存储，以改代删
-//        note.setDeleted(Note.TRUE);
-//        if (!"".equals(note.getGuid())) {
-//            note.setSynStatus(Note.DELETE);
-//        }
-//        ProviderUtils.updateGNote(mContext, note);
-//
-//        // 更新笔记本状态
-//        int notebookId = note.getNoteBookId();
-//        NotebookUtil.updateGNotebook(mContext, notebookId, -1);
-//        if (notebookId != 0) {
-//            NotebookUtil.updateGNotebook(mContext, 0, -1);
-//        }
-//    }
+    private void deleteNote() {
+        // 物理数据存储，以改代删
+        note.setDeleted(Note.TRUE);
+        if (note.getGuid() != 0) {
+            note.setSynStatus(Note.DELETE);
+        }
+        ProviderUtils.updateNote(mContext, note);
+
+        // 更新笔记本状态
+        int notebookId = note.getNoteBookId();
+        NoteBookUtils.updateNoteBook(mContext, notebookId, -1);
+    }
 
     private void createNote() {
         // 不允许新建一条空的笔记
@@ -376,23 +379,16 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
         NoteBookUtils.updateNoteBook(mContext, groupId, +1);
     }
 
-//    private void updateNote() {
-//        gNote.setContent(editText.getText().toString());
-//        if (gNote.getSynStatus() == GNote.NOTHING) {
-//            //needUpdate
-//            gNote.setSynStatus(GNote.UPDATE);
-//        }
-//
-//        gNote.setEditTime(TimeUtils.getCurrentTimeInLong());
-//        //        物理数据存储
-//        ProviderUtils.updateGNote(mContext, gNote);
-//
-//        //当有定时提醒
-//        if (!gNote.getIsPassed()) {
-//            AlarmService.alarmTask(this);
-//        } else if (isPassed == GNote.FALSE) {//手动取消定时提醒
-//            AlarmService.cancelTask(this, gNote);
-//        }
-//    }
+    private void updateNote() {
+        note.setContent(editText.getText().toString());
+        if (note.getSynStatus() == Note.NOTHING) {
+            //needUpdate
+            note.setSynStatus(Note.UPDATE);
+        }
+
+        note.setUpdTime(TimeUtils.getCurrentTimeInLong());
+        //        物理数据存储
+        ProviderUtils.updateNote(mContext, note);
+    }
 
 }
