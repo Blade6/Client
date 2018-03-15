@@ -18,7 +18,7 @@ import com.example.jianhong.note.data.model.Note;
 import com.example.jianhong.note.data.db.NoteDB;
 import com.example.jianhong.note.data.model.NoteBook;
 import com.example.jianhong.note.data.provider.NoteProvider;
-import com.example.jianhong.note.entity.Common;
+import com.example.jianhong.note.utils.PrefrencesUtils;
 import com.example.jianhong.note.utils.ProviderUtils;
 
 import java.util.HashMap;
@@ -168,7 +168,7 @@ public class NoteBookAdapter extends CursorAdapter implements View.OnClickListen
     }
 
     private void bindFirstView(View mView) {
-        int bookId = Common.getNoteBookId();
+        int bookId = PrefrencesUtils.getInt(PrefrencesUtils.NOTEBOOK_ID);
         if (0 == bookId) {
 //            mHolder.flag.setVisibility(View.VISIBLE);
             mHolder.itemLayout.setBackgroundResource(R.drawable.abc_list_pressed_holo_dark);
@@ -196,7 +196,7 @@ public class NoteBookAdapter extends CursorAdapter implements View.OnClickListen
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         NoteBook noteBook = NoteDB.initNoteBook(cursor);
-        if (noteBook.getId() == Common.getNoteBookId()) {
+        if (noteBook.getId() == PrefrencesUtils.getInt(PrefrencesUtils.NOTEBOOK_ID)) {
 //            mHolder.flag.setVisibility(View.VISIBLE);
             mHolder.itemLayout.setBackgroundResource(R.drawable.abc_list_pressed_holo_dark);
         } else {

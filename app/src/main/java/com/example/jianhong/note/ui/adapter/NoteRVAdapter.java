@@ -16,7 +16,7 @@ import com.example.jianhong.note.ui.activity.NoteActivity;
 import com.example.jianhong.note.utils.CommonUtils;
 import com.example.jianhong.note.utils.LogUtils;
 import com.example.jianhong.note.utils.NoteBookUtils;
-import com.example.jianhong.note.utils.SPUtils;
+import com.example.jianhong.note.utils.PrefrencesUtils;
 import com.example.jianhong.note.utils.TimeUtils;
 import com.example.jianhong.note.utils.ProviderUtils;
 
@@ -114,7 +114,7 @@ public class NoteRVAdapter extends RecyclerView.Adapter<NoteRVAdapter.NoteItemHo
         noteItemHolder.title.setText(note.getContent());
 
         // 默认按照最后修改时间排序
-        if ((Boolean) SPUtils.get(mContext, "CREATE_ORDER", true)) {
+        if (PrefrencesUtils.getBoolean(PrefrencesUtils.CREATE_ORDER)) {
             noteItemHolder.editTime.setText(CommonUtils.timeStamp(note));
         } else {
             noteItemHolder.editTime.setText(TimeUtils.getConciseTime(note.getUpdTime(), mContext));

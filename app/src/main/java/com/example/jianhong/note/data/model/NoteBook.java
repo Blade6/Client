@@ -98,6 +98,25 @@ public class NoteBook implements Parcelable {
         return 0;
     }
 
+    public static final Creator<NoteBook> CREATOR = new Creator<NoteBook>() {
+        @Override
+        public NoteBook createFromParcel(Parcel parcel) {
+            NoteBook noteBook = new NoteBook();
+            noteBook.id = parcel.readInt();
+            noteBook.name = parcel.readString();
+            noteBook.synStatus = parcel.readInt();
+            noteBook.notebookGuid = parcel.readLong();
+            noteBook.deleted = parcel.readInt();
+            noteBook.notesNum = parcel.readInt();
+            return noteBook;
+        }
+
+        @Override
+        public NoteBook[] newArray(int i) {
+            return new NoteBook[i];
+        }
+    };
+
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeInt(id);
@@ -123,24 +142,5 @@ public class NoteBook implements Parcelable {
         values.put(NoteDB.NOTES_NUM, notesNum);
         return values;
     }
-
-    public static final Creator<NoteBook> CREATOR = new Creator<NoteBook>() {
-        @Override
-        public NoteBook createFromParcel(Parcel parcel) {
-            NoteBook noteBook = new NoteBook();
-            noteBook.id = parcel.readInt();
-            noteBook.name = parcel.readString();
-            noteBook.synStatus = parcel.readInt();
-            noteBook.notebookGuid = parcel.readLong();
-            noteBook.deleted = parcel.readInt();
-            noteBook.notesNum = parcel.readInt();
-            return noteBook;
-        }
-
-        @Override
-        public NoteBook[] newArray(int i) {
-            return new NoteBook[i];
-        }
-    };
 
 }

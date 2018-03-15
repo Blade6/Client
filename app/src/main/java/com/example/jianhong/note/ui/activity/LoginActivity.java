@@ -17,10 +17,10 @@ import com.example.jianhong.note.entity.Response;
 import com.example.jianhong.note.entity.User;
 import com.example.jianhong.note.entity.HttpCallbackListener;
 import com.example.jianhong.note.utils.AccountUtils;
+import com.example.jianhong.note.utils.PrefrencesUtils;
 import com.example.jianhong.note.utils.UrlUtils;
 import com.example.jianhong.note.utils.HttpUtils;
 import com.example.jianhong.note.utils.MD5Utils;
-import com.example.jianhong.note.utils.SPUtils;
 import com.example.jianhong.note.utils.JSONUtils;
 
 import butterknife.BindView;
@@ -99,11 +99,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 }
                 else {
                     progress.dismiss();
-                    //将用户信息保存至本地
-                    SPUtils.put(LoginActivity.this, "user_name",name);
-                    SPUtils.put(LoginActivity.this,"pwd", pwd);
-                    //将登陆信息保存本地
-                    AccountUtils.saveUserInfos(LoginActivity.this, user, pwd);
+
+                    User user2 = User.dealWithData(res.getData());
+                    AccountUtils.saveUserInfos(user2);
+
                     goToHomeActivity();
                 }
             }

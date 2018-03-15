@@ -22,10 +22,10 @@ import com.example.jianhong.note.R;
 import com.example.jianhong.note.data.model.Note;
 import com.example.jianhong.note.data.model.NoteBook;
 import com.example.jianhong.note.data.db.NoteDB;
-import com.example.jianhong.note.entity.Common;
+import com.example.jianhong.note.utils.AccountUtils;
 import com.example.jianhong.note.utils.CommonUtils;
 import com.example.jianhong.note.utils.LogUtils;
-import com.example.jianhong.note.utils.SPUtils;
+import com.example.jianhong.note.utils.PrefrencesUtils;
 import com.example.jianhong.note.utils.SystemUtils;
 import com.example.jianhong.note.utils.TimeUtils;
 import com.example.jianhong.note.ui.fragment.ChangeBgFragment;
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity
         today = Calendar.getInstance();
         mContext = MainActivity.this;
         versionCode = CommonUtils.getVersionCode(mContext);
-        boolean first = (Boolean) SPUtils.get(mContext, "first", true);
+        boolean first = PrefrencesUtils.getBoolean(PrefrencesUtils.FIRST_USE);
         LogUtils.d(TAG, "first:" + first);
         if (first) {
             firstLaunch();
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity
         initBgPic(); // 感觉这个要废掉
 
         // 设置当前文件夹
-        Common.setNoteBookId(0);
+        PrefrencesUtils.putInt(PrefrencesUtils.NOTEBOOK_ID, 0);
     }
 
     @Override
@@ -166,8 +166,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void logout() {
-        SPUtils.remove(MainActivity.this, "user_name");
-        SPUtils.remove(MainActivity.this, "pwd");
+        AccountUtils.clearAllInfos();
         finish();
         System.exit(0);
     }
@@ -197,11 +196,11 @@ public class MainActivity extends AppCompatActivity
     标注版本号
      */
     private void setVersionCode() {
-        SPUtils.put(mContext, "version_code", versionCode);
+        PrefrencesUtils.putInt(PrefrencesUtils.VERSION_CODE, versionCode);
     }
 
     private void firstLaunch() {
-        SPUtils.put(mContext, "first", false);
+        PrefrencesUtils.putBoolean(PrefrencesUtils.FIRST_USE, false);
 
         //如果是第一次启动应用，首先创建笔记本表，
         NoteBook noteBook = new NoteBook();

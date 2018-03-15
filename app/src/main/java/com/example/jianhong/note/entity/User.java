@@ -2,6 +2,8 @@ package com.example.jianhong.note.entity;
 
 import android.text.TextUtils;
 
+import org.json.JSONObject;
+
 import java.io.Serializable;
 
 
@@ -41,6 +43,18 @@ public class User implements Serializable{
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getHeadUrl() {
+        return headUrl;
+    }
+
+    public void setHeadUrl(String headUrl) {
+        this.headUrl = headUrl;
+    }
+
+    public static User dealWithData(JSONObject Data) {
+        return new User();
     }
 
 }

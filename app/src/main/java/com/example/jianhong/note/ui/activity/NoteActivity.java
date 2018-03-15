@@ -21,12 +21,10 @@ import java.util.Calendar;
 import com.example.jianhong.note.R;
 import com.example.jianhong.note.data.model.Note;
 import com.example.jianhong.note.data.db.NoteDB;
-import com.example.jianhong.note.entity.Common;
 import com.example.jianhong.note.entity.Originator;
 import com.example.jianhong.note.entity.Memo;
 import com.example.jianhong.note.utils.CommonUtils;
-import com.example.jianhong.note.utils.LogUtils;
-import com.example.jianhong.note.utils.SPUtils;
+import com.example.jianhong.note.utils.PrefrencesUtils;
 import com.example.jianhong.note.utils.TimeUtils;
 import com.example.jianhong.note.utils.ProviderUtils;
 import com.example.jianhong.note.utils.NoteBookUtils;
@@ -84,7 +82,6 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
      * @param mode
      */
     public static void actionStart(Context context, Note note, int mode) {
-        LogUtils.d(TAG, "note1:" + note.toString());
         Intent intent = new Intent(context, NoteActivity.class);
         intent.putExtra("note_data", note);
         intent.putExtra("mode", mode);
@@ -112,7 +109,7 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
 
     private void updateAppBar() {
         String stamp;
-        if ((Boolean) SPUtils.get(mContext, "CREATE_ORDER", true)) {
+        if (PrefrencesUtils.getBoolean(PrefrencesUtils.CREATE_ORDER)) {
             stamp = CommonUtils.timeStamp(note);
         } else {
             stamp = TimeUtils.getConciseTime(note.getUpdTime(), mContext);
@@ -187,7 +184,6 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
         mContext = this;
         Calendar today = Calendar.getInstance();
         note = getIntent().getParcelableExtra("note_data");
-        LogUtils.d(TAG, "note2:" + note.toString());
         mDataParser = new Originator(new Memo(note.getContent(), 0));
         isUndoOrRedo = false;
         db = NoteDB.getInstance(this);
@@ -211,14 +207,13 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
             });
         } else if (mode == MODE_TODAY) {
             note.setCalToTime(today);
-            note.setNoteBookId(Common.getNoteBookId());
+            note.setNoteBookId(PrefrencesUtils.getInt(PrefrencesUtils.NOTEBOOK_ID));
             editText.requestFocus();
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
     }
 
     private void initMode(String content) {
-        LogUtils.d(TAG, "content:" + content);
         mode = getIntent().getIntExtra("mode", 0);
         if (mode == MODE_NEW || mode == MODE_EDIT || MODE_TODAY == mode) {
             setNoteContent(content, content.length());
@@ -371,7 +366,7 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
 
         note.setContent(editText.getText().toString());
         note.setSynStatus(Note.NEW);
-        int groupId = Common.getNoteBookId();
+        int groupId = PrefrencesUtils.getInt(PrefrencesUtils.NOTEBOOK_ID);
         note.setNoteBookId(groupId);
         note.setUpdTime(TimeUtils.getCurrentTimeInLong());
 

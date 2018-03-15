@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<prefs name="note_pref">
+    <pref>
+        <key>login_state</key>
+        <def-value>false</def-value>
+    </pref>
+    <pref>
+        <key>user_id</key>
+        <def-value>""</def-value>
+    </pref>
+    <pref>
+        <key>user_name</key>
+        <def-value>""</def-value>
+    </pref>
+    <pref>
+        <key>user_pwd</key>
+        <def-value>""</def-value>
+    </pref>
+    <pref>
+        <key>user_head_url</key>
+        <def-value>""</def-value>
+    </pref>
+
+    <pref>
+        <key>first_use</key>
+        <def_value>true</def_value>
+    </pref>
+    <pref>
+        <key>version_code</key>
+        <def_value>1</def_value>
+    </pref>
+
+    <pref>
+        <key>notebook_id</key>
+        <def-value>0</def-value>
+    </pref>
+    <pref>
+        <key>note_max_length_key</key>
+        <def-value>0.418</def-value>
+    </pref>
+    <pref>
+        <key>one_column</key>
+        <def-value>false</def-value>
+    </pref>
+    <pref>
+        <key>create_order</key>
+        <def-value>false</def-value>
+    </pref>
+
+</prefs>

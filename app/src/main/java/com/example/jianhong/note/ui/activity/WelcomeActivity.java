@@ -8,12 +8,17 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.example.jianhong.note.R;
-import com.example.jianhong.note.utils.SPUtils;
+import com.example.jianhong.note.utils.AccountUtils;
+import com.example.jianhong.note.utils.PrefrencesUtils;
 
 public class WelcomeActivity extends AppCompatActivity {
 
+    private static boolean first = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        initPrefrences();
+
         super.onCreate(savedInstanceState);
         /*set it to be no title*/
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -31,9 +36,16 @@ public class WelcomeActivity extends AppCompatActivity {
         }, 2000);
     }
 
+    private void initPrefrences() {
+        if (first) {
+            PrefrencesUtils.initFromXml(this);
+            first = false;
+        }
+    }
+
     private void autoLogin()
     {
-        if(SPUtils.contains(this,"user_name"))
+        if(AccountUtils.isLogin())
         {
             goToHomeActivity();
         }

@@ -27,14 +27,13 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.example.jianhong.note.R;
-import com.example.jianhong.note.entity.Common;
 import com.example.jianhong.note.ui.activity.MainActivity;
 import com.example.jianhong.note.ui.adapter.NoteRVAdapter;
 import com.example.jianhong.note.data.db.NoteDB;
 import com.example.jianhong.note.data.model.NoteBook;
 import com.example.jianhong.note.data.provider.NoteProvider;
 import com.example.jianhong.note.ui.widget.MySwipeRefreshLayout;
-import com.example.jianhong.note.utils.SPUtils;
+import com.example.jianhong.note.utils.PrefrencesUtils;
 
 import java.util.List;
 
@@ -80,7 +79,7 @@ public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCa
 
     public void configLayoutManager() {
         int columnNum = 2;
-        if ((Boolean) SPUtils.get(mContext, "One_column", false)) {
+        if (PrefrencesUtils.getBoolean(PrefrencesUtils.ONE_COLUMN)) {
             columnNum = 1;
         }
         mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(columnNum,
@@ -93,7 +92,7 @@ public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        int bookId = Common.getNoteBookId();
+        int bookId = PrefrencesUtils.getInt(PrefrencesUtils.NOTEBOOK_ID);
         String selection = NoteDB.NOTEBOOK_ID + " = ?";
         String[] selectionArgs = {"" + bookId};
         if (0 == bookId) {
@@ -102,7 +101,7 @@ public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCa
         }
 
         String sortOrder = NoteProvider.STANDARD_SORT_ORDER;
-        if ((Boolean) SPUtils.get(mContext, "CREATE_ORDER", true)) {
+        if (PrefrencesUtils.getBoolean(PrefrencesUtils.CREATE_ORDER)) {
             sortOrder = NoteProvider.STANDARD_SORT_ORDER2;
         }
 
