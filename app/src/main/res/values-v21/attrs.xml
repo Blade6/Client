@@ -32,6 +32,15 @@
         <attr name="is_need_footer" format="boolean" />
     </declare-styleable>
 
+    <declare-styleable name="FloatingActionButton">
+        <attr name="drawable" format="integer"/>
+        <attr name="fab_color" format="color"/>
+        <attr name="shadowRadius" format="float"/>
+        <attr name="shadowDx" format="float"/>
+        <attr name="shadowDy" format="float"/>
+        <attr name="shadowColor" format="integer"/>
+    </declare-styleable>
+
     <declare-styleable name="CirclePagerIndicator">
         <attr name="circle_indicator_centerHorizontal" format="boolean" />
         <attr name="circle_indicator_follow" format="boolean" />

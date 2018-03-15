@@ -1,4 +1,4 @@
-package com.example.jianhong.note.ui.view;
+package com.example.jianhong.note.ui.widget;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -7,8 +7,6 @@ import android.util.AttributeSet;
 import android.view.Display;
 import android.view.WindowManager;
 import android.widget.TextView;
-
-import com.example.jianhong.note.utils.SPUtils;
 
 public class MinusTextView extends TextView {
     public static final String TAG = MinusTextView.class.getSimpleName();

@@ -4,9 +4,7 @@
     <string name="mgr_note">笔记管理</string>
     <string name="change_bg">更换壁纸</string>
     <string name="setting">个人设置</string>
-    <string name="about_app">关于应用</string>
     <string name="logout">注销登陆</string>
-    <string name="separate_line">~~我是可爱的分割线~~</string>
 
     <string name="login_username_hint">请输入账号</string>
     <string name="login_password_hint">请输入密码</string>
@@ -20,7 +18,7 @@
     <string name="reg_pwd_hint">请再次输入密码</string>
     <string name="register_account">注册帐号</string>
 
-    <string name="proudly">Copyright © 2015 简道笔记\nMade with love by Jianhong</string>
+    <string name="proudly">Copyright © 2018 简道笔记\nMade with love by Jianhong</string>
     <string name="author">作者：@hjh</string>
     <string name="donate_developer">捐赠作者</string>
     <string name="use_feedback">使用反馈</string>
@@ -47,9 +45,12 @@
     <string name="words">字数：</string>
     <string name="menu_undo">撤销</string>
     <string name="menu_redo">重做</string>
+    <string name="menu_search">搜索</string>
     <string name="action_share">分享</string>
     <string name="action_move">移动</string>
     <string name="action_trash">删除</string>
+    <string name="action_sync">同步</string>
+    <string name="action_about">关于</string>
 
     <string name="tip1">人生苦短，想做的事如果不迅速付诸行动，99% 都会无疾而终哦(・8・)</string>
     <string name="tip2">我信了你的邪，红的像个番茄</string>

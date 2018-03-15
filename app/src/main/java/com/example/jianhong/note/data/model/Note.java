@@ -36,11 +36,6 @@ public class Note implements Parcelable {
 
     private int deleted = FALSE;
 
-    // 返回note的开头段落
-    public String getStart() {
-        return content.substring(0, 10);
-    }
-
     public boolean needUpdate() {
         return synStatus == UPDATE;
     }
@@ -163,10 +158,15 @@ public class Note implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeInt(id);
+        parcel.writeString(time);
+        parcel.writeInt(synStatus);
         parcel.writeString(content);
         parcel.writeLong(create_time);
         parcel.writeLong(upd_time);
         parcel.writeInt(noteBookId);
+        parcel.writeInt(deleted);
+        parcel.writeLong(guid);
+        parcel.writeLong(bookGuid);
     }
 
     @Override
@@ -216,4 +216,19 @@ public class Note implements Parcelable {
         return values;
     }
 
+    @Override
+    public String toString() {
+        String toString = "note:[" + "Id->" + getId()
+                + " time->" + getTime()
+                + " syn_status->" + getSynStatus()
+                + " content->" + getContent()
+                + " create_time->" + getCreateTime()
+                + " upd_time->" + getUpdTime()
+                + " book_id->" + getNoteBookId()
+                + " delete->" + getDeleted()
+                + " guid->" + getGuid()
+                + " bookguid->" + getBookGuid()
+                + "]/n";
+        return toString;
+    }
 }

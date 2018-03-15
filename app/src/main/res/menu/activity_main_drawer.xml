@@ -15,18 +15,9 @@
             android:icon="@drawable/ic_menu_manage"
             android:title="@string/setting" />
         <item
-            android:id="@+id/nav_about"
+            android:id="@+id/nav_exit"
             android:icon="@drawable/about"
-            android:title="@string/about_app" />
+            android:title="@string/logout" />
     </group>
-
-    <item android:title="@string/separate_line">
-        <menu>
-            <item
-                android:id="@+id/nav_exit"
-                android:icon="@android:drawable/ic_menu_info_details"
-                android:title="@string/logout" />
-        </menu>
-    </item>
 
 </menu>

@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -31,7 +30,8 @@ import com.example.jianhong.note.utils.SystemUtils;
 import com.example.jianhong.note.utils.TimeUtils;
 import com.example.jianhong.note.ui.fragment.ChangeBgFragment;
 import com.example.jianhong.note.ui.fragment.AboutFragment;
-import com.example.jianhong.note.ui.view.NoteRecyclerView;
+import com.example.jianhong.note.ui.fragment.NoteRecyclerView;
+import com.example.jianhong.note.ui.view.FloatingActionButton;
 
 import java.util.Calendar;
 
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity
 
         changeContent();
 
-        initBgPic();
+        initBgPic(); // 感觉这个要废掉
 
         // 设置当前文件夹
         Common.setNoteBookId(0);
@@ -130,8 +130,13 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_sync) {
+
+        } else if (id == R.id.action_about) {
+            setTitle(R.string.action_about);
+            AboutFragment aboutAppFragment=new AboutFragment();
+            changeFragment(aboutAppFragment);
+            fab.hide();
         }
 
         return super.onOptionsItemSelected(item);
@@ -152,11 +157,6 @@ public class MainActivity extends AppCompatActivity
             fab.hide();
         } else if (id == R.id.nav_setting) {
 
-        } else if (id == R.id.nav_about) {
-            setTitle(R.string.about_app);
-            AboutFragment aboutAppFragment=new AboutFragment();
-            changeFragment(aboutAppFragment);
-            fab.hide();
         } else if (id == R.id.nav_exit) {
             logout();
         }

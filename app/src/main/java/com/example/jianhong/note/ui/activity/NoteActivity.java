@@ -25,6 +25,7 @@ import com.example.jianhong.note.entity.Common;
 import com.example.jianhong.note.entity.Originator;
 import com.example.jianhong.note.entity.Memo;
 import com.example.jianhong.note.utils.CommonUtils;
+import com.example.jianhong.note.utils.LogUtils;
 import com.example.jianhong.note.utils.SPUtils;
 import com.example.jianhong.note.utils.TimeUtils;
 import com.example.jianhong.note.utils.ProviderUtils;
@@ -75,7 +76,7 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
 
     /**
      * 启动NoteActivity活动的静态方法，
-     * 需给出GAsstNote实例及启动模式NoteActivity.MODE_SHOW or NoteActivity.MODE_NEW
+     * 需给出Note实例及启动模式NoteActivity.MODE_SHOW or NoteActivity.MODE_NEW
      * or NoteActivity.MODE_EDIT
      *
      * @param context
@@ -83,8 +84,9 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
      * @param mode
      */
     public static void actionStart(Context context, Note note, int mode) {
+        LogUtils.d(TAG, "note1:" + note.toString());
         Intent intent = new Intent(context, NoteActivity.class);
-        intent.putExtra("gAsstNote_data", note);
+        intent.putExtra("note_data", note);
         intent.putExtra("mode", mode);
         context.startActivity(intent);
     }
@@ -184,7 +186,8 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
     private void initValues() {
         mContext = this;
         Calendar today = Calendar.getInstance();
-        note = getIntent().getParcelableExtra("gAsstNote_data");
+        note = getIntent().getParcelableExtra("note_data");
+        LogUtils.d(TAG, "note2:" + note.toString());
         mDataParser = new Originator(new Memo(note.getContent(), 0));
         isUndoOrRedo = false;
         db = NoteDB.getInstance(this);
@@ -203,7 +206,6 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
                 public void onFocusChange(View v, boolean hasFocus) {
                     if (hasFocus) {
                         editText.setCursorVisible(true);
-//                      actionBar.setTitle(R.string.mode_edit);
                     }
                 }
             });
@@ -216,6 +218,7 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
     }
 
     private void initMode(String content) {
+        LogUtils.d(TAG, "content:" + content);
         mode = getIntent().getIntExtra("mode", 0);
         if (mode == MODE_NEW || mode == MODE_EDIT || MODE_TODAY == mode) {
             setNoteContent(content, content.length());
@@ -237,7 +240,7 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
         note.setCalToTime(cal);
 
         Intent intent = new Intent(mContext, NoteActivity.class);
-        intent.putExtra("gAsstNote_data", note);
+        intent.putExtra("note_data", note);
         intent.putExtra("mode", MODE_NEW);
         mContext.startActivity(intent);
         ((Activity) mContext).overridePendingTransition(0, 0);

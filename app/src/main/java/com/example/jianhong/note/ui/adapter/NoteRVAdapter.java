@@ -14,6 +14,7 @@ import com.example.jianhong.note.data.model.Note;
 import com.example.jianhong.note.data.db.NoteDB;
 import com.example.jianhong.note.ui.activity.NoteActivity;
 import com.example.jianhong.note.utils.CommonUtils;
+import com.example.jianhong.note.utils.LogUtils;
 import com.example.jianhong.note.utils.NoteBookUtils;
 import com.example.jianhong.note.utils.SPUtils;
 import com.example.jianhong.note.utils.TimeUtils;
@@ -155,6 +156,7 @@ public class NoteRVAdapter extends RecyclerView.Adapter<NoteRVAdapter.NoteItemHo
     @Override
     public void onClick(View v) {
         if (R.id.rv_item_container == v.getId()) {
+            LogUtils.d(TAG, "mCheckMode:" + mCheckMode);
             if (!mCheckMode) {
                 NoteActivity.actionStart(mContext, (Note) v.getTag(R.string.note_data), NoteActivity.MODE_EDIT);
             } else {
@@ -266,7 +268,7 @@ public class NoteRVAdapter extends RecyclerView.Adapter<NoteRVAdapter.NoteItemHo
             for (Integer key : keys) {
                 Note note = mCheckedItems.get(key);
 
-                //                更新受到影响的笔记本中的数值
+                // 更新受到影响的笔记本中的数值
                 if (0 != note.getNoteBookId()) {
                     int num = affectedNotebooks.get(note.getNoteBookId());
                     affectedNotebooks.put(note.getNoteBookId(), num + 1);

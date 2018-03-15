@@ -7,7 +7,7 @@
     android:layout_margin="@dimen/rv_item_margin"
     android:padding="@dimen/rv_item_padding_left_right">
 
-    <com.example.jianhong.note.ui.view.MinusTextView
+    <com.example.jianhong.note.ui.widget.MinusTextView
         android:id="@+id/note_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,15 +27,4 @@
         android:gravity="center|right"
         android:textColor="@color/darkgrey"
         android:textSize="12sp"/>
-
-    <TextView
-        android:id="@+id/alert_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@id/note_content"
-        android:gravity="center|left"
-        android:textColor="@color/darkgrey"
-        android:textSize="11sp"/>
 </RelativeLayout>

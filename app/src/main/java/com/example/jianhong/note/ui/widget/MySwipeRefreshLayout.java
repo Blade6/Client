@@ -1,4 +1,4 @@
-package com.example.jianhong.note.ui.view;
+package com.example.jianhong.note.ui.widget;
 
 import android.content.Context;
 import android.support.v4.widget.SwipeRefreshLayout;

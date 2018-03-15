@@ -1,4 +1,4 @@
-package com.example.jianhong.note.ui.view;
+package com.example.jianhong.note.ui.fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -33,13 +33,14 @@ import com.example.jianhong.note.ui.adapter.NoteRVAdapter;
 import com.example.jianhong.note.data.db.NoteDB;
 import com.example.jianhong.note.data.model.NoteBook;
 import com.example.jianhong.note.data.provider.NoteProvider;
+import com.example.jianhong.note.ui.widget.MySwipeRefreshLayout;
 import com.example.jianhong.note.utils.SPUtils;
 
 import java.util.List;
 
 public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
         NoteRVAdapter.ItemLongPressedListener, NoteRVAdapter.OnItemSelectListener {
-    public static final String TAG = com.example.jianhong.note.ui.view.NoteRecyclerView.class.getSimpleName();
+    public static final String TAG = NoteRecyclerView.class.getSimpleName();
 
     private static final int LOADER_ID = 113;
     private Context mContext;

@@ -5,7 +5,7 @@
              android:layout_height="match_parent"
              android:orientation="vertical">
 
-    <com.example.jianhong.note.ui.view.MySwipeRefreshLayout
+    <com.example.jianhong.note.ui.widget.MySwipeRefreshLayout
         android:id="@+id/refresher"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -18,6 +18,6 @@
             android:paddingRight="@dimen/rv_margin"
             android:overScrollMode="never"
             android:scrollbars="none"/>
-    </com.example.jianhong.note.ui.view.MySwipeRefreshLayout>
+    </com.example.jianhong.note.ui.widget.MySwipeRefreshLayout>
 
 </FrameLayout>
