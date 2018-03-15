@@ -26,7 +26,7 @@ public class Note implements Parcelable {
 
     private int id = 0; // note的本地编号
     private String time = "";
-    private String content; // note的内容
+    private String content = ""; // note的内容
     private long create_time; // 创建时间
     private long upd_time; // 最后编辑时间
     private int noteBookId = 0;//数据表中笔记本的id号[本地使用]，为0时使用默认笔记本 简记

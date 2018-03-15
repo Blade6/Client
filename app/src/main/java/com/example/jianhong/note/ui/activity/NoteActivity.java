@@ -24,6 +24,7 @@ import com.example.jianhong.note.data.db.NoteDB;
 import com.example.jianhong.note.entity.Originator;
 import com.example.jianhong.note.entity.Memo;
 import com.example.jianhong.note.utils.CommonUtils;
+import com.example.jianhong.note.utils.LogUtils;
 import com.example.jianhong.note.utils.PrefrencesUtils;
 import com.example.jianhong.note.utils.TimeUtils;
 import com.example.jianhong.note.utils.ProviderUtils;
@@ -184,6 +185,7 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
         mContext = this;
         Calendar today = Calendar.getInstance();
         note = getIntent().getParcelableExtra("note_data");
+        LogUtils.d(TAG, note.toString());
         mDataParser = new Originator(new Memo(note.getContent(), 0));
         isUndoOrRedo = false;
         db = NoteDB.getInstance(this);
@@ -218,15 +220,6 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
         if (mode == MODE_NEW || mode == MODE_EDIT || MODE_TODAY == mode) {
             setNoteContent(content, content.length());
         }
-    }
-
-    /**
-     * 以cal为日期写一篇新记事
-     */
-    public static void writeNewNote(Context mContext, Calendar cal) {
-        Note note = new Note();
-        note.setCalToTime(cal);
-        NoteActivity.actionStart(mContext, note, NoteActivity.MODE_NEW);
     }
 
     public static void writeTodayNewNote(Context mContext) {
@@ -338,9 +331,9 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
         if (dbFlag == DB_SAVE) {
             createNote();
         } else if (dbFlag == DB_UPDATE) {
-            //updateNote();
+            updateNote();
         } else if (dbFlag == DB_DELETE) {
-            //deleteNote();
+            deleteNote();
         }
         finish();
     }
@@ -385,7 +378,7 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
         }
 
         note.setUpdTime(TimeUtils.getCurrentTimeInLong());
-        //        物理数据存储
+        // 物理数据存储
         ProviderUtils.updateNote(mContext, note);
     }
 
