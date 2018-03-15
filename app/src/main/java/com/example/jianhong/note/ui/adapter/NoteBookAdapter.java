@@ -177,7 +177,7 @@ public class NoteBookAdapter extends CursorAdapter implements View.OnClickListen
             mHolder.itemLayout.setBackgroundColor(mContext.getResources().getColor(android.R.color.transparent));
         }
 
-        mHolder.name.setText(R.string.all_notes);
+        mHolder.name.setText(R.string.default_notebook);
         mHolder.checkBox.setVisibility(View.INVISIBLE);
 //        mHolder.divider.setVisibility(View.VISIBLE);
         mHolder.divider.setVisibility(View.GONE);

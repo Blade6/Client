@@ -72,7 +72,6 @@ public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCa
         loaderManager.initLoader(LOADER_ID, null, this);
 
         refreshLayout = (MySwipeRefreshLayout) view.findViewById(R.id.refresher);
-        //refreshLayout.setColorSchemeColors(((MainActivity) mContext).getColorPrimary());
         refreshLayout.setOnRefreshListener((MainActivity) mContext);
         return view;
     }
@@ -143,7 +142,7 @@ public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCa
 
     // / The followings are about ActionMode
     private Menu mContextMenu;
-    private int tmpGNoteBookId;
+    private int tmpNoteBookId;
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
 
         @Override
@@ -209,35 +208,39 @@ public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCa
 
             final RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id
                     .rg_dialog);
-            RadioButton purenote = (RadioButton) view.findViewById(R.id.rb_purenote);
+            RadioButton note = (RadioButton) view.findViewById(R.id.rb_note);
             NoteDB db = NoteDB.getInstance(mContext);
             List<NoteBook> list = db.loadNoteBooks();
             for (final NoteBook noteBook : list) {
-                RadioButton tempButton = new RadioButton(mContext);
-                tempButton.setText(noteBook.getName());
-                radioGroup.addView(tempButton, LinearLayout.LayoutParams
-                        .MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                if (noteBook.getId() == 0) {
+                    // ignore
+                } else {
+                    RadioButton tempButton = new RadioButton(mContext);
+                    tempButton.setText(noteBook.getName());
+                    radioGroup.addView(tempButton, LinearLayout.LayoutParams
+                            .MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
-                tempButton.setOnCheckedChangeListener(new CompoundButton
-                        .OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton compoundButton,
-                                                 boolean b) {
-                        if (b) {
-                            tmpGNoteBookId = noteBook.getId();
+                    tempButton.setOnCheckedChangeListener(new CompoundButton
+                            .OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton compoundButton,
+                                                     boolean b) {
+                            if (b) {
+                                tmpNoteBookId = noteBook.getId();
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
 
-            purenote.setChecked(true);
-            tmpGNoteBookId = 0;
-            purenote.setOnCheckedChangeListener(new CompoundButton
+            note.setChecked(true);
+            tmpNoteBookId = 0;
+            note.setOnCheckedChangeListener(new CompoundButton
                     .OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                     if (b) {
-                        tmpGNoteBookId = 0;
+                        tmpNoteBookId = 0;
                     }
                 }
             });
@@ -247,7 +250,7 @@ public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCa
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            mAdapter.moveSelectedNotes(tmpGNoteBookId);
+                            mAdapter.moveSelectedNotes(tmpNoteBookId);
                             if (mActionMode != null) {
                                 mActionMode.finish();
                             }
@@ -286,7 +289,7 @@ public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void startActionMode() {
-//        mActionMode 在Destroy中重赋为了 null
+        // mActionMode 在Destroy中重赋为了 null
         if (mActionMode != null) {
             return;
         }

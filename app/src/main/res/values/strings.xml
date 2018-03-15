@@ -58,7 +58,6 @@
     <string name="default_notebook">简记</string>
     <string name="notebook_data">本子信息</string>
     <string name="note_data">笔记信息</string>
-    <string name="all_notes">所有笔记</string>
     <string name="delete_confirm">确认删除?</string>
     <string name="delete_all_confirm">删除所有选中笔记？</string>
     <string name="delete_select_nothing">未选中任何笔记</string>
