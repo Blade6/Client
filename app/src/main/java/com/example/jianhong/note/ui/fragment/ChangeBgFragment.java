@@ -41,7 +41,6 @@ public class ChangeBgFragment extends Fragment {
 
     private void initView()
     {
-
         mGridView = (GridView) baseView.findViewById(R.id.change_background_grid);
         mBgPicAdapter = new BgPicGridAdapter(getActivity(),mBgPicList);
         mGridView.setOnItemClickListener(gridItemClickListener);

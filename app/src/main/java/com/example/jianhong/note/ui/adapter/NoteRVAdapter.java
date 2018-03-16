@@ -110,7 +110,6 @@ public class NoteRVAdapter extends RecyclerView.Adapter<NoteRVAdapter.NoteItemHo
         noteItemHolder.itemLayout.setTag(R.string.note_data, note);
         noteItemHolder.itemLayout.setOnClickListener(this);
         noteItemHolder.itemLayout.setOnLongClickListener(this);
-//      noteItemHolder.title.setText(note.getContentFromHtml().toString().trim());
         noteItemHolder.title.setText(note.getContent());
 
         // 默认按照最后修改时间排序

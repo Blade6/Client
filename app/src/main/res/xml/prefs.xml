@@ -22,10 +22,6 @@
     </pref>
 
     <pref>
-        <key>first_use</key>
-        <def_value>true</def_value>
-    </pref>
-    <pref>
         <key>version_code</key>
         <def_value>1</def_value>
     </pref>
@@ -34,6 +30,15 @@
         <key>notebook_id</key>
         <def-value>0</def-value>
     </pref>
+    <pref>
+        <key>notebook_name</key>
+        <def-value>简记</def-value>
+    </pref>
+    <pref>
+        <key>jian_num</key>
+        <def-value>0</def-value>
+    </pref>
+
     <pref>
         <key>note_max_length_key</key>
         <def-value>0.418</def-value>
@@ -45,6 +50,10 @@
     <pref>
         <key>create_order</key>
         <def-value>false</def-value>
+    </pref>
+    <pref>
+        <key>quick_save_location</key>
+        <def-value>0</def-value>
     </pref>
 
 </prefs>

@@ -14,6 +14,9 @@ public class NoteBookUtils {
         NoteBook noteBook = db.getNoteBookById(id);
         int num = noteBook.getNotesNum();
         noteBook.setNotesNum(num + diff);
+        if (id == 0) {
+            PrefrencesUtils.putInt(PrefrencesUtils.JIAN_NUM, num+diff);
+        }
         ProviderUtils.updateNoteBook(mContext, noteBook);
     }
 }

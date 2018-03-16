@@ -1,7 +1,13 @@
 package com.example.jianhong.note.ui.activity;
 
+
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.design.widget.NavigationView;
@@ -17,15 +23,22 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.jianhong.note.R;
 import com.example.jianhong.note.data.model.Note;
 import com.example.jianhong.note.data.model.NoteBook;
 import com.example.jianhong.note.data.db.NoteDB;
+import com.example.jianhong.note.ui.adapter.NoteBookAdapter;
+import com.example.jianhong.note.ui.fragment.NoteBookFragment;
 import com.example.jianhong.note.utils.AccountUtils;
 import com.example.jianhong.note.utils.CommonUtils;
 import com.example.jianhong.note.utils.LogUtils;
 import com.example.jianhong.note.utils.PrefrencesUtils;
+import com.example.jianhong.note.utils.ProviderUtils;
 import com.example.jianhong.note.utils.SystemUtils;
 import com.example.jianhong.note.utils.TimeUtils;
 import com.example.jianhong.note.ui.fragment.ChangeBgFragment;
@@ -34,6 +47,7 @@ import com.example.jianhong.note.ui.fragment.NoteRecyclerView;
 import com.example.jianhong.note.ui.view.FloatingActionButton;
 
 import java.util.Calendar;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
@@ -47,22 +61,12 @@ public class MainActivity extends AppCompatActivity
 
     public static final int MODE_LIST = 0;
     public static final int MODE_GRID = 1;
-    private int mode;
 
-    private NoteRecyclerView noteRecyclerView;
     //private FiltratePage filtratePage;
 
     protected FloatingActionButton fab;
     public DrawerLayout drawer;
     Toolbar toolbar;
-
-    public int getMode() {
-        return mode;
-    }
-
-    public void setMode(int mode) {
-        this.mode = mode;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,19 +95,16 @@ public class MainActivity extends AppCompatActivity
         today = Calendar.getInstance();
         mContext = MainActivity.this;
         versionCode = CommonUtils.getVersionCode(mContext);
-        boolean first = PrefrencesUtils.getBoolean(PrefrencesUtils.FIRST_USE);
-        LogUtils.d(TAG, "first:" + first);
-        if (first) {
-            firstLaunch();
-            setVersionCode();
-        }
-
-        changeContent();
+        first_use();
 
         initBgPic(); // 感觉这个要废掉
 
-        // 设置当前文件夹
-        PrefrencesUtils.putInt(PrefrencesUtils.NOTEBOOK_ID, 0);
+        List<NoteBook> list = NoteDB.getInstance(mContext).loadNoteBooks();
+        for (NoteBook nb : list) {
+            LogUtils.d(TAG, nb.toString());
+        }
+
+        goToNoteRecyclerViewFragment();
     }
 
     @Override
@@ -149,10 +150,13 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_mgr_note) {
-
+            setTitle(R.string.mgr_note);
+            NoteBookFragment noteBookFragment = new NoteBookFragment();
+            changeFragment(noteBookFragment);
+            fab.hide();
         } else if (id == R.id.nav_change_bg) {
             setTitle(R.string.change_bg);
-            ChangeBgFragment changeBgFragment=new ChangeBgFragment();
+            ChangeBgFragment changeBgFragment = new ChangeBgFragment();
             changeFragment(changeBgFragment);
             fab.hide();
         } else if (id == R.id.nav_setting) {
@@ -165,25 +169,41 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void logout() {
+    private void first_use() {
+        SharedPreferences sp = this.getSharedPreferences("note", Context.MODE_PRIVATE);
+        if(sp.getBoolean("first_use", true)) {
+            firstLaunch();
+            setVersionCode();
+
+            Editor editor = sp.edit();
+            editor.putBoolean("first_use", false);
+            editor.commit();
+        }
+    }
+
+    private void logout() {
         AccountUtils.clearAllInfos();
         finish();
         System.exit(0);
     }
 
-    protected void changeFragment(Fragment fragment)
+    private void changeFragment(Fragment fragment)
     {
-        FragmentManager fm=getSupportFragmentManager();
-        FragmentTransaction ft=fm.beginTransaction();
-        ft.replace(R.id.main_fraglayout, fragment,null);
-        //    ft.addToBackStack(fragment.toString());
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.main_fraglayout, fragment, null);
         ft.commit();
+    }
+
+    public void goToNoteRecyclerViewFragment() {
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_fraglayout, new NoteRecyclerView()).commit();
+        fab.show();
     }
 
     private void initBgPic()
     {
         SystemUtils systemUtils = new SystemUtils(this);
-        String path=systemUtils.getPath();
+        String path = systemUtils.getPath();
         if(path!=null) {
             Bitmap bitmap = systemUtils.getBitmapByPath(this, path);
             if (bitmap != null) {
@@ -200,14 +220,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void firstLaunch() {
-        PrefrencesUtils.putBoolean(PrefrencesUtils.FIRST_USE, false);
-
         //如果是第一次启动应用，首先创建笔记本表，
         NoteBook noteBook = new NoteBook();
         noteBook.setName(getString(R.string.default_notebook));
-        noteBook.setNotesNum(0);
+        noteBook.setNotesNum(2);
         noteBook.setNotebookGuid(0L);
         NoteDB.getInstance(mContext).saveNoteBook_initDB(noteBook);
+        PrefrencesUtils.putInt(PrefrencesUtils.JIAN_NUM, 2);
 
         // 然后在数据库中添加note
         Note one = new Note();
@@ -226,27 +245,85 @@ public class MainActivity extends AppCompatActivity
         NoteDB.getInstance(mContext).saveNote(two);
     }
 
-    public void changeContent() {
-        if (mode == MODE_LIST) {
-            if (null == noteRecyclerView) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.main_fraglayout, new NoteRecyclerView()).commit();
-            }
-            unlockDrawerLock();//打开手势滑动
-        } else if (mode == MODE_GRID) {//暂时弃用
-
-        }
-    }
-
-    public void lockDrawerLock() {
-        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);//关闭手势滑动
-    }
-
-    public void unlockDrawerLock() {
-        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);//关闭手势滑动
-    }
-
     @Override
     public void onRefresh() {
         // todo 同步数据
     }
+
+    /**
+     *-----------------------------------------会话相关---------------------------------------------
+     */
+
+    public void showCreateFolderDialog() {
+        LogUtils.d(TAG, "showCreateFolderDialog");
+        View view = getLayoutInflater().inflate(R.layout.dialog_edittext, (ViewGroup) getWindow()
+                .getDecorView(), false);
+        final EditText editText = (EditText) view.findViewById(R.id.et_in_dialog);
+
+        final Dialog dialog = new AlertDialog.Builder(mContext)
+                .setTitle(R.string.create_folder_title)
+                .setView(view)
+                .setPositiveButton(R.string.create_folder, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (editText.getText().toString().trim().length() == 0) {
+                            Toast.makeText(mContext, R.string.create_folder_err, Toast.LENGTH_SHORT).show();
+                        } else {
+                            createFolder(editText.getText().toString().trim());
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.folder_cancel, null)
+                .create();
+
+        dialog.show();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+    }
+
+    private void createFolder(String name) {
+        LogUtils.d(TAG, "folder_name:" + name);
+        NoteBook noteBook = new NoteBook();
+        noteBook.setName(name);
+        ProviderUtils.insertNoteBook(mContext, noteBook);
+    }
+
+    public void showRenameFolderDialog(final NoteBook noteBook) {
+        View view = getLayoutInflater().inflate(R.layout.dialog_edittext, (ViewGroup) getWindow()
+                .getDecorView(), false);
+        final EditText editText = (EditText) view.findViewById(R.id.et_in_dialog);
+        editText.setText(noteBook.getName());
+        editText.setSelection(noteBook.getName().length());
+        final Dialog dialog = new AlertDialog.Builder(mContext)
+                .setTitle(R.string.rename_folder_title)
+                .setView(view)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (editText.getText().toString().trim().length() == 0) {
+                            Toast.makeText(mContext, R.string.rename_folder_err, Toast.LENGTH_SHORT).show();
+                        } else {
+                            noteBook.setName(editText.getText().toString().trim());
+                            ProviderUtils.updateNoteBook(mContext, noteBook);
+                        }
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .create();
+
+        dialog.show();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+    }
+
+    public void trash(final NoteBookFragment noteBookFragment) {
+        new AlertDialog.Builder(this).
+                setMessage(R.string.delete_folder_title).
+                setNegativeButton(android.R.string.cancel, null).
+                setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        noteBookFragment.trash();
+                    }
+                }).show();
+    }
+
 }

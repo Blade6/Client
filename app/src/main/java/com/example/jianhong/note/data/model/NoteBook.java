@@ -143,4 +143,15 @@ public class NoteBook implements Parcelable {
         return values;
     }
 
+    @Override
+    public String toString() {
+        String toString = "notebook:[id->" + getId()
+                + " name->" + getName()
+                + " guid->" + getNotebookGuid()
+                + " num->" + getNotesNum()
+                + " syn_status->" + getSynStatus()
+                + " delete->" + getDeleted();
+        return toString;
+    }
+
 }

@@ -22,10 +22,11 @@ public class BgPicGridAdapter extends BaseAdapter {
 	private Activity mActivity;
 	private String mDefaultBgPath;
 	private SystemUtils systemUtil;
+
 	public BgPicGridAdapter(Activity mActivity,List<BgPic> list)
 	{
 		this.bgList = list;
-		this.mActivity=mActivity;
+		this.mActivity= mActivity;
 		this.resources = mActivity.getResources();
 		systemUtil=new SystemUtils(mActivity);
 	}

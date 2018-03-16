@@ -73,6 +73,8 @@ public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCa
 
         refreshLayout = (MySwipeRefreshLayout) view.findViewById(R.id.refresher);
         refreshLayout.setOnRefreshListener((MainActivity) mContext);
+
+        getActivity().setTitle(PrefrencesUtils.getString(PrefrencesUtils.NOTEBOOK_NAME));
         return view;
     }
 
@@ -172,18 +174,13 @@ public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCa
 
         @Override
         public void onDestroyActionMode(ActionMode arg0) {
-            ((MainActivity) mContext).unlockDrawerLock();
-
             mActionMode = null;
             mContextMenu = null;
             mAdapter.setCheckMode(false);
-
         }
 
         @Override
         public boolean onPrepareActionMode(ActionMode arg0, Menu menu) {
-            ((MainActivity) mContext).lockDrawerLock();
-
             mContextMenu = menu;
             updateActionMode();
 

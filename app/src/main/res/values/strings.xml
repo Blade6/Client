@@ -55,7 +55,7 @@
     <string name="tip1">人生苦短，想做的事如果不迅速付诸行动，99% 都会无疾而终哦(・8・)</string>
     <string name="tip2">我信了你的邪，红的像个番茄</string>
 
-    <string name="default_notebook">简记</string>
+
     <string name="notebook_data">本子信息</string>
     <string name="note_data">笔记信息</string>
     <string name="delete_confirm">确认删除?</string>
@@ -64,6 +64,19 @@
     <string name="select_all">选择全部</string>
     <string name="selected_one_count">选择了%1$d个</string>
     <string name="selected_more_count">选择了%1$d个</string>
+
+    <string name="default_notebook">简记</string>
+    <string name="folder_cancel">取消</string>
+    <string name="folder_delete">删除</string>
+    <string name="folder_new">新建</string>
+
+    <!-- create folder dialog -->
+    <string name="create_folder_title">新建笔记分组</string>
+    <string name="delete_folder_title">删除笔记分组？</string>
+    <string name="create_folder">创建</string>
+    <string name="create_folder_err">笔记分组创建失败！</string>
+    <string name="rename_folder_title">重命名笔记分组</string>
+    <string name="rename_folder_err">重命名笔记分组失败！</string>
 
 
 
@@ -89,5 +102,4 @@
     <string name="font_normal">普通</string>
     <string name="font_large">大</string>
     <string name="font_super">较大</string>
-    <string name="create_folder">创建文件夹</string>
 </resources>

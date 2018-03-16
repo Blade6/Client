@@ -110,11 +110,11 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
 
     private void updateAppBar() {
         String stamp;
-        if (PrefrencesUtils.getBoolean(PrefrencesUtils.CREATE_ORDER)) {
+        //if (PrefrencesUtils.getBoolean(PrefrencesUtils.CREATE_ORDER)) {
             stamp = CommonUtils.timeStamp(note);
-        } else {
-            stamp = TimeUtils.getConciseTime(note.getUpdTime(), mContext);
-        }
+        //} else {
+            //stamp = TimeUtils.getConciseTime(note.getUpdTime(), mContext);
+        //}
         actionBar.setTitle(stamp);
     }
 
@@ -135,11 +135,7 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        if (mode == MODE_NEW || MODE_TODAY == mode) {
-            getMenuInflater().inflate(R.menu.new_note_menu, menu);
-        } else if (mode == MODE_EDIT) {
-            getMenuInflater().inflate(R.menu.edit_note_menu, menu);
-        }
+        getMenuInflater().inflate(R.menu.new_note_menu, menu);
         undoItem = menu.findItem(R.id.action_undo);
         redoItem = menu.findItem(R.id.action_redo);
         updateUndoAndRedo();

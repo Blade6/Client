@@ -18,6 +18,7 @@ import com.example.jianhong.note.data.model.Note;
 import com.example.jianhong.note.data.db.NoteDB;
 import com.example.jianhong.note.data.model.NoteBook;
 import com.example.jianhong.note.data.provider.NoteProvider;
+import com.example.jianhong.note.utils.LogUtils;
 import com.example.jianhong.note.utils.PrefrencesUtils;
 import com.example.jianhong.note.utils.ProviderUtils;
 
@@ -26,121 +27,51 @@ import java.util.Set;
 
 public class NoteBookAdapter extends CursorAdapter implements View.OnClickListener,
         View.OnLongClickListener, CompoundButton.OnCheckedChangeListener {
+
     private static final String TAG = NoteBookAdapter.class.getSimpleName();
 
-    public static final int SPECIAL_ITEM_NUM = 1;
-    private LayoutInflater mLayoutInflater;
     private boolean mCheckMode;
     private HashMap<Integer, NoteBook> mCheckedItems;
     private ItemLongPressedListener mItemLongPressedListener;
-    private OnItemSelectListener mOnItemSelectListener;
     private OnItemClickListener mOnItemClickListener;
 
-    @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        View view = (View) buttonView.getParent();
-        NoteBook noteBook = (NoteBook) view.getTag(R.string.notebook_data);
-        if (null != noteBook) {
-            checkBoxChanged(noteBook.getId(), noteBook, isChecked);
-        } else {
-            Log.e(TAG, "Error in onCheckedChanged(CompoundButton buttonView, boolean isChecked),"
-                    + "null==noteBook");
-        }
-    }
-
-    public void checkBoxChanged(int _id, NoteBook noteBook, boolean isChecked) {
-        if (isChecked) {
-            mCheckedItems.put(_id, noteBook);
-
-            if (null != mOnItemSelectListener) {
-                mOnItemSelectListener.onSelect();
-            }
-        } else {
-            mCheckedItems.remove(_id);
-
-            if (null != mOnItemSelectListener) {
-                mOnItemSelectListener.onCancelSelect();
-            }
-        }
-    }
-
-    public interface ItemLongPressedListener {
-        void startActionMode();
-
-        void onLongPress(NoteBook noteBook);
-    }
-
-    public interface OnItemSelectListener {
-        void onSelect();
-
-        void onCancelSelect();
-    }
-
-    public interface OnItemClickListener {
-        void onItemClick(View view);
-    }
-
-    public void setItemLongPressedListener(ItemLongPressedListener mItemLongPressedListener) {
-        this.mItemLongPressedListener = mItemLongPressedListener;
-    }
-
-    public void setOnItemSelectListener(OnItemSelectListener mOnItemSelectListener) {
-        this.mOnItemSelectListener = mOnItemSelectListener;
-    }
-
-    public void setOnItemClickListener(OnItemClickListener mOnItemClickListener) {
-        this.mOnItemClickListener = mOnItemClickListener;
-    }
-
-    public NoteBookAdapter(Context context, Cursor c, int flags) {
+    public NoteBookAdapter(Context context, Cursor c, int flags, ItemLongPressedListener
+            itemLongPressedListener) {
         super(context, c, flags);
-        mLayoutInflater = (LayoutInflater) context.getSystemService(Context
-                .LAYOUT_INFLATER_SERVICE);
-    }
-
-    public NoteBookAdapter(Context context, Cursor c, int flags, ItemLongPressedListener
-            itemLongPressedListener, OnItemSelectListener onItemSelectListener) {
-        this(context, c, flags);
         mItemLongPressedListener = itemLongPressedListener;
-        mOnItemSelectListener = onItemSelectListener;
     }
 
     public NoteBookAdapter(Context context, Cursor c, int flags, ItemLongPressedListener
-            itemLongPressedListener, OnItemSelectListener onItemSelectListener,
-                           OnItemClickListener onItemClickListener) {
-        this(context, c, flags, itemLongPressedListener, onItemSelectListener);
+            itemLongPressedListener, OnItemClickListener onItemClickListener) {
+        this(context, c, flags, itemLongPressedListener);
         mOnItemClickListener = onItemClickListener;
     }
 
-    public Cursor getCursor() {
-        return mCursor;
-    }
-
-    public HashMap<Integer, NoteBook> getCheckedItems() {
-        return mCheckedItems;
-    }
-
-    @Override
-    public int getCount() {
-//        注意当 未配置 cursor 时，需要返回0
-        if (null != mCursor) {
-            return super.getCount() + SPECIAL_ITEM_NUM;
-        }
-        return 0;
-    }
+    /**
+     *-----------------------------------------view相关---------------------------------------------
+     */
 
     private View mView;
     private Holder mHolder;
 
     @Override
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        View commonView = LayoutInflater.from(context).inflate(R.layout.folder_item, parent, false);
+        final View hover = commonView.findViewById(R.id.ll_folder_unit);
+        hover.setOnClickListener(this);
+        hover.setOnLongClickListener(this);
+        return commonView;
+    }
+
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-//        mDataValid 等疑似 父类 域,仅 v4 包中有效
+        // mDataValid 等疑似 父类 域,仅 v4 包中有效
         if (!mDataValid) {
             throw new IllegalStateException("this should only be called when the cursor is valid");
         }
 
         if (convertView == null) {
-//            newView()中实际并未使用 mCursor，所以没有问题
+            // newView()中实际并未使用 mCursor，所以没有问题
             mView = newView(mContext, mCursor, parent);
             mHolder = new Holder();
             mHolder.itemLayout = (LinearLayout) mView.findViewById(R.id.ll_folder_unit);
@@ -155,57 +86,37 @@ public class NoteBookAdapter extends CursorAdapter implements View.OnClickListen
             mHolder = (Holder) mView.getTag();
         }
 
-        if (position == 0) {
-            bindFirstView(mView);
-        } else {
-            int newPosition = position - 1;
-            if (!mCursor.moveToPosition(newPosition)) {
+        // Cursor下标从-1开始计数，但是第一个值在下标0处
+        if (!mCursor.moveToPosition(position)) {
                 throw new IllegalStateException("couldn't move cursor to position " + position);
+        } else {
+            if (position == 0) {
+                bindFirstView(mCursor);
+            } else {
+                bindView(mView, mContext, mCursor);
             }
-            bindView(mView, mContext, mCursor);
         }
         return mView;
     }
 
-    private void bindFirstView(View mView) {
-        int bookId = PrefrencesUtils.getInt(PrefrencesUtils.NOTEBOOK_ID);
-        if (0 == bookId) {
-//            mHolder.flag.setVisibility(View.VISIBLE);
-            mHolder.itemLayout.setBackgroundResource(R.drawable.abc_list_pressed_holo_dark);
-        } else {
-//            mHolder.flag.setVisibility(View.INVISIBLE);
-            mHolder.itemLayout.setBackgroundColor(mContext.getResources().getColor(android.R.color.transparent));
-        }
+    private void bindFirstView(Cursor cursor) {
+        NoteBook noteBook = NoteDB.initNoteBook(cursor);
+        //mHolder.itemLayout.setBackgroundColor(mContext.getResources().getColor(android.R.color.transparent));
 
         mHolder.name.setText(R.string.default_notebook);
+        mHolder.num.setText("" + PrefrencesUtils.getInt(PrefrencesUtils.JIAN_NUM));
         mHolder.checkBox.setVisibility(View.INVISIBLE);
-//        mHolder.divider.setVisibility(View.VISIBLE);
         mHolder.divider.setVisibility(View.GONE);
-        mHolder.itemLayout.setTag(R.string.notebook_data, null);//似乎很有必要
-    }
-
-    @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View commonView = mLayoutInflater.inflate(R.layout.drawer_folder_item, parent, false);
-        final View hover = commonView.findViewById(R.id.ll_folder_unit);
-        hover.setOnClickListener(this);
-        hover.setOnLongClickListener(this);
-        return commonView;
+        mHolder.itemLayout.setTag(R.string.notebook_data, noteBook);//似乎很有必要
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         NoteBook noteBook = NoteDB.initNoteBook(cursor);
-        if (noteBook.getId() == PrefrencesUtils.getInt(PrefrencesUtils.NOTEBOOK_ID)) {
-//            mHolder.flag.setVisibility(View.VISIBLE);
-            mHolder.itemLayout.setBackgroundResource(R.drawable.abc_list_pressed_holo_dark);
-        } else {
-//            mHolder.flag.setVisibility(View.INVISIBLE);
-            mHolder.itemLayout.setBackgroundColor(mContext.getResources().getColor(android.R.color.transparent));
-        }
+        //mHolder.itemLayout.setBackgroundColor(mContext.getResources().getColor(android.R.color.transparent));
+
         mHolder.name.setText(noteBook.getName());
         mHolder.num.setText("" + noteBook.getNotesNum());
-//        mHolder.divider.setVisibility(View.INVISIBLE);
         mHolder.divider.setVisibility(View.GONE);
         mHolder.itemLayout.setTag(R.string.notebook_data, noteBook);
 
@@ -230,6 +141,28 @@ public class NoteBookAdapter extends CursorAdapter implements View.OnClickListen
         TextView num;
         CheckBox checkBox;
         View divider;
+    }
+
+    /**
+     *-----------------------------------------手势操作相关-------------------------------------------
+     */
+
+    public interface ItemLongPressedListener {
+        void startActionMode();
+
+        void onLongPress(NoteBook noteBook);
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(View view);
+    }
+
+    public void setItemLongPressedListener(ItemLongPressedListener mItemLongPressedListener) {
+        this.mItemLongPressedListener = mItemLongPressedListener;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener mOnItemClickListener) {
+        this.mOnItemClickListener = mOnItemClickListener;
     }
 
     @Override
@@ -257,25 +190,18 @@ public class NoteBookAdapter extends CursorAdapter implements View.OnClickListen
         return true;
     }
 
-    private boolean isChecked(int id) {
-        if (null == mCheckedItems) {
-            return false;
-        }
-        return mCheckedItems.containsKey(id);
-    }
+    /**
+     *-----------------------------------------check相关---------------------------------------------
+     */
 
-    public int getSelectedCount() {
-        if (mCheckedItems == null) {
-            return 0;
-        } else {
-            return mCheckedItems.size();
-        }
+    public boolean isChecked() {
+        return !(null == mCheckedItems || 0 == mCheckedItems.size());
     }
 
     public void setCheckMode(boolean check) {
         if (!check) {
-//            由于牵连甚广，退出删除模式后，这里我们让它维持原状态
-//            mCheckedItems = null;
+            // 由于牵连甚广，退出删除模式后，这里我们让它维持原状态
+            // ignore
         } else {
             if (mCheckedItems == null) {
                 mCheckedItems = new HashMap<Integer, NoteBook>();
@@ -305,8 +231,35 @@ public class NoteBookAdapter extends CursorAdapter implements View.OnClickListen
         }
     }
 
+    public void checkBoxChanged(int _id, NoteBook noteBook, boolean isChecked) {
+        if (isChecked) {
+            mCheckedItems.put(_id, noteBook);
+        } else {
+            mCheckedItems.remove(_id);
+        }
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        View view = (View) buttonView.getParent();
+        NoteBook noteBook = (NoteBook) view.getTag(R.string.notebook_data);
+        if (null != noteBook) {
+            checkBoxChanged(noteBook.getId(), noteBook, isChecked);
+        } else {
+            Log.e(TAG, "Error in onCheckedChanged(CompoundButton buttonView, boolean isChecked),"
+                    + "null==noteBook");
+        }
+    }
+
+    public HashMap<Integer, NoteBook> getCheckedItems() {
+        return mCheckedItems;
+    }
+
+    /**
+     *-----------------------------------------删除笔记本---------------------------------------------
+     */
+
     public void deleteNoteBook(NoteBook noteBook) {
-//        仍旧以改代删
         deleteNotesByBookId(noteBook.getId());
         noteBook.setNotesNum(0);
         noteBook.setDeleted(NoteBook.TRUE);
