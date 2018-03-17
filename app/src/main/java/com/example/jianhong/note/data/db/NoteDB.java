@@ -25,7 +25,6 @@ public class NoteDB {
     public static final String DELETED = "deleted";
 
     // table_note
-    public static final String TIME = "time";
     public static final String CONTENT = "content";
     public static final String CREATE_TIME = "create_time";
     public static final String UPD_TIME = "upd_time";
@@ -68,7 +67,6 @@ public class NoteDB {
     public void saveNote(Note note) {
         if (note != null) {
             ContentValues values = new ContentValues();
-            values.put(TIME, note.getTime());
             values.put(SYN_STATUS, note.getSynStatus());
             values.put(CONTENT, note.getContent());
             values.put(CREATE_TIME, note.getCreateTime());
@@ -94,7 +92,6 @@ public class NoteDB {
             do {
                 Note note = new Note();
                 note.setId(cursor.getInt(cursor.getColumnIndex(ID)));
-                note.setTime(cursor.getString(cursor.getColumnIndex(TIME)));
                 note.setSynStatus(cursor.getInt(cursor.getColumnIndex(SYN_STATUS)));
                 note.setContent(cursor.getString(cursor.getColumnIndex(CONTENT)));
                 note.setCreateTime(cursor.getLong(cursor.getColumnIndex(CREATE_TIME)));
@@ -129,7 +126,6 @@ public class NoteDB {
             do {
                 Note note = new Note();
                 note.setId(cursor.getInt(cursor.getColumnIndex(ID)));
-                note.setTime(cursor.getString(cursor.getColumnIndex(TIME)));
                 note.setSynStatus(cursor.getInt(cursor.getColumnIndex(SYN_STATUS)));
                 note.setContent(cursor.getString(cursor.getColumnIndex(CONTENT)));
                 note.setCreateTime(cursor.getLong(cursor.getColumnIndex(CREATE_TIME)));
@@ -155,7 +151,6 @@ public class NoteDB {
             do {
                 Note note = new Note();
                 note.setId(cursor.getInt(cursor.getColumnIndex(ID)));
-                note.setTime(cursor.getString(cursor.getColumnIndex(TIME)));
                 note.setSynStatus(cursor.getInt(cursor.getColumnIndex(SYN_STATUS)));
                 note.setContent(cursor.getString(cursor.getColumnIndex(CONTENT)));
                 note.setCreateTime(cursor.getLong(cursor.getColumnIndex(CREATE_TIME)));
@@ -202,7 +197,6 @@ public class NoteDB {
         if (cursor.moveToFirst()) {
             Note note = new Note();
             note.setId(cursor.getInt(cursor.getColumnIndex(ID)));
-            note.setTime(cursor.getString(cursor.getColumnIndex(TIME)));
             note.setSynStatus(cursor.getInt(cursor.getColumnIndex(SYN_STATUS)));
             note.setContent(cursor.getString(cursor.getColumnIndex(CONTENT)));
             note.setCreateTime(cursor.getLong(cursor.getColumnIndex(CREATE_TIME)));
@@ -227,7 +221,6 @@ public class NoteDB {
         if (cursor.moveToFirst()) {
             Note note = new Note();
             note.setId(cursor.getInt(cursor.getColumnIndex(ID)));
-            note.setTime(cursor.getString(cursor.getColumnIndex(TIME)));
             note.setSynStatus(cursor.getInt(cursor.getColumnIndex(SYN_STATUS)));
             note.setContent(cursor.getString(cursor.getColumnIndex(CONTENT)));
             note.setCreateTime(cursor.getLong(cursor.getColumnIndex(CREATE_TIME)));
@@ -258,7 +251,6 @@ public class NoteDB {
      */
     public boolean updateNote(Note note) {
         ContentValues values = new ContentValues();
-        values.put(TIME, note.getTime());
         values.put(SYN_STATUS, note.getSynStatus());
         values.put(CONTENT, note.getContent());
         values.put(CREATE_TIME, note.getCreateTime());

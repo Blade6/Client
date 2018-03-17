@@ -15,32 +15,10 @@ public class TimeUtils {
     public static final long DAY_Millis = 24 * HOUR_Millis;
     public static final long MONTH_Millis = 30 * DAY_Millis;
     public static final long YEAR_Millis = 365 * DAY_Millis;
-    public static final SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy.MM.dd    HH : mm");
-    public static final SimpleDateFormat DATE_FORMAT_DATE_1 = new SimpleDateFormat(" HH : mm ");
+    public static final SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     private TimeUtils() {
         throw new AssertionError();
-    }
-
-    /**
-     * long time to string
-     *
-     * @param timeInMillis
-     * @param dateFormat
-     * @return
-     */
-    public static String getTime(long timeInMillis, SimpleDateFormat dateFormat) {
-        return dateFormat.format(new Date(timeInMillis));
-    }
-
-    /**
-     * long time to string, format is {@link #DEFAULT_DATE_FORMAT}
-     *
-     * @param timeInMillis
-     * @return
-     */
-    public static String getTime(long timeInMillis) {
-        return getTime(timeInMillis, DEFAULT_DATE_FORMAT);
     }
 
     @SuppressWarnings("Deprecated")
@@ -79,35 +57,23 @@ public class TimeUtils {
         return context.getString(R.string.just_now);
     }
 
-
-    public static String getConciseTime(long timeInMillis, Context context) {
-        return getConciseTime(timeInMillis, getCurrentTimeInLong(), context);
-    }
-
-    /**
-     * get current time in milliseconds
-     *
-     * @return
-     */
     public static long getCurrentTimeInLong() {
         return System.currentTimeMillis();
     }
 
     /**
-     * get current time in milliseconds, format is {@link #DEFAULT_DATE_FORMAT}
-     *
+     * 描述给定时间戳是多久之前的时间
+     * @param timeInMillis
+     * @param context
      * @return
      */
-    public static String getCurrentTimeInString() {
-        return getTime(getCurrentTimeInLong());
+    public static String getConciseTime(long timeInMillis, Context context) {
+        return getConciseTime(timeInMillis, getCurrentTimeInLong(), context);
     }
 
-    /**
-     * get current time in milliseconds
-     *
-     * @return
-     */
-    public static String getCurrentTimeInString(SimpleDateFormat dateFormat) {
-        return getTime(getCurrentTimeInLong(), dateFormat);
+    public static String getTime(long timeInMillis) {
+        return DEFAULT_DATE_FORMAT.format(timeInMillis);
     }
+
+
 }

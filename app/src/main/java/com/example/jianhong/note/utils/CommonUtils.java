@@ -1,44 +1,17 @@
 package com.example.jianhong.note.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-
-import com.example.jianhong.note.data.model.Note;
+import android.net.Uri;
+import android.os.Build;
 
 /**
  * Created by jianhong on 2018/3/12.
  */
 
 public class CommonUtils {
-
-    public static String twoDigit(int n) {
-        java.text.DecimalFormat format = new java.text.DecimalFormat("00");
-        return format.format(n);
-    }
-
-    public static String twoDigit(String str) {
-        if (str.length() == 1) {
-            return "0" + str;
-        }
-        return str;
-    }
-
-    public static String timeStamp(Note note) {
-        String tmp = "";
-        String[] allInfo;
-        allInfo = note.getTime().split(",");
-        //不知原因的数组越界，故暂时在此进行检测
-        if (allInfo.length == 3 && (Integer.parseInt(allInfo[2]) >= 1 && Integer.parseInt
-                (allInfo[2]) <= 31)) {
-            tmp = allInfo[0]
-                    + "."
-                    + (Integer.parseInt(allInfo[1]) + 1)
-                    + "."
-                    + Integer.parseInt(allInfo[2]);
-        }
-        return tmp;
-    }
 
     public static void wordCount(String str, int[] res) {
         if (res.length < 3) {
@@ -98,6 +71,28 @@ public class CommonUtils {
             e.printStackTrace();
         }
         return 1;
+    }
+
+    public static String getVersionName(Context ctx) {
+        try {
+            PackageManager pm = ctx.getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(ctx.getPackageName(), PackageManager.GET_ACTIVITIES);
+            return pi.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return "1.0.0";
+    }
+
+    public static void feedback(Context mContext) {
+        // 必须明确使用mailto前缀来修饰邮件地址
+        Uri uri = Uri.parse("mailto:hjh<893426994@qq.com>");
+        Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
+        intent.putExtra(Intent.EXTRA_SUBJECT, "PureNote用户反馈" + " Version:" + getVersionName(mContext));
+        // 主题
+        intent.putExtra(Intent.EXTRA_TEXT, "Manufacturer:" + Build.MANUFACTURER +
+                " - Device name: " + Build.MODEL + " - SDK Version: " + Build.VERSION.SDK_INT + "  "); // 正文
+        mContext.startActivity(Intent.createChooser(intent, "Select email client"));
     }
 
 }

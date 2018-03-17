@@ -25,7 +25,6 @@ public class Note implements Parcelable {
     private int synStatus = NOTHING; // 同步状态，确定执行同步操作时是否需要提交到服务器
 
     private int id = 0; // note的本地编号
-    private String time = "";
     private String content = ""; // note的内容
     private long create_time; // 创建时间
     private long upd_time; // 最后编辑时间
@@ -108,14 +107,6 @@ public class Note implements Parcelable {
         this.deleted = deleted;
     }
 
-    public void setTime(String time) {
-        this.time = time;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
     public long getGuid() {
         return guid;
     }
@@ -137,7 +128,6 @@ public class Note implements Parcelable {
         public Note createFromParcel(Parcel parcel) {
             Note note = new Note();
             note.id = parcel.readInt();
-            note.time = parcel.readString();
             note.synStatus = parcel.readInt();
             note.content = parcel.readString();
             note.create_time = parcel.readLong();
@@ -158,7 +148,6 @@ public class Note implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeInt(id);
-        parcel.writeString(time);
         parcel.writeInt(synStatus);
         parcel.writeString(content);
         parcel.writeLong(create_time);
@@ -174,26 +163,6 @@ public class Note implements Parcelable {
         return 0;
     }
 
-    /**
-     * 以calendar为日期给note的time赋值
-     */
-    public void setCalToTime(Calendar calendar) {
-        setTime(calendar.get(Calendar.YEAR)
-                + ","
-                + CommonUtils.twoDigit(calendar.get(Calendar.MONTH))
-                + ","
-                + CommonUtils.twoDigit(calendar.get(Calendar.DAY_OF_MONTH)));
-
-    }
-
-    public void setTimeFromDate(int year, int month, int day) {
-        time = year
-                + ","
-                + CommonUtils.twoDigit(month)
-                + ","
-                + CommonUtils.twoDigit(day);
-    }
-
     public ContentValues toContentValues() {
         ContentValues values = toInsertContentValues();
         values.put(NoteDB.ID, id);
@@ -203,7 +172,6 @@ public class Note implements Parcelable {
     public ContentValues toInsertContentValues() {
         ContentValues values = new ContentValues();
 
-        values.put(NoteDB.TIME, time);
         values.put(NoteDB.SYN_STATUS, synStatus);
         values.put(NoteDB.CONTENT, content);
         values.put(NoteDB.CREATE_TIME, create_time);
@@ -219,7 +187,6 @@ public class Note implements Parcelable {
     @Override
     public String toString() {
         String toString = "note:[" + "Id->" + getId()
-                + " time->" + getTime()
                 + " syn_status->" + getSynStatus()
                 + " content->" + getContent()
                 + " create_time->" + getCreateTime()

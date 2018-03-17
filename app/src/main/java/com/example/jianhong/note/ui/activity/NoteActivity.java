@@ -109,12 +109,7 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
     }
 
     private void updateAppBar() {
-        String stamp;
-        //if (PrefrencesUtils.getBoolean(PrefrencesUtils.CREATE_ORDER)) {
-            stamp = CommonUtils.timeStamp(note);
-        //} else {
-            //stamp = TimeUtils.getConciseTime(note.getUpdTime(), mContext);
-        //}
+        String stamp = TimeUtils.getTime(note.getUpdTime());
         LogUtils.d(TAG, "stamp:" + stamp);
         actionBar.setTitle(stamp);
     }
@@ -205,7 +200,7 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
                 }
             });
         } else if (mode == MODE_TODAY) {
-            note.setCalToTime(today);
+            note.setCreateTime(TimeUtils.getCurrentTimeInLong());
             note.setNoteBookId(PrefrencesUtils.getInt(PrefrencesUtils.NOTEBOOK_ID));
             editText.requestFocus();
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
@@ -221,8 +216,7 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
 
     public static void writeNewNote(Context mContext) {
         Note note = new Note();
-        Calendar cal = Calendar.getInstance();
-        note.setCalToTime(cal);
+        note.setCreateTime(TimeUtils.getCurrentTimeInLong());
 
         Intent intent = new Intent(mContext, NoteActivity.class);
         intent.putExtra("note_data", note);

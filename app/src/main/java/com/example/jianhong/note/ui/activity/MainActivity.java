@@ -218,8 +218,8 @@ public class MainActivity extends AppCompatActivity
 
         // 然后在数据库中添加note
         Note one = new Note();
-        one.setCalToTime(today);
         one.setContent(getString(R.string.tip1));
+        one.setCreateTime(TimeUtils.getCurrentTimeInLong());
         one.setUpdTime(TimeUtils.getCurrentTimeInLong());
         NoteDB.getInstance(mContext).saveNote(one);
 
@@ -227,8 +227,8 @@ public class MainActivity extends AppCompatActivity
         tmpCal.add(Calendar.DAY_OF_MONTH, -1);
 
         Note two = new Note();
-        two.setCalToTime(tmpCal);
         two.setContent(getString(R.string.tip2));
+        two.setCreateTime(TimeUtils.getCurrentTimeInLong());
         two.setUpdTime(TimeUtils.getCurrentTimeInLong());
         NoteDB.getInstance(mContext).saveNote(two);
     }

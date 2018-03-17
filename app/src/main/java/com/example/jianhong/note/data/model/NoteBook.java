@@ -150,7 +150,8 @@ public class NoteBook implements Parcelable {
                 + " guid->" + getNotebookGuid()
                 + " num->" + getNotesNum()
                 + " syn_status->" + getSynStatus()
-                + " delete->" + getDeleted();
+                + " delete->" + getDeleted()
+                + "]/n";
         return toString;
     }
 

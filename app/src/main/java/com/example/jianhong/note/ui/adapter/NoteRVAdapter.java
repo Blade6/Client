@@ -36,16 +36,6 @@ public class NoteRVAdapter extends RecyclerView.Adapter<NoteRVAdapter.NoteItemHo
     private ItemLongPressedListener mItemLongPressedListener;
     private OnItemSelectListener mOnItemSelectListener;
 
-    public interface ItemLongPressedListener {
-        void startActionMode();
-    }
-
-    public interface OnItemSelectListener {
-        void onSelect();
-
-        void onCancelSelect();
-    }
-
     public NoteRVAdapter(Context context, Cursor cursor) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
@@ -60,6 +50,11 @@ public class NoteRVAdapter extends RecyclerView.Adapter<NoteRVAdapter.NoteItemHo
         mOnItemSelectListener = onItemSelectListener;
         mItemLongPressedListener = itemLongPressedListener;
     }
+
+    /**
+     *-----------------------------------------cursor管理--------------------------------------------
+     */
+
 
     public Cursor getCursor() {
         return mCursor;
@@ -83,6 +78,16 @@ public class NoteRVAdapter extends RecyclerView.Adapter<NoteRVAdapter.NoteItemHo
     }
 
     @Override
+    public int getItemCount() {
+        if (mDataValid && null != mCursor) return mCursor.getCount();
+        return 0;
+    }
+
+    /**
+     *-----------------------------------------view管理---------------------------------------------
+     */
+
+    @Override
     public NoteItemHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View view = mInflater.inflate(R.layout.note_rv_item, viewGroup, false);
         NoteItemHolder noteItemHolder = new NoteItemHolder(view);
@@ -103,15 +108,9 @@ public class NoteRVAdapter extends RecyclerView.Adapter<NoteRVAdapter.NoteItemHo
         noteItemHolder.itemLayout.setOnClickListener(this);
         noteItemHolder.itemLayout.setOnLongClickListener(this);
         noteItemHolder.title.setText(note.getContent());
+        noteItemHolder.editTime.setText(TimeUtils.getConciseTime(note.getUpdTime(), mContext));
 
-        // 默认按照最后修改时间排序
-        if (PrefrencesUtils.getBoolean(PrefrencesUtils.CREATE_ORDER)) {
-            noteItemHolder.editTime.setText(CommonUtils.timeStamp(note));
-        } else {
-            noteItemHolder.editTime.setText(TimeUtils.getConciseTime(note.getUpdTime(), mContext));
-        }
-
-//        主要用于批量操作时，notifyDataSetChanged()之后改变背景
+        // 主要用于批量操作时，notifyDataSetChanged()之后改变背景
         if (mCheckMode) {
             if (isChecked(note.getId())) {
                 noteItemHolder.itemLayout.setBackgroundResource(R.drawable.hover_multi_background_normal);
@@ -122,14 +121,6 @@ public class NoteRVAdapter extends RecyclerView.Adapter<NoteRVAdapter.NoteItemHo
             noteItemHolder.itemLayout.setBackgroundResource(R.drawable.hover_background);
         }
     }
-
-
-    @Override
-    public int getItemCount() {
-        if (mDataValid && null != mCursor) return mCursor.getCount();
-        return 0;
-    }
-
 
     class NoteItemHolder extends RecyclerView.ViewHolder {
         View itemLayout;
@@ -142,6 +133,20 @@ public class NoteRVAdapter extends RecyclerView.Adapter<NoteRVAdapter.NoteItemHo
             title = (TextView) itemView.findViewById(R.id.note_content);
             editTime = (TextView) itemView.findViewById(R.id.edit_time);
         }
+    }
+
+    /**
+     *-----------------------------------------监听器管理---------------------------------------------
+     */
+
+    public interface ItemLongPressedListener {
+        void startActionMode();
+    }
+
+    public interface OnItemSelectListener {
+        void onSelect();
+
+        void onCancelSelect();
     }
 
     @Override
@@ -169,6 +174,10 @@ public class NoteRVAdapter extends RecyclerView.Adapter<NoteRVAdapter.NoteItemHo
         toggleCheckedId(note.getId(), note, v);
         return true;
     }
+
+    /**
+     *-----------------------------------------选中管理---------------------------------------------
+     */
 
     private boolean isChecked(int id) {
         if (null == mCheckedItems) {
@@ -215,6 +224,32 @@ public class NoteRVAdapter extends RecyclerView.Adapter<NoteRVAdapter.NoteItemHo
         notifyDataSetChanged();
     }
 
+    public void selectAllNotes() {
+        for (int i = 0; i < mCursor.getCount(); i++) {
+            mCursor.moveToPosition(i);
+            Note note = NoteDB.initNote(mCursor);
+
+            if (mCheckedItems == null) {
+                mCheckedItems = new HashMap<Integer, Note>();
+            }
+            int _id = note.getId();
+            if (!mCheckedItems.containsKey(_id)) {
+                mCheckedItems.put(_id, note);
+            }
+
+        }
+
+        if (null != mOnItemSelectListener) {
+            mOnItemSelectListener.onSelect();
+        }
+
+        notifyDataSetChanged();
+    }
+
+    /**
+     *-----------------------------------------笔记管理---------------------------------------------
+     */
+
     public void deleteSelectedNotes() {
         if (mCheckedItems == null || mCheckedItems.size() == 0) {
             return;
@@ -227,13 +262,10 @@ public class NoteRVAdapter extends RecyclerView.Adapter<NoteRVAdapter.NoteItemHo
                 note.setDeleted(Note.TRUE);
                 ProviderUtils.updateNote(mContext, note);
 
-//                更新受到影响的笔记本的应删除数值
-                if (0 != note.getNoteBookId()) {
-                    int num = affectedNotebooks.get(note.getNoteBookId());
-                    affectedNotebooks.put(note.getNoteBookId(), num + 1);
-                }
+                // 更新受到影响的笔记本的应删除数值
+                int num = affectedNotebooks.get(note.getNoteBookId());
+                affectedNotebooks.put(note.getNoteBookId(), num + 1);
             }
-            NoteBookUtils.updateNoteBook(mContext, 0, -mCheckedItems.size());
             for (int i = 0; i < affectedNotebooks.size(); i++) {
                 int key = affectedNotebooks.keyAt(i);
                 int value = affectedNotebooks.valueAt(i);
@@ -285,28 +317,6 @@ public class NoteRVAdapter extends RecyclerView.Adapter<NoteRVAdapter.NoteItemHo
             }
 
         }
-    }
-
-    public void selectAllNotes() {
-        for (int i = 0; i < mCursor.getCount(); i++) {
-            mCursor.moveToPosition(i);
-            Note note = NoteDB.initNote(mCursor);
-
-            if (mCheckedItems == null) {
-                mCheckedItems = new HashMap<Integer, Note>();
-            }
-            int _id = note.getId();
-            if (!mCheckedItems.containsKey(_id)) {
-                mCheckedItems.put(_id, note);
-            }
-
-        }
-
-        if (null != mOnItemSelectListener) {
-            mOnItemSelectListener.onSelect();
-        }
-
-        notifyDataSetChanged();
     }
 
 }

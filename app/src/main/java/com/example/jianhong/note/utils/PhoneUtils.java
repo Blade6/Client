@@ -3,11 +3,6 @@ package com.example.jianhong.note.utils;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
 
 public class PhoneUtils {
 
@@ -50,27 +45,5 @@ public class PhoneUtils {
 		else
 			return false;
 	}
-
-	public static void feedback(Context mContext) {
-		// 必须明确使用mailto前缀来修饰邮件地址
-		Uri uri = Uri.parse("mailto:hjh<893426994@qq.com>");
-		Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
-		intent.putExtra(Intent.EXTRA_SUBJECT, "PureNote用户反馈" + " Version:" + getVersionName(mContext));
-		// 主题
-		intent.putExtra(Intent.EXTRA_TEXT, "Manufacturer:" + Build.MANUFACTURER +
-				" - Device name: " + Build.MODEL + " - SDK Version: " + Build.VERSION.SDK_INT + "  "); // 正文
-		mContext.startActivity(Intent.createChooser(intent, "Select email client"));
-	}
-
-    public static String getVersionName(Context ctx) {
-        try {
-            PackageManager pm = ctx.getPackageManager();
-            PackageInfo pi = pm.getPackageInfo(ctx.getPackageName(), PackageManager.GET_ACTIVITIES);
-            return pi.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return "1.0.0";
-    }
 
 }

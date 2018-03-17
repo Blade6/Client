@@ -55,6 +55,15 @@ public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCa
         mContext = getActivity();
     }
 
+    public void configLayoutManager() {
+        int columnNum = 2;
+        if (PrefrencesUtils.getBoolean(PrefrencesUtils.ONE_COLUMN)) {
+            columnNum = 1;
+        }
+        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(columnNum,
+                StaggeredGridLayoutManager.VERTICAL));
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,18 +98,34 @@ public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCa
         return view;
     }
 
-    public void configLayoutManager() {
-        int columnNum = 2;
-        if (PrefrencesUtils.getBoolean(PrefrencesUtils.ONE_COLUMN)) {
-            columnNum = 1;
-        }
-        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(columnNum,
-                StaggeredGridLayoutManager.VERTICAL));
-    }
-
     public void notifyDataSetChanged() {
         mAdapter.notifyDataSetChanged();
     }
+
+    public void refreshUI() {
+        loaderManager.restartLoader(LOADER_ID, null, this);
+    }
+
+    public MySwipeRefreshLayout getRefreshLayout() {
+        return refreshLayout;
+    }
+
+    public boolean setRefresherEnabled(boolean b) {
+        if (null == refreshLayout) {
+            return false;
+        }
+        refreshLayout.setEnabled(b);
+        return true;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    /**
+     *-----------------------------------------Loader---------------------------------------------
+     */
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -128,30 +153,13 @@ public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCa
         mAdapter.swapCursor(null);
     }
 
-    public void refreshUI() {
-        loaderManager.restartLoader(LOADER_ID, null, this);
-    }
+    /**
+     *-----------------------------------------选中行为管理---------------------------------------------
+     */
 
-    public MySwipeRefreshLayout getRefreshLayout() {
-        return refreshLayout;
-    }
-
-    public boolean setRefresherEnabled(boolean b) {
-        if (null == refreshLayout) {
-            return false;
-        }
-        refreshLayout.setEnabled(b);
-        return true;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    // / The followings are about ActionMode
     private Menu mContextMenu;
     private int tmpNoteBookId;
+    private ActionMode mActionMode;
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
 
         @Override
@@ -197,9 +205,42 @@ public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCa
 
     };
 
+    @Override
+    public void startActionMode() {
+        // mActionMode 在Destroy中重赋为了 null
+        if (mActionMode != null) {
+            return;
+        }
+        mActionMode = ((MainActivity) mContext).startSupportActionMode(mActionModeCallback);
+    }
+
+    public void updateActionMode() {
+        if (mAdapter.getSelectedCount() <= 1) {
+            mContextMenu.findItem(R.id.selected_counts).setTitle(mContext.getString(R.string
+                    .selected_one_count, mAdapter.getSelectedCount()));
+        } else {
+            mContextMenu.findItem(R.id.selected_counts).setTitle(mContext.getString(R.string
+                    .selected_more_count, mAdapter.getSelectedCount()));
+        }
+    }
+
+    @Override
+    public void onSelect() {
+        updateActionMode();
+    }
+
+    @Override
+    public void onCancelSelect() {
+        updateActionMode();
+    }
+
     private void selectAll() {
         mAdapter.selectAllNotes();
     }
+
+    /**
+     *-----------------------------------------笔记管理---------------------------------------------
+     */
 
     private void moveNotes() {
         if (mAdapter.getSelectedCount() == 0) {
@@ -289,34 +330,4 @@ public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCa
         }
     }
 
-    private ActionMode mActionMode;
-
-    @Override
-    public void startActionMode() {
-        // mActionMode 在Destroy中重赋为了 null
-        if (mActionMode != null) {
-            return;
-        }
-        mActionMode = ((MainActivity) mContext).startSupportActionMode(mActionModeCallback);
-    }
-
-    public void updateActionMode() {
-        if (mAdapter.getSelectedCount() <= 1) {
-            mContextMenu.findItem(R.id.selected_counts).setTitle(mContext.getString(R.string
-                    .selected_one_count, mAdapter.getSelectedCount()));
-        } else {
-            mContextMenu.findItem(R.id.selected_counts).setTitle(mContext.getString(R.string
-                    .selected_more_count, mAdapter.getSelectedCount()));
-        }
-    }
-
-    @Override
-    public void onSelect() {
-        updateActionMode();
-    }
-
-    @Override
-    public void onCancelSelect() {
-        updateActionMode();
-    }
 }
