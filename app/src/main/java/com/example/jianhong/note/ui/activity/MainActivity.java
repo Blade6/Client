@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity
     public DrawerLayout drawer;
     Toolbar toolbar;
     ActionBarDrawerToggle toggle;
+    NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +75,7 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         today = Calendar.getInstance();
@@ -125,8 +126,6 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.action_about) {
             AboutActivity.activityStart(mContext);
-        } else if (id == android.R.id.home) {
-            LogUtils.d(TAG, "click home");
         }
 
         return super.onOptionsItemSelected(item);
@@ -138,14 +137,17 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_mgr_note) {
+        if (id == R.id.nav_home) {
+            //goToNoteRVFragment();
+            // ignore
+        } else if (id == R.id.nav_mgr_note) {
             setTitle(R.string.mgr_note);
             NoteBookFragment noteBookFragment = new NoteBookFragment();
-            changeFragment(noteBookFragment);
+            changeFragment(noteBookFragment, item);
         } else if (id == R.id.nav_change_bg) {
             setTitle(R.string.change_bg);
             ChangeBgFragment changeBgFragment = new ChangeBgFragment();
-            changeFragment(changeBgFragment);
+            changeFragment(changeBgFragment, item);
         } else if (id == R.id.nav_setting) {
 
         } else if (id == R.id.nav_exit) {
@@ -174,26 +176,30 @@ public class MainActivity extends AppCompatActivity
         System.exit(0);
     }
 
-    private void changeFragment(Fragment fragment)
+    private void changeFragment(Fragment fragment, MenuItem item)
     {
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.main_fraglayout, fragment, null);
         ft.commit();
 
-        back();
+        back(item);
     }
 
     public void goToNoteRVFragment() {
         LogUtils.d(TAG, "goToNoteRe...Fragment");
         getSupportFragmentManager().beginTransaction().replace(R.id.main_fraglayout, new NoteRVFragment()).commit();
+
+        navigationView.getMenu().getItem(0).setChecked(true); // 修改导航栏选中项
     }
 
     /**
      * 返回键方法，切换更换壁纸或者笔记管理时，点击返回键会返回主页
      */
-    private void back() {
+    private void back(MenuItem item) {
+        item.setChecked(false); // 关闭选中
         closeDrawer();
+
         toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
