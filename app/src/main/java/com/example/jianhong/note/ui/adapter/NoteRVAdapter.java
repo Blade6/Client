@@ -46,14 +46,6 @@ public class NoteRVAdapter extends RecyclerView.Adapter<NoteRVAdapter.NoteItemHo
         void onCancelSelect();
     }
 
-    public void setmItemLongPressedListener(ItemLongPressedListener mItemLongPressedListener) {
-        this.mItemLongPressedListener = mItemLongPressedListener;
-    }
-
-    public void setmOnItemSelectListener(OnItemSelectListener mOnItemSelectListener) {
-        this.mOnItemSelectListener = mOnItemSelectListener;
-    }
-
     public NoteRVAdapter(Context context, Cursor cursor) {
         mContext = context;
         mInflater = LayoutInflater.from(context);

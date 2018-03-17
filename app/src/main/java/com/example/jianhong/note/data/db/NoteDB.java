@@ -86,7 +86,7 @@ public class NoteDB {
      * 从数据库中读取Note数据
      */
     public List<Note> loadNotes() {
-        List<Note> list = new ArrayList<Note>();
+        List<Note> list = new ArrayList<>();
         Cursor cursor = db.query(TABLE_NOTE, null, SYN_STATUS + " != ?" + " and " + DELETED + " " +
                 "!= ?", new String[]{"" + Note.DELETE, "" + Note.TRUE}, null, null, "time desc");
 

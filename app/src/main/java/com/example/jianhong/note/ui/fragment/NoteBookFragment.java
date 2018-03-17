@@ -121,6 +121,7 @@ public class NoteBookFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void startActionMode() {
+
     }
 
     @Override

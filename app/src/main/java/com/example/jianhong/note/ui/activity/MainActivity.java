@@ -84,13 +84,18 @@ public class MainActivity extends AppCompatActivity
         first_use();
 
         initBgPic(); // 感觉这个要废掉
+        goToNoteRecyclerViewFragment();
 
+        LogUtils.d(TAG, "NoteBook:");
         List<NoteBook> list = NoteDB.getInstance(mContext).loadNoteBooks();
         for (NoteBook nb : list) {
             LogUtils.d(TAG, nb.toString());
         }
-
-        goToNoteRecyclerViewFragment();
+        LogUtils.d(TAG, "Note:");
+        List<Note> nlist = NoteDB.getInstance(mContext).loadNotes();
+        for (Note note : nlist) {
+            LogUtils.d(TAG, note.toString());
+        }
     }
 
     @Override

@@ -82,7 +82,7 @@ public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCa
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NoteActivity.writeTodayNewNote(getActivity());
+                NoteActivity.writeNewNote(getActivity());
             }
         });
 
@@ -107,10 +107,6 @@ public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCa
         int bookId = PrefrencesUtils.getInt(PrefrencesUtils.NOTEBOOK_ID);
         String selection = NoteDB.NOTEBOOK_ID + " = ?";
         String[] selectionArgs = {"" + bookId};
-        if (0 == bookId) {
-            selection = null;
-            selectionArgs = null;
-        }
 
         String sortOrder = NoteProvider.STANDARD_SORT_ORDER;
         if (PrefrencesUtils.getBoolean(PrefrencesUtils.CREATE_ORDER)) {

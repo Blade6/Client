@@ -157,14 +157,6 @@ public class NoteBookAdapter extends CursorAdapter implements View.OnClickListen
         void onItemClick(View view);
     }
 
-    public void setItemLongPressedListener(ItemLongPressedListener mItemLongPressedListener) {
-        this.mItemLongPressedListener = mItemLongPressedListener;
-    }
-
-    public void setOnItemClickListener(OnItemClickListener mOnItemClickListener) {
-        this.mOnItemClickListener = mOnItemClickListener;
-    }
-
     @Override
     public void onClick(View v) {
         if (R.id.ll_folder_unit == v.getId()) {

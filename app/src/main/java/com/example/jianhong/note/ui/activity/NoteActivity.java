@@ -219,7 +219,7 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
         }
     }
 
-    public static void writeTodayNewNote(Context mContext) {
+    public static void writeNewNote(Context mContext) {
         Note note = new Note();
         Calendar cal = Calendar.getInstance();
         note.setCalToTime(cal);
