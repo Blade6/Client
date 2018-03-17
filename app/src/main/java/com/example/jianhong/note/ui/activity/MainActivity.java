@@ -32,7 +32,6 @@ import com.example.jianhong.note.R;
 import com.example.jianhong.note.data.model.Note;
 import com.example.jianhong.note.data.model.NoteBook;
 import com.example.jianhong.note.data.db.NoteDB;
-import com.example.jianhong.note.ui.adapter.NoteBookAdapter;
 import com.example.jianhong.note.ui.fragment.NoteBookFragment;
 import com.example.jianhong.note.utils.AccountUtils;
 import com.example.jianhong.note.utils.CommonUtils;
@@ -44,7 +43,6 @@ import com.example.jianhong.note.utils.TimeUtils;
 import com.example.jianhong.note.ui.fragment.ChangeBgFragment;
 import com.example.jianhong.note.ui.fragment.AboutFragment;
 import com.example.jianhong.note.ui.fragment.NoteRecyclerView;
-import com.example.jianhong.note.ui.view.FloatingActionButton;
 
 import java.util.Calendar;
 import java.util.List;
@@ -59,12 +57,8 @@ public class MainActivity extends AppCompatActivity
     private Context mContext;
     private Calendar today;
 
-    public static final int MODE_LIST = 0;
-    public static final int MODE_GRID = 1;
-
     //private FiltratePage filtratePage;
 
-    protected FloatingActionButton fab;
     public DrawerLayout drawer;
     Toolbar toolbar;
 
@@ -74,14 +68,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                NoteActivity.writeTodayNewNote(MainActivity.this);
-            }
-        });
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -137,7 +123,6 @@ public class MainActivity extends AppCompatActivity
             setTitle(R.string.action_about);
             AboutFragment aboutAppFragment=new AboutFragment();
             changeFragment(aboutAppFragment);
-            fab.hide();
         }
 
         return super.onOptionsItemSelected(item);
@@ -153,12 +138,10 @@ public class MainActivity extends AppCompatActivity
             setTitle(R.string.mgr_note);
             NoteBookFragment noteBookFragment = new NoteBookFragment();
             changeFragment(noteBookFragment);
-            fab.hide();
         } else if (id == R.id.nav_change_bg) {
             setTitle(R.string.change_bg);
             ChangeBgFragment changeBgFragment = new ChangeBgFragment();
             changeFragment(changeBgFragment);
-            fab.hide();
         } else if (id == R.id.nav_setting) {
 
         } else if (id == R.id.nav_exit) {
@@ -196,8 +179,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void goToNoteRecyclerViewFragment() {
+        LogUtils.d(TAG, "goToNoteRe...Fragment");
         getSupportFragmentManager().beginTransaction().replace(R.id.main_fraglayout, new NoteRecyclerView()).commit();
-        fab.show();
     }
 
     private void initBgPic()

@@ -28,10 +28,12 @@ import android.widget.Toast;
 
 import com.example.jianhong.note.R;
 import com.example.jianhong.note.ui.activity.MainActivity;
+import com.example.jianhong.note.ui.activity.NoteActivity;
 import com.example.jianhong.note.ui.adapter.NoteRVAdapter;
 import com.example.jianhong.note.data.db.NoteDB;
 import com.example.jianhong.note.data.model.NoteBook;
 import com.example.jianhong.note.data.provider.NoteProvider;
+import com.example.jianhong.note.ui.view.FloatingActionButton;
 import com.example.jianhong.note.ui.widget.MySwipeRefreshLayout;
 import com.example.jianhong.note.utils.PrefrencesUtils;
 
@@ -75,6 +77,15 @@ public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCa
         refreshLayout.setOnRefreshListener((MainActivity) mContext);
 
         getActivity().setTitle(PrefrencesUtils.getString(PrefrencesUtils.NOTEBOOK_NAME));
+
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NoteActivity.writeTodayNewNote(getActivity());
+            }
+        });
+
         return view;
     }
 

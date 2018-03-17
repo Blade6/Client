@@ -141,7 +141,6 @@ public class FloatingActionButton extends View {
 //            mYDisplayed = ViewHelper.getY(this);
 //        }
 
-        // / Modified by Duanze
         // Just for the situation that the parent layout is changed
         mYDisplayed = ViewHelper.getY(this);
     }

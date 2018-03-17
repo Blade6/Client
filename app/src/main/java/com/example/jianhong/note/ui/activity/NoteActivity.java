@@ -115,6 +115,7 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
         //} else {
             //stamp = TimeUtils.getConciseTime(note.getUpdTime(), mContext);
         //}
+        LogUtils.d(TAG, "stamp:" + stamp);
         actionBar.setTitle(stamp);
     }
 
