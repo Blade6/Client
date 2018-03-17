@@ -39,17 +39,18 @@ import com.example.jianhong.note.utils.PrefrencesUtils;
 
 import java.util.List;
 
-public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
+public class NoteRVFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
         NoteRVAdapter.ItemLongPressedListener, NoteRVAdapter.OnItemSelectListener {
-    public static final String TAG = NoteRecyclerView.class.getSimpleName();
+    public static final String TAG = NoteRVFragment.class.getSimpleName();
 
     private static final int LOADER_ID = 113;
-    private Context mContext;
     private LoaderManager loaderManager;
-    private MySwipeRefreshLayout refreshLayout;
+
+    private Context mContext;
 
     private RecyclerView mRecyclerView;
     private NoteRVAdapter mAdapter;
+    private MySwipeRefreshLayout refreshLayout;
 
     private void initValues() {
         mContext = getActivity();
@@ -96,18 +97,6 @@ public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCa
         });
 
         return view;
-    }
-
-    public void notifyDataSetChanged() {
-        mAdapter.notifyDataSetChanged();
-    }
-
-    public void refreshUI() {
-        loaderManager.restartLoader(LOADER_ID, null, this);
-    }
-
-    public MySwipeRefreshLayout getRefreshLayout() {
-        return refreshLayout;
     }
 
     public boolean setRefresherEnabled(boolean b) {
@@ -182,16 +171,10 @@ public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCa
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            menu.clear();
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.context_menu, menu);
             return true;
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode arg0) {
-            mActionMode = null;
-            mContextMenu = null;
-            mAdapter.setCheckMode(false);
         }
 
         @Override
@@ -201,6 +184,17 @@ public class NoteRecyclerView extends Fragment implements LoaderManager.LoaderCa
 
             setRefresherEnabled(false);
             return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mContextMenu.clear();
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.main, mContextMenu);
+
+            mActionMode = null;
+            mContextMenu = null;
+            mAdapter.setCheckMode(false);
         }
 
     };

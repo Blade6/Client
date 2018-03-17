@@ -25,8 +25,9 @@
         android:layout_width="72dp"
         android:layout_height="72dp"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="16dp"
-        app:drawable="@drawable/ic_content_new"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="20dp"
+        app:drawable="@drawable/ic_edit_white"
         app:fab_color="?attr/colorPrimary"/>
 
 </FrameLayout>

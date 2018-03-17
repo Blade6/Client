@@ -3,6 +3,10 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home_black_24dp"
+            android:title="我的主页" />
+        <item
             android:id="@+id/nav_mgr_note"
             android:icon="@drawable/ic_menu_gallery"
             android:title="@string/mgr_note" />
@@ -16,7 +20,7 @@
             android:title="@string/setting" />
         <item
             android:id="@+id/nav_exit"
-            android:icon="@drawable/about"
+            android:icon="@drawable/ic_error_black_24dp"
             android:title="@string/logout" />
     </group>
 

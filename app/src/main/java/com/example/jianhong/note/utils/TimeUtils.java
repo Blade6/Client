@@ -15,7 +15,7 @@ public class TimeUtils {
     public static final long DAY_Millis = 24 * HOUR_Millis;
     public static final long MONTH_Millis = 30 * DAY_Millis;
     public static final long YEAR_Millis = 365 * DAY_Millis;
-    public static final SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    public static final SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("MM-dd HH:mm");
 
     private TimeUtils() {
         throw new AssertionError();

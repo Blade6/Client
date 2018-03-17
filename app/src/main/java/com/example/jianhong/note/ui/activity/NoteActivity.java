@@ -41,7 +41,6 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
     public static final String TAG = NoteActivity.class.getSimpleName();
 
     public static final int MODE_NEW = 0;
-    public static final int MODE_SHOW = 1;
     public static final int MODE_EDIT = 2;
     public static final int MODE_TODAY = 3;
 
@@ -175,7 +174,6 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
 
     private void initValues() {
         mContext = this;
-        Calendar today = Calendar.getInstance();
         note = getIntent().getParcelableExtra("note_data");
         LogUtils.d(TAG, note.toString());
         mDataParser = new Originator(new Memo(note.getContent(), 0));

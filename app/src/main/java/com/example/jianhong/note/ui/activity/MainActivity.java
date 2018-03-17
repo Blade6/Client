@@ -1,6 +1,5 @@
 package com.example.jianhong.note.ui.activity;
 
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -41,8 +40,7 @@ import com.example.jianhong.note.utils.ProviderUtils;
 import com.example.jianhong.note.utils.SystemUtils;
 import com.example.jianhong.note.utils.TimeUtils;
 import com.example.jianhong.note.ui.fragment.ChangeBgFragment;
-import com.example.jianhong.note.ui.fragment.AboutFragment;
-import com.example.jianhong.note.ui.fragment.NoteRecyclerView;
+import com.example.jianhong.note.ui.fragment.NoteRVFragment;
 
 import java.util.Calendar;
 import java.util.List;
@@ -61,16 +59,17 @@ public class MainActivity extends AppCompatActivity
 
     public DrawerLayout drawer;
     Toolbar toolbar;
+    ActionBarDrawerToggle toggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
@@ -84,7 +83,7 @@ public class MainActivity extends AppCompatActivity
         first_use();
 
         initBgPic(); // 感觉这个要废掉
-        goToNoteRecyclerViewFragment();
+        goToNoteRVFragment();
 
         LogUtils.d(TAG, "NoteBook:");
         List<NoteBook> list = NoteDB.getInstance(mContext).loadNoteBooks();
@@ -125,9 +124,9 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.action_sync) {
 
         } else if (id == R.id.action_about) {
-            setTitle(R.string.action_about);
-            AboutFragment aboutAppFragment=new AboutFragment();
-            changeFragment(aboutAppFragment);
+            AboutActivity.activityStart(mContext);
+        } else if (id == android.R.id.home) {
+            LogUtils.d(TAG, "click home");
         }
 
         return super.onOptionsItemSelected(item);
@@ -181,11 +180,44 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.main_fraglayout, fragment, null);
         ft.commit();
+
+        back();
     }
 
-    public void goToNoteRecyclerViewFragment() {
+    public void goToNoteRVFragment() {
         LogUtils.d(TAG, "goToNoteRe...Fragment");
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_fraglayout, new NoteRecyclerView()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_fraglayout, new NoteRVFragment()).commit();
+    }
+
+    /**
+     * 返回键方法，切换更换壁纸或者笔记管理时，点击返回键会返回主页
+     */
+    private void back() {
+        closeDrawer();
+        toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDrawer();
+
+                goToNoteRVFragment();
+            }
+        });
+    }
+
+    /**
+     * 开启抽屉，隐藏返回键
+     */
+    public void openDrawer() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        toggle.setDrawerIndicatorEnabled(true);
+    }
+
+    /**
+     * 关闭抽屉，出现返回键
+     */
+    public void closeDrawer() {
+        toggle.setDrawerIndicatorEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void initBgPic()

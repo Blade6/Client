@@ -156,7 +156,9 @@ public class NoteBookFragment extends Fragment implements LoaderManager.LoaderCa
 
     public void refresh_UI() {
         // 点击文件夹后跳转该文件页面
-        ((MainActivity) activity).goToNoteRecyclerViewFragment();
+        // 跳转前别忘了打开抽屉
+        ((MainActivity) activity).openDrawer();
+        ((MainActivity) activity).goToNoteRVFragment();
     }
 
     public void trash() {
