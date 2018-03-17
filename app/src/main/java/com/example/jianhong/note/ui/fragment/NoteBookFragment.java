@@ -21,7 +21,7 @@ import com.example.jianhong.note.ui.adapter.NoteBookAdapter;
 import com.example.jianhong.note.data.model.NoteBook;
 import com.example.jianhong.note.data.provider.NoteProvider;
 import com.example.jianhong.note.utils.LogUtils;
-import com.example.jianhong.note.utils.PrefrencesUtils;
+import com.example.jianhong.note.utils.PreferencesUtils;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -150,19 +150,18 @@ public class NoteBookFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     public void changeToBook(int newId, String newName) {
-        PrefrencesUtils.putInt(PrefrencesUtils.NOTEBOOK_ID, newId);
-        PrefrencesUtils.putString(PrefrencesUtils.NOTEBOOK_NAME, newName);
+        PreferencesUtils.putInt(PreferencesUtils.NOTEBOOK_ID, newId);
+        PreferencesUtils.putString(PreferencesUtils.NOTEBOOK_NAME, newName);
     }
 
     public void refresh_UI() {
         // 点击文件夹后跳转该文件页面
         // 跳转前别忘了打开抽屉
-        ((MainActivity) activity).openDrawer();
         ((MainActivity) activity).goToNoteRVFragment();
     }
 
     public void trash() {
-        int quickId = PrefrencesUtils.getInt(PrefrencesUtils.QUICK_SAVE_LOCATION);
+        int quickId = PreferencesUtils.getInt(PreferencesUtils.LIGHTNING_EXTRACT_SAVE_LOCATION);
 
         HashMap<Integer, NoteBook> map = noteBookAdapter.getCheckedItems();
         if (null == map || 0 == map.size()) {
@@ -173,9 +172,9 @@ public class NoteBookFragment extends Fragment implements LoaderManager.LoaderCa
                 NoteBook noteBook = map.get(key);
                 int noteBookId = noteBook.getId();
                 if (noteBookId == quickId) {
-                    PrefrencesUtils.putInt(PrefrencesUtils.QUICK_SAVE_LOCATION, 0);
+                    PreferencesUtils.putInt(PreferencesUtils.LIGHTNING_EXTRACT_SAVE_LOCATION, 0);
                 }
-                if (noteBookId == PrefrencesUtils.getInt(PrefrencesUtils.NOTEBOOK_ID)) {
+                if (noteBookId == PreferencesUtils.getInt(PreferencesUtils.NOTEBOOK_ID)) {
                     changeToBook(0, getString(R.string.default_notebook));
                 }
                 noteBookAdapter.deleteNoteBook(noteBook);

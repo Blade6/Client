@@ -1,8 +1,5 @@
 package com.example.jianhong.note.utils;
 
-import android.content.Context;
-import android.gesture.Prediction;
-
 import com.example.jianhong.note.entity.User;
 
 /**
@@ -11,47 +8,47 @@ import com.example.jianhong.note.entity.User;
 public class AccountUtils {
 
     public static String getUserId() {
-        return PrefrencesUtils.getString(PrefrencesUtils.USER_ID);
+        return PreferencesUtils.getString(PreferencesUtils.USER_ID);
     }
 
     public static void setUserId(String str) {
-        PrefrencesUtils.putString(PrefrencesUtils.USER_ID, str);
+        PreferencesUtils.putString(PreferencesUtils.USER_ID, str);
     }
 
     public static String getUserName() {
-        return PrefrencesUtils.getString(PrefrencesUtils.USER_NAME);
+        return PreferencesUtils.getString(PreferencesUtils.USER_NAME);
     }
 
     public static void setUserName(String str) {
-        PrefrencesUtils.putString(PrefrencesUtils.USER_NAME, str);
+        PreferencesUtils.putString(PreferencesUtils.USER_NAME, str);
     }
 
     public static String getUserPwd() {
-        return PrefrencesUtils.getString(PrefrencesUtils.USER_PWD);
+        return PreferencesUtils.getString(PreferencesUtils.USER_PWD);
     }
 
     public static void setUserPwd(String str) {
-        PrefrencesUtils.putString(PrefrencesUtils.USER_PWD, str);
+        PreferencesUtils.putString(PreferencesUtils.USER_PWD, str);
     }
 
     public static String getUserHeadUrl(){
-        return PrefrencesUtils.getString(PrefrencesUtils.USER_HEAD_URL);
+        return PreferencesUtils.getString(PreferencesUtils.USER_HEAD_URL);
     }
 
     public static void setUserHeadUrl(String str) {
-        PrefrencesUtils.putString(PrefrencesUtils.USER_HEAD_URL, str);
+        PreferencesUtils.putString(PreferencesUtils.USER_HEAD_URL, str);
     }
 
     public static void login() {
-        PrefrencesUtils.putBoolean(PrefrencesUtils.LOGIN_STATE, true);
+        PreferencesUtils.putBoolean(PreferencesUtils.LOGIN_STATE, true);
     }
 
     public static void logout() {
-        PrefrencesUtils.putBoolean(PrefrencesUtils.LOGIN_STATE, false);
+        PreferencesUtils.putBoolean(PreferencesUtils.LOGIN_STATE, false);
     }
 
     public static boolean isLogin() {
-        return PrefrencesUtils.getBoolean(PrefrencesUtils.LOGIN_STATE) == true;
+        return PreferencesUtils.getBoolean(PreferencesUtils.LOGIN_STATE) == true;
     }
 
     public static void saveUserInfos(User user) {

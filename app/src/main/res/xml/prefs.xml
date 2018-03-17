@@ -40,20 +40,20 @@
     </pref>
 
     <pref>
-        <key>note_max_length_key</key>
-        <def-value>0.418</def-value>
-    </pref>
-    <pref>
         <key>one_column</key>
         <def-value>false</def-value>
     </pref>
     <pref>
-        <key>create_order</key>
+        <key>lightning_extract</key>
         <def-value>false</def-value>
     </pref>
     <pref>
-        <key>quick_save_location</key>
+        <key>lightning_extract_save_location</key>
         <def-value>0</def-value>
+    </pref>
+    <pref>
+        <key>lightning_extract_save_name</key>
+        <def-value>简记</def-value>
     </pref>
 
 </prefs>

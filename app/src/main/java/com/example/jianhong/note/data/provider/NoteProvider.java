@@ -31,7 +31,6 @@ public class NoteProvider extends ContentProvider {
             NoteDB.UPD_TIME, NoteDB.CREATE_TIME, NoteDB.SYN_STATUS, NoteDB.GUID,
             NoteDB.BOOK_GUID, NoteDB.DELETED, NoteDB.NOTEBOOK_ID};
     public static final String STANDARD_SORT_ORDER = NoteDB.UPD_TIME + " desc";
-    public static final String STANDARD_SORT_ORDER2 = NoteDB.CREATE_TIME + " asc";
 
     public static final String[] NOTEBOOK_PROJECTION = {NoteDB.ID + " AS _id", NoteDB.NAME,
             NoteDB.SYN_STATUS, NoteDB.NOTEBOOK_GUID, NoteDB.DELETED, NoteDB.NOTES_NUM};

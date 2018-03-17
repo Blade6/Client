@@ -10,6 +10,10 @@
         app:showAsAction="always|collapseActionView"/>
 
     <item
+        android:id="@+id/action_setting"
+        android:title="@string/action_setting"/>
+
+    <item
         android:id="@+id/action_sync"
         android:title="@string/action_sync"/>
 

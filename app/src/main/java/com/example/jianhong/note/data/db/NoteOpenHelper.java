@@ -9,7 +9,6 @@ public class NoteOpenHelper extends SQLiteOpenHelper {
     public static final String CREATE_TABLE =
             "create table " + NoteDB.TABLE_NOTE + " ("
                     + "id integer primary key autoincrement,"
-                    + "time text,"
                     + "syn_status integer,"
                     + "content text,"
                     + "create_time integer,"

@@ -18,8 +18,7 @@ import com.example.jianhong.note.data.model.Note;
 import com.example.jianhong.note.data.db.NoteDB;
 import com.example.jianhong.note.data.model.NoteBook;
 import com.example.jianhong.note.data.provider.NoteProvider;
-import com.example.jianhong.note.utils.LogUtils;
-import com.example.jianhong.note.utils.PrefrencesUtils;
+import com.example.jianhong.note.utils.PreferencesUtils;
 import com.example.jianhong.note.utils.ProviderUtils;
 
 import java.util.HashMap;
@@ -79,7 +78,6 @@ public class NoteBookAdapter extends CursorAdapter implements View.OnClickListen
             mHolder.name = (TextView) mView.findViewById(R.id.tv_folder_unit_name);
             mHolder.num = (TextView) mView.findViewById(R.id.tv_folder_unit_num);
             mHolder.checkBox = (CheckBox) mView.findViewById(R.id.cb_folder_unit);
-            mHolder.divider = mView.findViewById(R.id.v_divider);
             mView.setTag(mHolder);
         } else {
             mView = convertView;
@@ -104,9 +102,8 @@ public class NoteBookAdapter extends CursorAdapter implements View.OnClickListen
         //mHolder.itemLayout.setBackgroundColor(mContext.getResources().getColor(android.R.color.transparent));
 
         mHolder.name.setText(R.string.default_notebook);
-        mHolder.num.setText("" + PrefrencesUtils.getInt(PrefrencesUtils.JIAN_NUM));
+        mHolder.num.setText("" + PreferencesUtils.getInt(PreferencesUtils.JIAN_NUM));
         mHolder.checkBox.setVisibility(View.INVISIBLE);
-        mHolder.divider.setVisibility(View.GONE);
         mHolder.itemLayout.setTag(R.string.notebook_data, noteBook);//似乎很有必要
     }
 
@@ -117,7 +114,6 @@ public class NoteBookAdapter extends CursorAdapter implements View.OnClickListen
 
         mHolder.name.setText(noteBook.getName());
         mHolder.num.setText("" + noteBook.getNotesNum());
-        mHolder.divider.setVisibility(View.GONE);
         mHolder.itemLayout.setTag(R.string.notebook_data, noteBook);
 
         mHolder.checkBox.setOnCheckedChangeListener(null);
@@ -140,7 +136,6 @@ public class NoteBookAdapter extends CursorAdapter implements View.OnClickListen
         TextView name;
         TextView num;
         CheckBox checkBox;
-        View divider;
     }
 
     /**

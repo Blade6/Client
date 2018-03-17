@@ -13,10 +13,8 @@ import com.example.jianhong.note.R;
 import com.example.jianhong.note.data.model.Note;
 import com.example.jianhong.note.data.db.NoteDB;
 import com.example.jianhong.note.ui.activity.NoteActivity;
-import com.example.jianhong.note.utils.CommonUtils;
 import com.example.jianhong.note.utils.LogUtils;
 import com.example.jianhong.note.utils.NoteBookUtils;
-import com.example.jianhong.note.utils.PrefrencesUtils;
 import com.example.jianhong.note.utils.TimeUtils;
 import com.example.jianhong.note.utils.ProviderUtils;
 

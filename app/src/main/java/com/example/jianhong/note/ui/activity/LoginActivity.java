@@ -17,7 +17,6 @@ import com.example.jianhong.note.entity.Response;
 import com.example.jianhong.note.entity.User;
 import com.example.jianhong.note.entity.HttpCallbackListener;
 import com.example.jianhong.note.utils.AccountUtils;
-import com.example.jianhong.note.utils.PrefrencesUtils;
 import com.example.jianhong.note.utils.UrlUtils;
 import com.example.jianhong.note.utils.HttpUtils;
 import com.example.jianhong.note.utils.MD5Utils;

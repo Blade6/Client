@@ -9,7 +9,7 @@ import android.view.WindowManager;
 
 import com.example.jianhong.note.R;
 import com.example.jianhong.note.utils.AccountUtils;
-import com.example.jianhong.note.utils.PrefrencesUtils;
+import com.example.jianhong.note.utils.PreferencesUtils;
 
 public class WelcomeActivity extends AppCompatActivity {
 
@@ -38,13 +38,12 @@ public class WelcomeActivity extends AppCompatActivity {
 
     private void initPrefrences() {
         if (first) {
-            PrefrencesUtils.initFromXml(this);
+            PreferencesUtils.initFromXml(this);
             first = false;
         }
     }
 
-    private void autoLogin()
-    {
+    private void autoLogin() {
         if(AccountUtils.isLogin())
         {
             goToHomeActivity();
@@ -54,14 +53,14 @@ public class WelcomeActivity extends AppCompatActivity {
             goToLoginActivity();
         }
     }
-    private void goToHomeActivity()
-    {
+
+    private void goToHomeActivity() {
         Intent intent=new Intent(WelcomeActivity.this,MainActivity.class);
         startActivity(intent);
         WelcomeActivity.this.finish();
     }
-    private void goToLoginActivity()
-    {
+
+    private void goToLoginActivity() {
         Intent intent=new Intent(WelcomeActivity.this,LoginActivity.class);
         startActivity(intent);
         WelcomeActivity.this.finish();

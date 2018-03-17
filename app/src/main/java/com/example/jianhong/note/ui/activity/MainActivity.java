@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -28,6 +30,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.jianhong.note.R;
+import com.example.jianhong.note.app.NoteApplication;
 import com.example.jianhong.note.data.model.Note;
 import com.example.jianhong.note.data.model.NoteBook;
 import com.example.jianhong.note.data.db.NoteDB;
@@ -35,7 +38,7 @@ import com.example.jianhong.note.ui.fragment.NoteBookFragment;
 import com.example.jianhong.note.utils.AccountUtils;
 import com.example.jianhong.note.utils.CommonUtils;
 import com.example.jianhong.note.utils.LogUtils;
-import com.example.jianhong.note.utils.PrefrencesUtils;
+import com.example.jianhong.note.utils.PreferencesUtils;
 import com.example.jianhong.note.utils.ProviderUtils;
 import com.example.jianhong.note.utils.SystemUtils;
 import com.example.jianhong.note.utils.TimeUtils;
@@ -56,6 +59,7 @@ public class MainActivity extends AppCompatActivity
     private Calendar today;
 
     //private FiltratePage filtratePage;
+    private NoteRVFragment noteRVFragment;
 
     public DrawerLayout drawer;
     Toolbar toolbar;
@@ -85,6 +89,10 @@ public class MainActivity extends AppCompatActivity
 
         initBgPic(); // 感觉这个要废掉
         goToNoteRVFragment();
+
+        // / 配置全局Handler
+        NoteApplication application = (NoteApplication) getApplication();
+        application.setHandler(new SyncHandler());
 
         LogUtils.d(TAG, "NoteBook:");
         List<NoteBook> list = NoteDB.getInstance(mContext).loadNoteBooks();
@@ -116,19 +124,19 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_sync) {
+        if (id == R.id.menu_search) {
 
+        } else if (id == R.id.action_sync) {
+
+        } else if (id == R.id.action_setting) {
+            SettingsActivity.actionStart(mContext);
         } else if (id == R.id.action_about) {
             AboutActivity.activityStart(mContext);
         }
 
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -138,8 +146,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            //goToNoteRVFragment();
-            // ignore
+            goToNoteRVFragment();
         } else if (id == R.id.nav_mgr_note) {
             setTitle(R.string.mgr_note);
             NoteBookFragment noteBookFragment = new NoteBookFragment();
@@ -148,8 +155,6 @@ public class MainActivity extends AppCompatActivity
             setTitle(R.string.change_bg);
             ChangeBgFragment changeBgFragment = new ChangeBgFragment();
             changeFragment(changeBgFragment, item);
-        } else if (id == R.id.nav_setting) {
-
         } else if (id == R.id.nav_exit) {
             logout();
         }
@@ -182,49 +187,47 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.main_fraglayout, fragment, null);
         ft.commit();
-
-        back(item);
     }
 
     public void goToNoteRVFragment() {
-        LogUtils.d(TAG, "goToNoteRe...Fragment");
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_fraglayout, new NoteRVFragment()).commit();
+        noteRVFragment = new NoteRVFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_fraglayout, noteRVFragment).commit();
 
         navigationView.getMenu().getItem(0).setChecked(true); // 修改导航栏选中项
     }
 
-    /**
-     * 返回键方法，切换更换壁纸或者笔记管理时，点击返回键会返回主页
-     */
-    private void back(MenuItem item) {
-        item.setChecked(false); // 关闭选中
-        closeDrawer();
-
-        toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDrawer();
-
-                goToNoteRVFragment();
-            }
-        });
-    }
-
-    /**
-     * 开启抽屉，隐藏返回键
-     */
-    public void openDrawer() {
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        toggle.setDrawerIndicatorEnabled(true);
-    }
-
-    /**
-     * 关闭抽屉，出现返回键
-     */
-    public void closeDrawer() {
-        toggle.setDrawerIndicatorEnabled(false);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    }
+//    /**
+//     * 返回键方法，切换更换壁纸或者笔记管理时，点击返回键会返回主页
+//     */
+//    private void back(MenuItem item) {
+//        item.setChecked(false); // 关闭选中
+//        closeDrawer();
+//
+//        toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                openDrawer();
+//
+//                goToNoteRVFragment();
+//            }
+//        });
+//    }
+//
+//    /**
+//     * 开启抽屉，隐藏返回键
+//     */
+//    public void openDrawer() {
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+//        toggle.setDrawerIndicatorEnabled(true);
+//    }
+//
+//    /**
+//     * 关闭抽屉，出现返回键
+//     */
+//    public void closeDrawer() {
+//        toggle.setDrawerIndicatorEnabled(false);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//    }
 
     private void initBgPic()
     {
@@ -242,7 +245,7 @@ public class MainActivity extends AppCompatActivity
     标注版本号
      */
     private void setVersionCode() {
-        PrefrencesUtils.putInt(PrefrencesUtils.VERSION_CODE, versionCode);
+        PreferencesUtils.putInt(PreferencesUtils.VERSION_CODE, versionCode);
     }
 
     private void firstLaunch() {
@@ -252,7 +255,7 @@ public class MainActivity extends AppCompatActivity
         noteBook.setNotesNum(2);
         noteBook.setNotebookGuid(0L);
         NoteDB.getInstance(mContext).saveNoteBook_initDB(noteBook);
-        PrefrencesUtils.putInt(PrefrencesUtils.JIAN_NUM, 2);
+        PreferencesUtils.putInt(PreferencesUtils.JIAN_NUM, 2);
 
         // 然后在数据库中添加note
         Note one = new Note();
@@ -350,6 +353,31 @@ public class MainActivity extends AppCompatActivity
                         noteBookFragment.trash();
                     }
                 }).show();
+    }
+
+    /**
+     *-----------------------------------------设置相关---------------------------------------------
+     */
+
+    public static final int NEED_CONFIG_LAYOUT = 0x0010;
+    public static final int NEED_RECREATE = 0x0011;
+    
+
+    public class SyncHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case NEED_CONFIG_LAYOUT:
+                    noteRVFragment.configLayoutManager();
+                    break;
+                case NEED_RECREATE:
+                    recreate();
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
 }

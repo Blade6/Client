@@ -35,7 +35,7 @@ import com.example.jianhong.note.data.model.NoteBook;
 import com.example.jianhong.note.data.provider.NoteProvider;
 import com.example.jianhong.note.ui.view.FloatingActionButton;
 import com.example.jianhong.note.ui.widget.MySwipeRefreshLayout;
-import com.example.jianhong.note.utils.PrefrencesUtils;
+import com.example.jianhong.note.utils.PreferencesUtils;
 
 import java.util.List;
 
@@ -58,11 +58,15 @@ public class NoteRVFragment extends Fragment implements LoaderManager.LoaderCall
 
     public void configLayoutManager() {
         int columnNum = 2;
-        if (PrefrencesUtils.getBoolean(PrefrencesUtils.ONE_COLUMN)) {
+        if (PreferencesUtils.getBoolean(PreferencesUtils.ONE_COLUMN)) {
             columnNum = 1;
         }
         mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(columnNum,
                 StaggeredGridLayoutManager.VERTICAL));
+    }
+
+    public void notifyDataSetChanged() {
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -86,7 +90,7 @@ public class NoteRVFragment extends Fragment implements LoaderManager.LoaderCall
         refreshLayout = (MySwipeRefreshLayout) view.findViewById(R.id.refresher);
         refreshLayout.setOnRefreshListener((MainActivity) mContext);
 
-        getActivity().setTitle(PrefrencesUtils.getString(PrefrencesUtils.NOTEBOOK_NAME));
+        getActivity().setTitle(PreferencesUtils.getString(PreferencesUtils.NOTEBOOK_NAME));
 
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -118,14 +122,11 @@ public class NoteRVFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        int bookId = PrefrencesUtils.getInt(PrefrencesUtils.NOTEBOOK_ID);
+        int bookId = PreferencesUtils.getInt(PreferencesUtils.NOTEBOOK_ID);
         String selection = NoteDB.NOTEBOOK_ID + " = ?";
         String[] selectionArgs = {"" + bookId};
 
         String sortOrder = NoteProvider.STANDARD_SORT_ORDER;
-        if (PrefrencesUtils.getBoolean(PrefrencesUtils.CREATE_ORDER)) {
-            sortOrder = NoteProvider.STANDARD_SORT_ORDER2;
-        }
 
         CursorLoader cursorLoader = new CursorLoader(mContext, NoteProvider.BASE_URI,
                 NoteProvider.STANDARD_PROJECTION, selection, selectionArgs, sortOrder);

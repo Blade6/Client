@@ -9,7 +9,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 
-public class PrefrencesUtils extends BaseLitePrefs {
+public class PreferencesUtils extends BaseLitePrefs {
 
     public static final String DATA = "note_pref";
 
@@ -26,10 +26,10 @@ public class PrefrencesUtils extends BaseLitePrefs {
     public static final String JIAN_NUM = "jian_num"; // 简记文件夹的笔记数目
 
     /** 用户自定义数据 **/
-    public static final String NOTE_MAX_LENGTH_RATIO = "note_max_length_key"; // 笔记高度
     public static final String ONE_COLUMN = "one_column"; // 是否单列显示
-    public static final String CREATE_ORDER = "create_order"; // 是否按照笔记创建时间升序显示
-    public static final String QUICK_SAVE_LOCATION = "quick_save_location"; // 摘录默认保存文件夹
+    public static final String LIGHTNING_EXTRACT = "lightning_extract"; // 闪电摘录
+    public static final String LIGHTNING_EXTRACT_SAVE_LOCATION = "lightning_extract_save_location"; // 摘录默认保存文件夹的ID
+    public static final String LIGHTNING_EXTRACT_SAVE_NAME = "lightning_extract_save_name"; // 摘录默认保存文件夹的名字
 
     public static void initFromXml(Context context) {
         try {

@@ -46,9 +46,4 @@
             android:layout_gravity="center"/>
     </LinearLayout>
 
-    <View
-        android:id="@+id/v_divider"
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/divider_line_color"/>
 </LinearLayout>

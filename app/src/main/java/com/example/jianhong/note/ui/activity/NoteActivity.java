@@ -16,7 +16,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 
 import java.lang.reflect.Field;
-import java.util.Calendar;
 
 import com.example.jianhong.note.R;
 import com.example.jianhong.note.data.model.Note;
@@ -25,7 +24,7 @@ import com.example.jianhong.note.entity.Originator;
 import com.example.jianhong.note.entity.Memo;
 import com.example.jianhong.note.utils.CommonUtils;
 import com.example.jianhong.note.utils.LogUtils;
-import com.example.jianhong.note.utils.PrefrencesUtils;
+import com.example.jianhong.note.utils.PreferencesUtils;
 import com.example.jianhong.note.utils.TimeUtils;
 import com.example.jianhong.note.utils.ProviderUtils;
 import com.example.jianhong.note.utils.NoteBookUtils;
@@ -199,7 +198,7 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
             });
         } else if (mode == MODE_TODAY) {
             note.setCreateTime(TimeUtils.getCurrentTimeInLong());
-            note.setNoteBookId(PrefrencesUtils.getInt(PrefrencesUtils.NOTEBOOK_ID));
+            note.setNoteBookId(PreferencesUtils.getInt(PreferencesUtils.NOTEBOOK_ID));
             editText.requestFocus();
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
@@ -348,7 +347,7 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
 
         note.setContent(editText.getText().toString());
         note.setSynStatus(Note.NEW);
-        int groupId = PrefrencesUtils.getInt(PrefrencesUtils.NOTEBOOK_ID);
+        int groupId = PreferencesUtils.getInt(PreferencesUtils.NOTEBOOK_ID);
         note.setNoteBookId(groupId);
         note.setUpdTime(TimeUtils.getCurrentTimeInLong());
 
