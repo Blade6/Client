@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.example.jianhong.note.data.model.Note;
 import com.example.jianhong.note.data.model.NoteBook;
+import com.example.jianhong.note.utils.SynStatusUtils;
 
 public class NoteDB {
     public static final String TAG = "NoteDB";
@@ -86,7 +87,7 @@ public class NoteDB {
     public List<Note> loadNotes() {
         List<Note> list = new ArrayList<>();
         Cursor cursor = db.query(TABLE_NOTE, null, SYN_STATUS + " != ?" + " and " + DELETED + " " +
-                "!= ?", new String[]{"" + Note.DELETE, "" + Note.TRUE}, null, null, UPD_TIME + " desc");
+                "!= ?", new String[]{"" + SynStatusUtils.DELETE, "" + Note.TRUE}, null, null, UPD_TIME + " desc");
 
         if (cursor.moveToFirst()) {
             do {
@@ -119,7 +120,7 @@ public class NoteDB {
         }
 
         Cursor cursor = db.query(TABLE_NOTE, null, NOTEBOOK_ID + " = ? and " + SYN_STATUS + " !=" +
-                " ?" + " and " + DELETED + " != ?", new String[]{"" + id, "" + Note.DELETE, "" +
+                " ?" + " and " + DELETED + " != ?", new String[]{"" + id, "" + SynStatusUtils.DELETE, "" +
                 Note.TRUE}, null, null, UPD_TIME + " desc");
 
         if (cursor.moveToFirst()) {

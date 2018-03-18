@@ -163,7 +163,7 @@ public class CommonUtils {
         note.setContent(str);
         note.setCreateTime(TimeUtils.getCurrentTimeInLong());
         note.setUpdTime(TimeUtils.getCurrentTimeInLong());
-        note.setSynStatus(Note.NEW);
+        note.setSynStatus(SynStatusUtils.NEW);
         note.setNoteBookId(groupId);
 
         ProviderUtils.insertNote(mContext, note);

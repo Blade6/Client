@@ -1,5 +1,6 @@
 package com.example.jianhong.note.ui.activity;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -25,6 +26,7 @@ import com.example.jianhong.note.entity.Memo;
 import com.example.jianhong.note.utils.CommonUtils;
 import com.example.jianhong.note.utils.LogUtils;
 import com.example.jianhong.note.utils.PreferencesUtils;
+import com.example.jianhong.note.utils.SynStatusUtils;
 import com.example.jianhong.note.utils.TimeUtils;
 import com.example.jianhong.note.utils.ProviderUtils;
 import com.example.jianhong.note.utils.NoteBookUtils;
@@ -128,8 +130,11 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.new_note_menu, menu);
+        if (mode == MODE_NEW || MODE_TODAY == mode) {
+            getMenuInflater().inflate(R.menu.new_note_menu, menu);
+        } else if (mode == MODE_EDIT) {
+            getMenuInflater().inflate(R.menu.edit_note_menu, menu);
+        }
         undoItem = menu.findItem(R.id.action_undo);
         redoItem = menu.findItem(R.id.action_redo);
         updateUndoAndRedo();
@@ -144,6 +149,9 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
                 return true;
             case R.id.action_share:
                 share();
+                return true;
+            case R.id.action_delete:
+                deleteNoteWithDialog();
                 return true;
             case R.id.word_count:
                 showWordCount();
@@ -330,7 +338,7 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
         // 物理数据存储，以改代删
         note.setDeleted(Note.TRUE);
         if (note.getGuid() != 0) {
-            note.setSynStatus(Note.DELETE);
+            note.setSynStatus(SynStatusUtils.DELETE);
         }
         ProviderUtils.updateNote(mContext, note);
 
@@ -346,7 +354,7 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
         }
 
         note.setContent(editText.getText().toString());
-        note.setSynStatus(Note.NEW);
+        note.setSynStatus(SynStatusUtils.NEW);
         int groupId = PreferencesUtils.getInt(PreferencesUtils.NOTEBOOK_ID);
         note.setNoteBookId(groupId);
         note.setUpdTime(TimeUtils.getCurrentTimeInLong());
@@ -360,14 +368,27 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
 
     private void updateNote() {
         note.setContent(editText.getText().toString());
-        if (note.getSynStatus() == Note.NOTHING) {
-            //needUpdate
-            note.setSynStatus(Note.UPDATE);
-        }
+        note.setSynStatus(SynStatusUtils.UPDATE);
 
         note.setUpdTime(TimeUtils.getCurrentTimeInLong());
         // 物理数据存储
         ProviderUtils.updateNote(mContext, note);
+    }
+
+    private void deleteNoteWithDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setMessage(R.string.delete_all_confirm)
+                .setPositiveButton(android.R.string.ok, new
+                        DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                deleteNote();
+                                finish();
+                            }
+                        })
+                .setNegativeButton(android.R.string.cancel, null)
+                .create().show();
     }
 
 }

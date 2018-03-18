@@ -15,6 +15,7 @@ import com.example.jianhong.note.data.db.NoteDB;
 import com.example.jianhong.note.ui.activity.NoteActivity;
 import com.example.jianhong.note.utils.LogUtils;
 import com.example.jianhong.note.utils.NoteBookUtils;
+import com.example.jianhong.note.utils.SynStatusUtils;
 import com.example.jianhong.note.utils.TimeUtils;
 import com.example.jianhong.note.utils.ProviderUtils;
 
@@ -256,7 +257,7 @@ public class NoteRVAdapter extends RecyclerView.Adapter<NoteRVAdapter.NoteItemHo
             SparseIntArray affectedNotebooks = new SparseIntArray(mCheckedItems.size());
             for (Integer key : keys) {
                 Note note = mCheckedItems.get(key);
-                note.setSynStatus(Note.DELETE);
+                note.setSynStatus(SynStatusUtils.DELETE);
                 note.setDeleted(Note.TRUE);
                 ProviderUtils.updateNote(mContext, note);
 

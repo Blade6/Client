@@ -4,10 +4,8 @@ import android.content.ContentValues;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.Calendar;
-
 import com.example.jianhong.note.data.db.NoteDB;
-import com.example.jianhong.note.utils.CommonUtils;
+import com.example.jianhong.note.utils.SynStatusUtils;
 
 /**
  * Created by jianhong on 2018/3/12.
@@ -18,11 +16,7 @@ public class Note implements Parcelable {
     public static final int TRUE = 1;
     public static final int FALSE = 0;
 
-    public static final int NOTHING = 0;
-    public static final int NEW = 1;
-    public static final int UPDATE = 2;
-    public static final int DELETE = 3;
-    private int synStatus = NOTHING; // 同步状态，确定执行同步操作时是否需要提交到服务器
+    private int synStatus = SynStatusUtils.NOTHING; // 同步状态，确定执行同步操作时是否需要提交到服务器
 
     private int id = 0; // note的本地编号
     private String content = ""; // note的内容
@@ -35,22 +29,6 @@ public class Note implements Parcelable {
 
     private int deleted = FALSE;
 
-    public boolean needUpdate() {
-        return synStatus == UPDATE;
-    }
-
-    public boolean needDelete() {
-        return synStatus == DELETE;
-    }
-
-    public boolean needCreate() {
-        return synStatus == NEW;
-    }
-
-    public boolean isDeleted() {
-        return deleted == TRUE;
-    }
-
     public int getId() {
         return id;
     }
@@ -59,8 +37,12 @@ public class Note implements Parcelable {
         this.id = id;
     }
 
-    public void setSynStatus(int synStatus) {
+    public void setSynStatus_inside(int synStatus) {
         this.synStatus = synStatus;
+    }
+
+    public void setSynStatus(int synStatus) {
+        SynStatusUtils.setStatus(this, synStatus);
     }
 
     public int getSynStatus() {
