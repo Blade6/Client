@@ -66,7 +66,7 @@ public class NoteBookFragment extends Fragment implements LoaderManager.LoaderCa
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         //引入我们的布局
-        View v = inflater.inflate(R.layout.fragment_notebook, container, false);
+        View v = inflater.inflate(R.layout.fragment_folder, container, false);
         folder_delete = (Button) v.findViewById(R.id.btn_folder_delete);
         folder_new = (Button) v.findViewById(R.id.btn_folder_new);
 
