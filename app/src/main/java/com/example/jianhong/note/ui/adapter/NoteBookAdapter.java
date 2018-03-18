@@ -99,7 +99,11 @@ public class NoteBookAdapter extends CursorAdapter implements View.OnClickListen
 
     private void bindFirstView(Cursor cursor) {
         NoteBook noteBook = NoteDB.initNoteBook(cursor);
-        //mHolder.itemLayout.setBackgroundColor(mContext.getResources().getColor(android.R.color.transparent));
+        if (noteBook.getId() == PreferencesUtils.getInt(PreferencesUtils.NOTEBOOK_ID)) {
+            mHolder.itemLayout.setBackgroundResource(R.drawable.abc_list_pressed_holo_dark);
+        } else {
+            mHolder.itemLayout.setBackgroundColor(mContext.getResources().getColor(android.R.color.transparent));
+        }
 
         mHolder.name.setText(R.string.default_notebook);
         mHolder.num.setText("" + PreferencesUtils.getInt(PreferencesUtils.JIAN_NUM));
@@ -110,7 +114,11 @@ public class NoteBookAdapter extends CursorAdapter implements View.OnClickListen
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         NoteBook noteBook = NoteDB.initNoteBook(cursor);
-        //mHolder.itemLayout.setBackgroundColor(mContext.getResources().getColor(android.R.color.transparent));
+        if (noteBook.getId() == PreferencesUtils.getInt(PreferencesUtils.NOTEBOOK_ID)) {
+            mHolder.itemLayout.setBackgroundResource(R.drawable.abc_list_pressed_holo_dark);
+        } else {
+            mHolder.itemLayout.setBackgroundColor(mContext.getResources().getColor(android.R.color.transparent));
+        }
 
         mHolder.name.setText(noteBook.getName());
         mHolder.num.setText("" + noteBook.getNotesNum());
