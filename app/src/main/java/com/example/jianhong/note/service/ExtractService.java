@@ -1,14 +1,18 @@
 package com.example.jianhong.note.service;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
 import com.example.jianhong.note.R;
+import com.example.jianhong.note.ui.activity.MainActivity;
 import com.example.jianhong.note.utils.CommonUtils;
 import com.example.jianhong.note.utils.LogUtils;
 import com.example.jianhong.note.utils.PreferencesUtils;
@@ -26,6 +30,7 @@ public class ExtractService extends Service {
     public static final int STOP_EXTRACT = 2;
 
     private Context mContext;
+    private Notification notification;
 
     private boolean isExtract = false;
 
@@ -64,6 +69,7 @@ public class ExtractService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         int command = intent.getIntExtra("command", NOTHING);
         if (START_EXTRACT == command) {
+            refreshNotification();
             startExtract();
         } else if (STOP_EXTRACT == command) {
             stopExtract();
@@ -91,14 +97,35 @@ public class ExtractService extends Service {
 
     private void startExtract() {
         isExtract = true;
+        startForeground(-1, notification);
         Toast.makeText(mContext, R.string.switch_lightning_extract_on, Toast.LENGTH_SHORT).show();
     }
 
     private void stopExtract() {
         isExtract = false;
+        startForeground(-1, notification);
         Toast.makeText(mContext, R.string.switch_lightning_extract_off, Toast.LENGTH_SHORT).show();
 
-        stopSelf(); // 关闭服务
+        stopSelf();
+    }
+
+    private void refreshNotification() {
+        Intent myIntent = new Intent(this, MainActivity.class);
+        PendingIntent pi = PendingIntent.getActivity(this, 0, myIntent, 0);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setOngoing(false);
+        builder.setAutoCancel(false);
+        builder.setSmallIcon(R.drawable.small_logo);
+        builder.setContentTitle(getString(R.string.app_name));
+        builder.setContentText(getString(R.string.notification_description));
+
+        notification = builder.build();
+        notification.flags = (Notification.FLAG_ONGOING_EVENT | Notification.FLAG_NO_CLEAR
+            | Notification.FLAG_FOREGROUND_SERVICE);
+        notification.contentIntent = pi;
+
+        startForeground(-1, notification);
     }
 
 }

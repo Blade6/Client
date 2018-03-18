@@ -86,7 +86,7 @@ public class NoteDB {
     public List<Note> loadNotes() {
         List<Note> list = new ArrayList<>();
         Cursor cursor = db.query(TABLE_NOTE, null, SYN_STATUS + " != ?" + " and " + DELETED + " " +
-                "!= ?", new String[]{"" + Note.DELETE, "" + Note.TRUE}, null, null, "time desc");
+                "!= ?", new String[]{"" + Note.DELETE, "" + Note.TRUE}, null, null, UPD_TIME + " desc");
 
         if (cursor.moveToFirst()) {
             do {
@@ -120,7 +120,7 @@ public class NoteDB {
 
         Cursor cursor = db.query(TABLE_NOTE, null, NOTEBOOK_ID + " = ? and " + SYN_STATUS + " !=" +
                 " ?" + " and " + DELETED + " != ?", new String[]{"" + id, "" + Note.DELETE, "" +
-                Note.TRUE}, null, null, "time desc");
+                Note.TRUE}, null, null, UPD_TIME + " desc");
 
         if (cursor.moveToFirst()) {
             do {
@@ -146,7 +146,7 @@ public class NoteDB {
 
     public List<Note> loadRawNotes() {
         List<Note> list = new ArrayList<Note>();
-        Cursor cursor = db.query(TABLE_NOTE, null, null, null, null, null, "time desc");
+        Cursor cursor = db.query(TABLE_NOTE, null, null, null, null, null, UPD_TIME + " desc");
         if (cursor.moveToFirst()) {
             do {
                 Note note = new Note();

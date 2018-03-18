@@ -26,6 +26,7 @@ import com.example.jianhong.note.data.db.NoteDB;
 import com.example.jianhong.note.data.model.NoteBook;
 import com.example.jianhong.note.service.ExtractService;
 import com.example.jianhong.note.utils.CommonUtils;
+import com.example.jianhong.note.utils.LogUtils;
 import com.example.jianhong.note.utils.PreferencesUtils;
 
 import java.util.List;
@@ -112,13 +113,16 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 PreferencesUtils.putBoolean(PreferencesUtils.LIGHTNING_EXTRACT, isChecked);
                 if (isChecked) {
                     if (CommonUtils.isServiceWork(mContext, SERVICE)) {
-                        ExtractService.startExtractTask(mContext);
+                        LogUtils.d(TAG, "Service is working!");
                     } else {
                         // todo hejianhong
+                        ExtractService.startExtractTask(mContext);
                     }
                 } else {
                     if (CommonUtils.isServiceWork(mContext, SERVICE)) {
                         ExtractService.stopExtractTask(mContext);
+                    } else {
+                        LogUtils.d(TAG, "Service already stopped");
                     }
                 }
             }

@@ -97,7 +97,9 @@
     <string name="extract_error">出现错误，未能成功摘录，请重新设置功能！</string>
     <string name="already_extract_to">"文本摘录至 "</string>
 
-    <string name="switch_lightning_extract_on">启动闪电摘录</string>
+    <string name="switch_lightning_extract_on">启动快速摘录</string>
     <string name="switch_lightning_extract_off">关闭快速摘录</string>
+
+    <string name="notification_description">快速摘录 开启中</string>
 
 </resources>
