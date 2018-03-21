@@ -35,7 +35,15 @@
         <def-value>简记</def-value>
     </pref>
     <pref>
+        <key>notebook_guid</key>
+        <def-value>0</def-value>
+    </pref>
+    <pref>
         <key>jian_num</key>
+        <def-value>0</def-value>
+    </pref>
+    <pref>
+        <key>jian_local_id</key>
         <def-value>0</def-value>
     </pref>
 

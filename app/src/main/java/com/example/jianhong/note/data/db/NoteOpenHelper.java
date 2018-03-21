@@ -6,17 +6,25 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class NoteOpenHelper extends SQLiteOpenHelper {
 
+    public static final String CREATE_USER =
+            "create table table_user  ("
+                    + "user_id integer primary key,"
+                    + "syn_status integer,"
+                    + "syn_uid integer"
+                    + ")";
+
     public static final String CREATE_TABLE =
             "create table " + NoteDB.TABLE_NOTE + " ("
                     + "id integer primary key autoincrement,"
                     + "syn_status integer,"
                     + "content text,"
                     + "create_time integer,"
-                    + "upd_time integer,"
+                    + "edit_time integer,"
                     + "notebook_id integer,"
                     + "deleted integer,"
                     + "guid text,"
-                    + "book_guid text"
+                    + "book_guid text,"
+                    + "user_id long"
                     + ")";
 
     public static final String CREATE_TABLE_NOTEBOOK =
@@ -26,7 +34,8 @@ public class NoteOpenHelper extends SQLiteOpenHelper {
                     + "syn_status integer,"
                     + "num integer,"
                     + "deleted integer,"
-                    + "notebook_guid text"
+                    + "notebook_guid text,"
+                    + "user_id long"
                     + ")";
 
     public NoteOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory,
@@ -36,6 +45,7 @@ public class NoteOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL(CREATE_USER);
         db.execSQL(CREATE_TABLE);
         db.execSQL(CREATE_TABLE_NOTEBOOK);
     }

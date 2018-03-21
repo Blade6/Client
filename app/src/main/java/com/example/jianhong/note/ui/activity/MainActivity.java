@@ -34,16 +34,27 @@ import com.example.jianhong.note.app.NoteApplication;
 import com.example.jianhong.note.data.model.Note;
 import com.example.jianhong.note.data.model.NoteBook;
 import com.example.jianhong.note.data.db.NoteDB;
+import com.example.jianhong.note.data.net.BooksData;
+import com.example.jianhong.note.data.net.NetBroker;
+import com.example.jianhong.note.data.net.NetData;
+import com.example.jianhong.note.data.net.NotesData;
+import com.example.jianhong.note.entity.HttpCallbackListener;
+import com.example.jianhong.note.entity.Response;
 import com.example.jianhong.note.ui.fragment.NoteBookFragment;
+import com.example.jianhong.note.ui.widget.MySwipeRefreshLayout;
 import com.example.jianhong.note.utils.AccountUtils;
 import com.example.jianhong.note.utils.CommonUtils;
+import com.example.jianhong.note.utils.HttpUtils;
+import com.example.jianhong.note.utils.JSONUtils;
 import com.example.jianhong.note.utils.LogUtils;
 import com.example.jianhong.note.utils.PreferencesUtils;
 import com.example.jianhong.note.utils.ProviderUtils;
+import com.example.jianhong.note.utils.SynStatusUtils;
 import com.example.jianhong.note.utils.SystemUtils;
 import com.example.jianhong.note.utils.TimeUtils;
 import com.example.jianhong.note.ui.fragment.ChangeBgFragment;
 import com.example.jianhong.note.ui.fragment.NoteRVFragment;
+import com.example.jianhong.note.utils.UrlUtils;
 
 import java.util.Calendar;
 import java.util.List;
@@ -85,7 +96,7 @@ public class MainActivity extends AppCompatActivity
         today = Calendar.getInstance();
         mContext = MainActivity.this;
         versionCode = CommonUtils.getVersionCode(mContext);
-        first_use();
+        first_use(AccountUtils.getUserName());
 
         initBgPic(); // 感觉这个要废掉
         goToNoteRVFragment();
@@ -95,12 +106,12 @@ public class MainActivity extends AppCompatActivity
         application.setHandler(new SyncHandler());
 
         LogUtils.d(TAG, "NoteBook:");
-        List<NoteBook> list = NoteDB.getInstance(mContext).loadNoteBooks();
+        List<NoteBook> list = NoteDB.getInstance(mContext).loadRawNoteBook();
         for (NoteBook nb : list) {
             LogUtils.d(TAG, nb.toString());
         }
         LogUtils.d(TAG, "Note:");
-        List<Note> nlist = NoteDB.getInstance(mContext).loadNotes();
+        List<Note> nlist = NoteDB.getInstance(mContext).loadRawNote();
         for (Note note : nlist) {
             LogUtils.d(TAG, note.toString());
         }
@@ -129,7 +140,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.menu_search) {
 
         } else if (id == R.id.action_sync) {
-
+            onRefresh();
         } else if (id == R.id.action_setting) {
             SettingsActivity.actionStart(mContext);
         } else if (id == R.id.action_about) {
@@ -163,22 +174,10 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void first_use() {
-        SharedPreferences sp = this.getSharedPreferences("note", Context.MODE_PRIVATE);
-        if(sp.getBoolean("first_use", true)) {
-            firstLaunch();
-            setVersionCode();
-
-            Editor editor = sp.edit();
-            editor.putBoolean("first_use", false);
-            editor.commit();
-        }
-    }
-
     private void logout() {
         AccountUtils.clearAllInfos();
         finish();
-        System.exit(0);
+        //System.exit(0);
     }
 
     private void changeFragment(Fragment fragment, MenuItem item)
@@ -251,32 +250,160 @@ public class MainActivity extends AppCompatActivity
     private void firstLaunch() {
         //如果是第一次启动应用，首先创建笔记本表，
         NoteBook noteBook = new NoteBook();
+        noteBook.setSynStatus(SynStatusUtils.NEW);
         noteBook.setName(getString(R.string.default_notebook));
         noteBook.setNotesNum(2);
         noteBook.setNotebookGuid(0L);
         NoteDB.getInstance(mContext).saveNoteBook_initDB(noteBook);
         PreferencesUtils.putInt(PreferencesUtils.JIAN_NUM, 2);
+        PreferencesUtils.putInt(PreferencesUtils.JIAN_LOCAL_ID, 0);
 
         // 然后在数据库中添加note
         Note one = new Note();
+        one.setSynStatus(SynStatusUtils.NEW);
         one.setContent(getString(R.string.tip1));
         one.setCreateTime(TimeUtils.getCurrentTimeInLong());
-        one.setUpdTime(TimeUtils.getCurrentTimeInLong());
-        NoteDB.getInstance(mContext).saveNote(one);
+        one.setEditTime(TimeUtils.getCurrentTimeInLong());
+        NoteDB.getInstance(mContext).insertNote(one);
 
         Calendar tmpCal = (Calendar) today.clone();
         tmpCal.add(Calendar.DAY_OF_MONTH, -1);
 
         Note two = new Note();
+        two.setSynStatus(SynStatusUtils.NEW);
         two.setContent(getString(R.string.tip2));
         two.setCreateTime(TimeUtils.getCurrentTimeInLong());
-        two.setUpdTime(TimeUtils.getCurrentTimeInLong());
-        NoteDB.getInstance(mContext).saveNote(two);
+        two.setEditTime(TimeUtils.getCurrentTimeInLong());
+        NoteDB.getInstance(mContext).insertNote(two);
+
+        NoteDB.getInstance(mContext).insertSyn(AccountUtils.getUserId(), 1);
     }
+
+    /**
+     *-----------------------------------------同步相关---------------------------------------------
+     */
 
     @Override
     public void onRefresh() {
-        // todo 同步数据
+        // todo hejianhong 同步数据
+        setRefreshing(true);
+        needSyn(new SyncHandler());
+    }
+
+    private void setRefreshing(boolean b) {
+        if (null == noteRVFragment || !noteRVFragment.isVisible()) return;
+        MySwipeRefreshLayout refreshLayout = noteRVFragment.getRefreshLayout();
+        refreshLayout.setRefreshing(b);
+
+        if (b) {
+            refreshLayout.setEnabled(false);
+        } else {
+            refreshLayout.setEnabled(true);
+        }
+    }
+
+    /**
+     * 0 不用同步
+     * 1 upload
+     * 2 download
+     * @return
+     */
+    public void needSyn(final SyncHandler syncHandler) {
+        String address = UrlUtils.GETSYNURL + "user_id/" + AccountUtils.getUserId();
+        HttpUtils.sendHttpRequest(address, new HttpCallbackListener() {
+            @Override
+            public void onFinish(String response) {
+                Response res = JSONUtils.handleResponse(response);
+                if (!res.getReturnCode()) {
+                    LogUtils.d(TAG, "syn fail");
+                }
+                else {
+                    long server_uid = res.getSynUid();
+                    long local_uid = NoteDB.getInstance(mContext).loadSyn();
+                    LogUtils.d(TAG, "server syn_id:" + server_uid + ", local syn_id:" + local_uid);
+
+                    if (local_uid > server_uid) {
+                        upload(server_uid, syncHandler);
+                    } else if (local_uid < server_uid) {
+                        download(server_uid, syncHandler);
+                    } else {
+                        // ignore
+                        LogUtils.d(TAG, "No need to sync");
+                        syncHandler.sendEmptyMessage(SYN_NO_NEED);
+                    }
+                }
+            }
+            @Override
+            public void onError(Exception e) {
+                LogUtils.d(TAG, "exception");
+            }
+        });
+    }
+
+    public void upload(Long server_uid, final SyncHandler syncHandler) {
+        List<NoteBook> synNoteBooks = NoteDB.getInstance(mContext).loadSynNoteBooks();
+        List<Note> synNotes = NoteDB.getInstance(mContext).loadSynNotes();
+
+        if (synNoteBooks.size() > 0 || synNotes.size() > 0) {
+            LogUtils.d(TAG, "synNoteBooks:");
+            for (NoteBook nb : synNoteBooks) {
+                LogUtils.d(TAG, nb.toString());
+            }
+
+            LogUtils.d(TAG, "synNotes:");
+            for (Note n: synNotes) {
+                LogUtils.d(TAG, n.toString());
+            }
+
+            final BooksData booksData = SynStatusUtils.booksToServer(synNoteBooks);
+            final NotesData notesData = SynStatusUtils.notesToServer(synNotes);
+            NetData netData = new NetData(AccountUtils.getUserId(), booksData, notesData);
+
+            final String jsonData = JSONUtils.converJavaBeanToJson(netData);
+            LogUtils.d(TAG, jsonData);
+
+            new Thread() {
+                @Override
+                public void run() {
+                    String result = HttpUtils.doJsonPost(UrlUtils.SynuURL, jsonData);
+                    LogUtils.d(TAG, result);
+                    if (result != null && result != "") {
+                        Response res = JSONUtils.handleResponse(result);
+
+                        NetBroker.handleUploadResult(mContext, res.getData(), booksData, notesData);
+                    }
+                    syncHandler.sendEmptyMessage(SYN_SUCC);
+                }
+            }.start();
+
+            NoteDB.getInstance(mContext).updateSyn(AccountUtils.getUserId(), server_uid+2);
+        }
+    }
+
+    public void download(final long server_uid, final SyncHandler syncHandler) {
+        String address = UrlUtils.SyndURL + "user_id/" + AccountUtils.getUserId();
+        HttpUtils.sendHttpRequest(address, new HttpCallbackListener() {
+            @Override
+            public void onFinish(String response) {
+                Response res = JSONUtils.handleResponse(response);
+                if (!res.getReturnCode()) {
+                    LogUtils.d(TAG, "同步失败");
+                    syncHandler.sendEmptyMessage(SYN_ERROR);
+                }
+                else {
+                    NetBroker.handleDownloadResult(mContext, res.getData(), AccountUtils.getUserId());
+                    NoteDB.getInstance(mContext).updateSyn(AccountUtils.getUserId(), server_uid);
+                    syncHandler.sendEmptyMessage(SYN_SUCC);
+                }
+
+            }
+
+            @Override
+            public void onError(Exception e) {
+                LogUtils.d(TAG, "程序故障");
+                syncHandler.sendEmptyMessage(SYN_ERROR);
+            }
+        });
     }
 
     /**
@@ -310,10 +437,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void createFolder(String name) {
-        LogUtils.d(TAG, "folder_name:" + name);
         NoteBook noteBook = new NoteBook();
+        noteBook.setSynStatus(SynStatusUtils.NEW);
         noteBook.setName(name);
         ProviderUtils.insertNoteBook(mContext, noteBook);
+
+        SynStatusUtils.setSyn(mContext);
     }
 
     public void showRenameFolderDialog(final NoteBook noteBook) {
@@ -332,7 +461,10 @@ public class MainActivity extends AppCompatActivity
                             Toast.makeText(mContext, R.string.rename_folder_err, Toast.LENGTH_SHORT).show();
                         } else {
                             noteBook.setName(editText.getText().toString().trim());
+                            noteBook.setSynStatus(SynStatusUtils.UPDATE);
                             ProviderUtils.updateNoteBook(mContext, noteBook);
+
+                            SynStatusUtils.setSyn(mContext);
                         }
                     }
                 })
@@ -356,12 +488,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     *-----------------------------------------设置相关---------------------------------------------
+     *-----------------------------------------handler相关---------------------------------------------
      */
 
     public static final int NEED_CONFIG_LAYOUT = 0x0010;
     public static final int NEED_RECREATE = 0x0011;
-    
+    public static final int SYN_SUCC = 0x0012;
+    public static final int SYN_ERROR = 0x0013;
+    public static final int SYN_NO_NEED = 0x0014;
 
     public class SyncHandler extends Handler {
         @Override
@@ -374,9 +508,38 @@ public class MainActivity extends AppCompatActivity
                 case NEED_RECREATE:
                     recreate();
                     break;
+                case SYN_SUCC:
+                    setRefreshing(false);
+                    goToNoteRVFragment();
+                    Toast.makeText(mContext, "同步完成", Toast.LENGTH_SHORT).show();
+                    break;
+                case SYN_ERROR:
+                    setRefreshing(false);
+                    Toast.makeText(mContext, "同步失败！", Toast.LENGTH_SHORT).show();
+                    break;
+                case SYN_NO_NEED:
+                    setRefreshing(false);
+                    Toast.makeText(mContext, "数据已是最新！", Toast.LENGTH_SHORT).show();
+                    break;
                 default:
                     break;
             }
+        }
+    }
+
+    /**
+     *-----------------------------------------SharedPreferences------------------------------------
+     */
+
+    private void first_use(String user_name) {
+        SharedPreferences sp = this.getSharedPreferences("note", Context.MODE_PRIVATE);
+        if(sp.getBoolean(user_name + " first_use", true)) {
+            firstLaunch();
+            setVersionCode();
+
+            Editor editor = sp.edit();
+            editor.putBoolean(user_name + " first_use", false);
+            editor.commit();
         }
     }
 

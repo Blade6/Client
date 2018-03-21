@@ -10,10 +10,7 @@ public class Response {
 
     private boolean ReturnCode;
     private JSONObject Data;
-
-    public Response() {
-
-    }
+    private long syn_uid;
 
     public boolean getReturnCode() {
         return ReturnCode;
@@ -31,6 +28,13 @@ public class Response {
         this.Data = Data;
     }
 
+    public long getSynUid() {
+        return syn_uid;
+    }
+
+    public void setSynUid(long syn_uid) {
+        this.syn_uid = syn_uid;
+    }
 
 
 }

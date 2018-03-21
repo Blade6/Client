@@ -20,6 +20,7 @@ import com.example.jianhong.note.data.model.NoteBook;
 import com.example.jianhong.note.data.provider.NoteProvider;
 import com.example.jianhong.note.utils.PreferencesUtils;
 import com.example.jianhong.note.utils.ProviderUtils;
+import com.example.jianhong.note.utils.SynStatusUtils;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -257,8 +258,10 @@ public class NoteBookAdapter extends CursorAdapter implements View.OnClickListen
     public void deleteNoteBook(NoteBook noteBook) {
         deleteNotesByBookId(noteBook.getId());
         noteBook.setNotesNum(0);
-        noteBook.setDeleted(NoteBook.TRUE);
+        noteBook.setDeleted(SynStatusUtils.TRUE);
         ProviderUtils.updateNoteBook(mContext, noteBook);
+
+        SynStatusUtils.setSyn(mContext);
     }
 
     private void deleteNotesByBookId(int bookId) {
@@ -269,7 +272,7 @@ public class NoteBookAdapter extends CursorAdapter implements View.OnClickListen
         if (cursor.moveToFirst()) {
             do {
                 Note note = NoteDB.initNote(cursor);
-                note.setDeleted(Note.TRUE);
+                note.setDeleted(SynStatusUtils.TRUE);
                 ProviderUtils.updateNote(mContext, note);
             } while (cursor.moveToNext());
         }
@@ -277,6 +280,8 @@ public class NoteBookAdapter extends CursorAdapter implements View.OnClickListen
         if (null != cursor) {
             cursor.close();
         }
+
+        SynStatusUtils.setSyn(mContext);
 
     }
 

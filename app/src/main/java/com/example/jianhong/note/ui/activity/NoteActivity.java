@@ -109,7 +109,7 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
     }
 
     private void updateAppBar() {
-        String stamp = TimeUtils.getTime(note.getUpdTime());
+        String stamp = TimeUtils.getTime(note.getEditTime());
         LogUtils.d(TAG, "stamp:" + stamp);
         actionBar.setTitle(stamp);
     }
@@ -336,15 +336,16 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
 
     private void deleteNote() {
         // 物理数据存储，以改代删
-        note.setDeleted(Note.TRUE);
-        if (note.getGuid() != 0) {
-            note.setSynStatus(SynStatusUtils.DELETE);
-        }
+        note.setDeleted(SynStatusUtils.TRUE);
+        note.setSynStatus(SynStatusUtils.DELETE);
+
         ProviderUtils.updateNote(mContext, note);
 
         // 更新笔记本状态
         int notebookId = note.getNoteBookId();
         NoteBookUtils.updateNoteBook(mContext, notebookId, -1);
+
+        SynStatusUtils.setSyn(mContext);
     }
 
     private void createNote() {
@@ -357,22 +358,27 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
         note.setSynStatus(SynStatusUtils.NEW);
         int groupId = PreferencesUtils.getInt(PreferencesUtils.NOTEBOOK_ID);
         note.setNoteBookId(groupId);
-        note.setUpdTime(TimeUtils.getCurrentTimeInLong());
+        note.setEditTime(TimeUtils.getCurrentTimeInLong());
+        note.setBookGuid(PreferencesUtils.getLong(PreferencesUtils.NOTEBOOK_GUID));
 
         // 物理数据存储
         ProviderUtils.insertNote(mContext, note);
 
         // 更新笔记本
         NoteBookUtils.updateNoteBook(mContext, groupId, +1);
+
+        SynStatusUtils.setSyn(mContext);
     }
 
     private void updateNote() {
         note.setContent(editText.getText().toString());
         note.setSynStatus(SynStatusUtils.UPDATE);
 
-        note.setUpdTime(TimeUtils.getCurrentTimeInLong());
+        note.setEditTime(TimeUtils.getCurrentTimeInLong());
         // 物理数据存储
         ProviderUtils.updateNote(mContext, note);
+
+        SynStatusUtils.setSyn(mContext);
     }
 
     private void deleteNoteWithDialog() {
@@ -384,6 +390,7 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 deleteNote();
+                                SynStatusUtils.setSyn(mContext);
                                 finish();
                             }
                         })

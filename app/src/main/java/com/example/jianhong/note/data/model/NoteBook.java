@@ -5,6 +5,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.example.jianhong.note.data.db.NoteDB;
+import com.example.jianhong.note.data.net.NetNoteBook;
+import com.example.jianhong.note.utils.SynStatusUtils;
 
 /**
  * Created by jianhong on 2018/3/12.
@@ -14,20 +16,14 @@ public class NoteBook implements Parcelable {
 
     public static final String TAG = "NoteBook";
 
-    public static final int TRUE = 1;
-    public static final int FALSE = 0;
-
-    public static final int NOTHING = 0;
-    public static final int NEW = 1;
-    public static final int UPDATE = 2;
-    public static final int DELETE = 3;
-    private int synStatus = NOTHING; // 同步状态
+    private int synStatus = SynStatusUtils.NOTHING; // 同步状态
 
     private int id;
     private String name;
-    private long notebookGuid;
+    private long notebookGuid = NetNoteBook.LOCAL_NEW;
     private int notesNum = 0;
-    private int deleted = FALSE;
+    private int deleted = SynStatusUtils.FALSE;
+    private long user_id;
 
     public int getNotesNum() {
         return notesNum;
@@ -65,24 +61,12 @@ public class NoteBook implements Parcelable {
         return synStatus;
     }
 
-    public void setSynStatus(int synStatus) {
+    public void setSynStatus_inside(int synStatus) {
         this.synStatus = synStatus;
     }
 
-    public boolean needUpdate() {
-        return synStatus == UPDATE;
-    }
-
-    public boolean needDelete() {
-        return synStatus == DELETE;
-    }
-
-    public boolean needCreate() {
-        return synStatus == NEW;
-    }
-
-    public boolean isDeleted() {
-        return deleted == TRUE;
+    public void setSynStatus(int synStatus) {
+        SynStatusUtils.setStatus(this, synStatus);
     }
 
     public int getDeleted() {
@@ -91,6 +75,14 @@ public class NoteBook implements Parcelable {
 
     public void setDeleted(int deleted) {
         this.deleted = deleted;
+    }
+
+    public long getUserId() {
+        return user_id;
+    }
+
+    public void setUserId(long user_id) {
+        this.user_id = user_id;
     }
 
     @Override
@@ -151,7 +143,8 @@ public class NoteBook implements Parcelable {
                 + " num->" + getNotesNum()
                 + " syn_status->" + getSynStatus()
                 + " delete->" + getDeleted()
-                + "]/n";
+                + " user_id->" + getUserId()
+                + "]";
         return toString;
     }
 

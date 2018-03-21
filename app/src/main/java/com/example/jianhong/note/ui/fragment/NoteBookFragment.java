@@ -16,12 +16,14 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.example.jianhong.note.R;
+import com.example.jianhong.note.data.db.NoteDB;
 import com.example.jianhong.note.ui.activity.MainActivity;
 import com.example.jianhong.note.ui.adapter.NoteBookAdapter;
 import com.example.jianhong.note.data.model.NoteBook;
 import com.example.jianhong.note.data.provider.NoteProvider;
 import com.example.jianhong.note.utils.LogUtils;
 import com.example.jianhong.note.utils.PreferencesUtils;
+import com.example.jianhong.note.utils.SynStatusUtils;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -142,16 +144,18 @@ public class NoteBookFragment extends Fragment implements LoaderManager.LoaderCa
         if (null != noteBook) {
             int newId = noteBook.getId();
             String newName = noteBook.getName();
-            changeToBook(newId, newName);
+            long guid = noteBook.getNotebookGuid();
+            changeToBook(newId, newName, guid);
             refresh_UI();
         } else {
             LogUtils.d(TAG, "onItemClick:view.getTag is null");
         }
     }
 
-    public void changeToBook(int newId, String newName) {
+    public void changeToBook(int newId, String newName, long guid) {
         PreferencesUtils.putInt(PreferencesUtils.NOTEBOOK_ID, newId);
         PreferencesUtils.putString(PreferencesUtils.NOTEBOOK_NAME, newName);
+        PreferencesUtils.putLong(PreferencesUtils.NOTEBOOK_GUID, guid);
     }
 
     public void refresh_UI() {
@@ -175,7 +179,8 @@ public class NoteBookFragment extends Fragment implements LoaderManager.LoaderCa
                     PreferencesUtils.putInt(PreferencesUtils.LIGHTNING_EXTRACT_SAVE_LOCATION, 0);
                 }
                 if (noteBookId == PreferencesUtils.getInt(PreferencesUtils.NOTEBOOK_ID)) {
-                    changeToBook(0, getString(R.string.default_notebook));
+                    changeToBook(PreferencesUtils.getInt(PreferencesUtils.JIAN_LOCAL_ID),
+                            getString(R.string.default_notebook), NoteDB.getInstance(mContext).getDefaultBookGuid());
                 }
                 noteBookAdapter.deleteNoteBook(noteBook);
             }

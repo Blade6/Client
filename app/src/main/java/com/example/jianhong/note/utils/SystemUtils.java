@@ -142,7 +142,6 @@ public class SystemUtils {
             fileOutputStream = mActivity.openFileOutput(
                     "share.jpg", 1);
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -169,7 +168,6 @@ public class SystemUtils {
 //            fileOutputStream = mActivity.openFileOutput(
 //                    "share.jpg", 1);
 //        } catch (FileNotFoundException e) {
-//            // TODO Auto-generated catch block
 //            e.printStackTrace();
 //        }
 //

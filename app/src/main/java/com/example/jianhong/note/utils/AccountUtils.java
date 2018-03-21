@@ -1,17 +1,19 @@
 package com.example.jianhong.note.utils;
 
-import com.example.jianhong.note.entity.User;
+import com.example.jianhong.note.data.model.User;
 
 /**
  * 用户信息管理类
  */
 public class AccountUtils {
 
-    public static String getUserId() {
-        return PreferencesUtils.getString(PreferencesUtils.USER_ID);
+    public static long getUserId() {
+        String str = PreferencesUtils.getString(PreferencesUtils.USER_ID);
+        return Long.parseLong(str);
     }
 
-    public static void setUserId(String str) {
+    public static void setUserId(long user_id) {
+        String str = "" + user_id;
         PreferencesUtils.putString(PreferencesUtils.USER_ID, str);
     }
 
@@ -60,7 +62,7 @@ public class AccountUtils {
     }
 
     public static void clearAllInfos(){
-        setUserId("");
+        setUserId(0);
         setUserName("");
         setUserPwd("");
         setUserHeadUrl("");

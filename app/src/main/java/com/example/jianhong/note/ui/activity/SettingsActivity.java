@@ -115,7 +115,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                     if (CommonUtils.isServiceWork(mContext, SERVICE)) {
                         LogUtils.d(TAG, "Service is working!");
                     } else {
-                        // todo hejianhong
                         ExtractService.startExtractTask(mContext);
                     }
                 } else {

@@ -14,9 +14,10 @@ import android.widget.TextView;
 
 import com.example.jianhong.note.R;
 import com.example.jianhong.note.entity.Response;
-import com.example.jianhong.note.entity.User;
+import com.example.jianhong.note.data.model.User;
 import com.example.jianhong.note.entity.HttpCallbackListener;
 import com.example.jianhong.note.utils.AccountUtils;
+import com.example.jianhong.note.utils.LogUtils;
 import com.example.jianhong.note.utils.UrlUtils;
 import com.example.jianhong.note.utils.HttpUtils;
 import com.example.jianhong.note.utils.MD5Utils;
@@ -27,6 +28,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private static final String TAG = LoginActivity.class.getSimpleName();
 
     @BindView(R.id.btn_login)
     Button loginBtn;
@@ -92,6 +95,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onFinish(String response) {
                 Response res = JSONUtils.handleResponse(response);
+                LogUtils.d(TAG, "hello");
                 if (!res.getReturnCode()) {
                     progress.dismiss();
                     Snackbar.make(loginBtn,"用户名或密码错误",Snackbar.LENGTH_LONG).show();
@@ -115,7 +119,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void goToHomeActivity() {
-        Intent intent=new Intent(LoginActivity.this,MainActivity.class);
+        Intent intent=new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);
         this.finish();
     }

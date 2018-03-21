@@ -107,7 +107,7 @@ public class NoteRVAdapter extends RecyclerView.Adapter<NoteRVAdapter.NoteItemHo
         noteItemHolder.itemLayout.setOnClickListener(this);
         noteItemHolder.itemLayout.setOnLongClickListener(this);
         noteItemHolder.title.setText(note.getContent());
-        noteItemHolder.editTime.setText(TimeUtils.getConciseTime(note.getUpdTime(), mContext));
+        noteItemHolder.editTime.setText(TimeUtils.getConciseTime(note.getEditTime(), mContext));
 
         // 主要用于批量操作时，notifyDataSetChanged()之后改变背景
         if (mCheckMode) {
@@ -258,7 +258,7 @@ public class NoteRVAdapter extends RecyclerView.Adapter<NoteRVAdapter.NoteItemHo
             for (Integer key : keys) {
                 Note note = mCheckedItems.get(key);
                 note.setSynStatus(SynStatusUtils.DELETE);
-                note.setDeleted(Note.TRUE);
+                note.setDeleted(SynStatusUtils.TRUE);
                 ProviderUtils.updateNote(mContext, note);
 
                 // 更新受到影响的笔记本的应删除数值
@@ -277,7 +277,7 @@ public class NoteRVAdapter extends RecyclerView.Adapter<NoteRVAdapter.NoteItemHo
                 mOnItemSelectListener.onCancelSelect();
             }
 
-//            new Evernote(mContext).sync(true, false, null);
+            SynStatusUtils.setSyn(mContext);
         }
     }
 
@@ -314,6 +314,7 @@ public class NoteRVAdapter extends RecyclerView.Adapter<NoteRVAdapter.NoteItemHo
             if (null != mOnItemSelectListener) {
                 mOnItemSelectListener.onCancelSelect();
             }
+            SynStatusUtils.setSyn(mContext);
 
         }
     }

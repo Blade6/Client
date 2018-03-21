@@ -162,7 +162,7 @@ public class CommonUtils {
         Note note = new Note();
         note.setContent(str);
         note.setCreateTime(TimeUtils.getCurrentTimeInLong());
-        note.setUpdTime(TimeUtils.getCurrentTimeInLong());
+        note.setEditTime(TimeUtils.getCurrentTimeInLong());
         note.setSynStatus(SynStatusUtils.NEW);
         note.setNoteBookId(groupId);
 

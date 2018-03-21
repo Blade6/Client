@@ -5,6 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.example.jianhong.note.data.db.NoteDB;
+import com.example.jianhong.note.data.net.NetNote;
 import com.example.jianhong.note.utils.SynStatusUtils;
 
 /**
@@ -13,21 +14,19 @@ import com.example.jianhong.note.utils.SynStatusUtils;
 
 public class Note implements Parcelable {
 
-    public static final int TRUE = 1;
-    public static final int FALSE = 0;
-
     private int synStatus = SynStatusUtils.NOTHING; // 同步状态，确定执行同步操作时是否需要提交到服务器
 
     private int id = 0; // note的本地编号
     private String content = ""; // note的内容
     private long create_time; // 创建时间
-    private long upd_time; // 最后编辑时间
+    private long edit_time; // 最后编辑时间
     private int noteBookId = 0;//数据表中笔记本的id号[本地使用]，为0时使用默认笔记本 简记
 
-    private long guid; // 服务器创建的id，唯一确定一条note
-    private long bookGuid; // 笔记所属笔记本在服务器的唯一id
+    private long guid = NetNote.LOCAL_NEW; // 服务器创建的id，唯一确定一条note
+    private long bookGuid = NetNote.LOCAL_NEW; // 笔记所属笔记本在服务器的唯一id
 
-    private int deleted = FALSE;
+    private int deleted = SynStatusUtils.FALSE;
+    private long user_id;
 
     public int getId() {
         return id;
@@ -65,12 +64,12 @@ public class Note implements Parcelable {
         return create_time;
     }
 
-    public void setUpdTime(Long upd_time) {
-        this.upd_time = upd_time;
+    public void setEditTime(Long edit_time) {
+        this.edit_time = edit_time;
     }
 
-    public long getUpdTime() {
-        return upd_time;
+    public long getEditTime() {
+        return edit_time;
     }
 
     public void setNoteBookId(int noteBookId) {
@@ -105,6 +104,14 @@ public class Note implements Parcelable {
         this.bookGuid = bookGuid;
     }
 
+    public long getUserId() {
+        return user_id;
+    }
+
+    public void setUserId(long user_id) {
+        this.user_id = user_id;
+    }
+
     public static final Creator<Note> CREATOR = new Creator<Note>() {
         @Override
         public Note createFromParcel(Parcel parcel) {
@@ -113,7 +120,7 @@ public class Note implements Parcelable {
             note.synStatus = parcel.readInt();
             note.content = parcel.readString();
             note.create_time = parcel.readLong();
-            note.upd_time = parcel.readLong();
+            note.edit_time = parcel.readLong();
             note.noteBookId = parcel.readInt();
             note.deleted = parcel.readInt();
             note.guid = parcel.readLong();
@@ -133,7 +140,7 @@ public class Note implements Parcelable {
         parcel.writeInt(synStatus);
         parcel.writeString(content);
         parcel.writeLong(create_time);
-        parcel.writeLong(upd_time);
+        parcel.writeLong(edit_time);
         parcel.writeInt(noteBookId);
         parcel.writeInt(deleted);
         parcel.writeLong(guid);
@@ -157,7 +164,7 @@ public class Note implements Parcelable {
         values.put(NoteDB.SYN_STATUS, synStatus);
         values.put(NoteDB.CONTENT, content);
         values.put(NoteDB.CREATE_TIME, create_time);
-        values.put(NoteDB.UPD_TIME, upd_time);
+        values.put(NoteDB.EDIT_TIME, edit_time);
         values.put(NoteDB.NOTEBOOK_ID, noteBookId);
         values.put(NoteDB.DELETED, deleted);
         values.put(NoteDB.GUID, guid);
@@ -172,12 +179,13 @@ public class Note implements Parcelable {
                 + " syn_status->" + getSynStatus()
                 + " content->" + getContent()
                 + " create_time->" + getCreateTime()
-                + " upd_time->" + getUpdTime()
+                + " edit_time->" + getEditTime()
                 + " book_id->" + getNoteBookId()
                 + " delete->" + getDeleted()
                 + " guid->" + getGuid()
                 + " bookguid->" + getBookGuid()
-                + "]/n";
+                + " user_id->" + getUserId()
+                + "]";
         return toString;
     }
 }

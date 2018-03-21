@@ -36,6 +36,7 @@ import com.example.jianhong.note.data.provider.NoteProvider;
 import com.example.jianhong.note.ui.view.FloatingActionButton;
 import com.example.jianhong.note.ui.widget.MySwipeRefreshLayout;
 import com.example.jianhong.note.utils.PreferencesUtils;
+import com.example.jianhong.note.utils.SynStatusUtils;
 
 import java.util.List;
 
@@ -67,6 +68,10 @@ public class NoteRVFragment extends Fragment implements LoaderManager.LoaderCall
 
     public void notifyDataSetChanged() {
         mAdapter.notifyDataSetChanged();
+    }
+
+    public MySwipeRefreshLayout getRefreshLayout() {
+        return refreshLayout;
     }
 
     @Override

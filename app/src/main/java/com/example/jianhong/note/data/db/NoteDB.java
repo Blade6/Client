@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.example.jianhong.note.data.model.Note;
 import com.example.jianhong.note.data.model.NoteBook;
+import com.example.jianhong.note.utils.AccountUtils;
 import com.example.jianhong.note.utils.SynStatusUtils;
 
 public class NoteDB {
@@ -24,11 +25,12 @@ public class NoteDB {
     public static final String ID = "id";
     public static final String SYN_STATUS = "syn_status";
     public static final String DELETED = "deleted";
+    public static final String USER_ID = "user_id";
 
     // table_note
     public static final String CONTENT = "content";
     public static final String CREATE_TIME = "create_time";
-    public static final String UPD_TIME = "upd_time";
+    public static final String EDIT_TIME = "edit_time";
     public static final String GUID = "guid";
     public static final String BOOK_GUID = "book_guid";
     public static final String NOTEBOOK_ID = "notebook_id";
@@ -58,6 +60,35 @@ public class NoteDB {
         return noteDB;
     }
 
+    public void insertSyn(long uid, long syn_uid) {
+        ContentValues values = new ContentValues();
+        values.put("user_id", uid);
+        values.put("syn_status", 0);
+        values.put("syn_uid", syn_uid);
+        db.insert("table_user", null, values);
+    }
+
+    public void updateSyn(long uid, long syn_uid) {
+        ContentValues values = new ContentValues();
+        values.put("user_id", uid);
+        values.put("syn_status", 0);
+        values.put("syn_uid", syn_uid);
+        db.update("table_user", values, "user_id = ?", new String[]{"" + uid});
+    }
+
+    public long loadSyn() {
+        Cursor cursor = db.query("table_user", null, USER_ID + " = ?",
+                new String[]{"" + AccountUtils.getUserId()}, null, null, null);
+        long syn_uid = 0L;
+        if (cursor.moveToFirst()) {
+            syn_uid = cursor.getLong(cursor.getColumnIndex("syn_uid"));
+        }
+        if (cursor != null) {
+            cursor.close();
+        }
+        return syn_uid;
+    }
+
     /**
      *--------------------------------------table_note----------------------------------------------
      */
@@ -65,17 +96,18 @@ public class NoteDB {
     /**
      * 将Note实例存入数据库
      */
-    public void saveNote(Note note) {
+    public void insertNote(Note note) {
         if (note != null) {
             ContentValues values = new ContentValues();
             values.put(SYN_STATUS, note.getSynStatus());
             values.put(CONTENT, note.getContent());
             values.put(CREATE_TIME, note.getCreateTime());
-            values.put(UPD_TIME, note.getUpdTime());
+            values.put(EDIT_TIME, note.getEditTime());
             values.put(NOTEBOOK_ID, note.getNoteBookId());
             values.put(DELETED, note.getDeleted());
             values.put(GUID, note.getGuid());
             values.put(BOOK_GUID, note.getBookGuid());
+            values.put(USER_ID, AccountUtils.getUserId());
 
             db.insert(TABLE_NOTE, null, values);
         }
@@ -85,10 +117,24 @@ public class NoteDB {
      * 从数据库中读取Note数据
      */
     public List<Note> loadNotes() {
+        Cursor cursor = db.query(TABLE_NOTE, null, DELETED + " " + "!= ?" + " and " + USER_ID + " = ?",
+                new String[]{"" + SynStatusUtils.TRUE, "" + AccountUtils.getUserId()}, null, null, EDIT_TIME + " desc");
+        return loadRawNotes(cursor);
+    }
+
+    public List<Note> loadSynNotes() {
+        Cursor cursor = db.query(TABLE_NOTE, null, SYN_STATUS + " > ?" + " and " + USER_ID + " = ?",
+                new String[]{"" + SynStatusUtils.NOTHING, "" + AccountUtils.getUserId()}, null, null, EDIT_TIME + " desc");
+        return loadRawNotes(cursor);
+    }
+
+    public List<Note> loadRawNote() {
+        Cursor cursor = db.query(TABLE_NOTE, null, null, null, null, null, EDIT_TIME + " desc");
+        return loadRawNotes(cursor);
+    }
+
+    private List<Note> loadRawNotes(Cursor cursor) {
         List<Note> list = new ArrayList<>();
-        Cursor cursor = db.query(TABLE_NOTE, null, SYN_STATUS + " != ?" + " and " + DELETED + " " +
-                "!= ?", new String[]{"" + SynStatusUtils.DELETE, "" + Note.TRUE}, null, null, UPD_TIME + " desc");
-
         if (cursor.moveToFirst()) {
             do {
                 Note note = new Note();
@@ -96,11 +142,12 @@ public class NoteDB {
                 note.setSynStatus(cursor.getInt(cursor.getColumnIndex(SYN_STATUS)));
                 note.setContent(cursor.getString(cursor.getColumnIndex(CONTENT)));
                 note.setCreateTime(cursor.getLong(cursor.getColumnIndex(CREATE_TIME)));
-                note.setUpdTime(cursor.getLong(cursor.getColumnIndex(UPD_TIME)));
+                note.setEditTime(cursor.getLong(cursor.getColumnIndex(EDIT_TIME)));
                 note.setNoteBookId(cursor.getInt(cursor.getColumnIndex(NOTEBOOK_ID)));
                 note.setDeleted(cursor.getInt(cursor.getColumnIndex(DELETED)));
                 note.setGuid(cursor.getLong(cursor.getColumnIndex(GUID)));
                 note.setBookGuid(cursor.getLong(cursor.getColumnIndex(BOOK_GUID)));
+                note.setUserId(cursor.getLong(cursor.getColumnIndex("user_id")));
 
                 list.add(note);
             } while (cursor.moveToNext());
@@ -111,142 +158,39 @@ public class NoteDB {
         return list;
     }
 
-    public List<Note> loadNotesByBookId(int id) {
-        List<Note> list = new ArrayList<Note>();
-
-        //当载入全部笔记时
-        if (id == 0) {
-            return loadNotes();
-        }
-
-        Cursor cursor = db.query(TABLE_NOTE, null, NOTEBOOK_ID + " = ? and " + SYN_STATUS + " !=" +
-                " ?" + " and " + DELETED + " != ?", new String[]{"" + id, "" + SynStatusUtils.DELETE, "" +
-                Note.TRUE}, null, null, UPD_TIME + " desc");
-
-        if (cursor.moveToFirst()) {
-            do {
-                Note note = new Note();
-                note.setId(cursor.getInt(cursor.getColumnIndex(ID)));
-                note.setSynStatus(cursor.getInt(cursor.getColumnIndex(SYN_STATUS)));
-                note.setContent(cursor.getString(cursor.getColumnIndex(CONTENT)));
-                note.setCreateTime(cursor.getLong(cursor.getColumnIndex(CREATE_TIME)));
-                note.setUpdTime(cursor.getLong(cursor.getColumnIndex(UPD_TIME)));
-                note.setNoteBookId(cursor.getInt(cursor.getColumnIndex(NOTEBOOK_ID)));
-                note.setDeleted(cursor.getInt(cursor.getColumnIndex(DELETED)));
-                note.setGuid(cursor.getLong(cursor.getColumnIndex(GUID)));
-                note.setBookGuid(cursor.getLong(cursor.getColumnIndex(BOOK_GUID)));
-
-                list.add(note);
-            } while (cursor.moveToNext());
-        }
-        if (cursor != null) {
-            cursor.close();
-        }
-        return list;
-    }
-
-    public List<Note> loadRawNotes() {
-        List<Note> list = new ArrayList<Note>();
-        Cursor cursor = db.query(TABLE_NOTE, null, null, null, null, null, UPD_TIME + " desc");
-        if (cursor.moveToFirst()) {
-            do {
-                Note note = new Note();
-                note.setId(cursor.getInt(cursor.getColumnIndex(ID)));
-                note.setSynStatus(cursor.getInt(cursor.getColumnIndex(SYN_STATUS)));
-                note.setContent(cursor.getString(cursor.getColumnIndex(CONTENT)));
-                note.setCreateTime(cursor.getLong(cursor.getColumnIndex(CREATE_TIME)));
-                note.setUpdTime(cursor.getLong(cursor.getColumnIndex(UPD_TIME)));
-                note.setNoteBookId(cursor.getInt(cursor.getColumnIndex(NOTEBOOK_ID)));
-                note.setDeleted(cursor.getInt(cursor.getColumnIndex(DELETED)));
-                note.setGuid(cursor.getLong(cursor.getColumnIndex(GUID)));
-                note.setBookGuid(cursor.getLong(cursor.getColumnIndex(BOOK_GUID)));
-
-                list.add(note);
-            } while (cursor.moveToNext());
-        }
-        if (cursor != null) {
-            cursor.close();
-        }
-        return list;
-    }
-
-    /**
-     * 得到最新一个Note的id
-     * 失败返回-1
-     */
-    public int getNewestNoteId() {
-        Cursor cursor = db.query(TABLE_NOTE, null, null, null, null, null, "id desc");
-        int id = -1;
-        if (cursor.moveToFirst()) {
-            id = cursor.getInt(cursor.getColumnIndex("id"));
-        }
-        if (cursor != null) {
-            cursor.close();
-        }
-        return id;
-    }
-
-    /**
-     * 通过id查找特定Note失败返回null
-     *
-     * @param id
-     * @return
-     */
-    public Note getNoteById(int id) {
-        Cursor cursor = db.query(TABLE_NOTE, null, "id = ?", new String[]{"" + id}, null, null,
-                null);
-        if (cursor.moveToFirst()) {
-            Note note = new Note();
-            note.setId(cursor.getInt(cursor.getColumnIndex(ID)));
-            note.setSynStatus(cursor.getInt(cursor.getColumnIndex(SYN_STATUS)));
-            note.setContent(cursor.getString(cursor.getColumnIndex(CONTENT)));
-            note.setCreateTime(cursor.getLong(cursor.getColumnIndex(CREATE_TIME)));
-            note.setUpdTime(cursor.getLong(cursor.getColumnIndex(UPD_TIME)));
-            note.setNoteBookId(cursor.getInt(cursor.getColumnIndex(NOTEBOOK_ID)));
-            note.setDeleted(cursor.getInt(cursor.getColumnIndex(DELETED)));
-            note.setGuid(cursor.getLong(cursor.getColumnIndex(GUID)));
-            note.setBookGuid(cursor.getLong(cursor.getColumnIndex(BOOK_GUID)));
-
-            cursor.close();
-            return note;
-        }
-        if (cursor != null) {
-            cursor.close();
-        }
-        return null;
-    }
-
-    public Note getNoteByGuid(String guid) {
-        Cursor cursor = db.query(TABLE_NOTE, null, "guid = ?", new String[]{guid}, null, null,
-                null);
-        if (cursor.moveToFirst()) {
-            Note note = new Note();
-            note.setId(cursor.getInt(cursor.getColumnIndex(ID)));
-            note.setSynStatus(cursor.getInt(cursor.getColumnIndex(SYN_STATUS)));
-            note.setContent(cursor.getString(cursor.getColumnIndex(CONTENT)));
-            note.setCreateTime(cursor.getLong(cursor.getColumnIndex(CREATE_TIME)));
-            note.setUpdTime(cursor.getLong(cursor.getColumnIndex(UPD_TIME)));
-            note.setNoteBookId(cursor.getInt(cursor.getColumnIndex(NOTEBOOK_ID)));
-            note.setDeleted(cursor.getInt(cursor.getColumnIndex(DELETED)));
-            note.setGuid(cursor.getLong(cursor.getColumnIndex(GUID)));
-            note.setBookGuid(cursor.getLong(cursor.getColumnIndex(BOOK_GUID)));
-
-            cursor.close();
-            return note;
-        }
-        if (cursor != null) {
-            cursor.close();
-        }
-        return null;
-    }
-
-    /**
-     * 根据主键删除Note数据
-     */
-    public boolean deleteNote(int id) {
-        return db.delete(TABLE_NOTE, "id = ?", new String[]{"" + id}) == 1;
-    }
-
+//
+//
+//    public Note getNoteByGuid(String guid) {
+//        Cursor cursor = db.query(TABLE_NOTE, null, "guid = ?", new String[]{guid}, null, null,
+//                null);
+//        if (cursor.moveToFirst()) {
+//            Note note = new Note();
+//            note.setId(cursor.getInt(cursor.getColumnIndex(ID)));
+//            note.setSynStatus(cursor.getInt(cursor.getColumnIndex(SYN_STATUS)));
+//            note.setContent(cursor.getString(cursor.getColumnIndex(CONTENT)));
+//            note.setCreateTime(cursor.getLong(cursor.getColumnIndex(CREATE_TIME)));
+//            note.setEditTime(cursor.getLong(cursor.getColumnIndex(EDIT_TIME)));
+//            note.setNoteBookId(cursor.getInt(cursor.getColumnIndex(NOTEBOOK_ID)));
+//            note.setDeleted(cursor.getInt(cursor.getColumnIndex(DELETED)));
+//            note.setGuid(cursor.getLong(cursor.getColumnIndex(GUID)));
+//            note.setBookGuid(cursor.getLong(cursor.getColumnIndex(BOOK_GUID)));
+//
+//            cursor.close();
+//            return note;
+//        }
+//        if (cursor != null) {
+//            cursor.close();
+//        }
+//        return null;
+//    }
+//
+//    /**
+//     * 根据主键删除Note数据
+//     */
+//    public boolean deleteNote(int id) {
+//        return db.delete(TABLE_NOTE, "id = ?", new String[]{"" + id}) == 1;
+//    }
+//
     /**
      * 根据主键更新Note数据
      */
@@ -255,7 +199,7 @@ public class NoteDB {
         values.put(SYN_STATUS, note.getSynStatus());
         values.put(CONTENT, note.getContent());
         values.put(CREATE_TIME, note.getCreateTime());
-        values.put(UPD_TIME, note.getUpdTime());
+        values.put(EDIT_TIME, note.getEditTime());
         values.put(DELETED, note.getDeleted());
         values.put(NOTEBOOK_ID, note.getNoteBookId());
         values.put(GUID, note.getGuid());
@@ -264,10 +208,50 @@ public class NoteDB {
         return db.update(TABLE_NOTE, values, "id = ?", new String[]{"" + note.getId()}) == 1;
     }
 
+    public int updateNote(int id, long guid, long bookGuid) {
+        ContentValues values = new ContentValues();
+        values.put(SYN_STATUS, SynStatusUtils.NOTHING);
+        values.put(GUID, guid);
+        values.put(BOOK_GUID, bookGuid);
+
+        return db.update(TABLE_NOTE, values, "id = ?", new String[]{"" + id});
+    }
+
+    public void updateNote(int id) {
+        ContentValues values = new ContentValues();
+        values.put(SYN_STATUS, SynStatusUtils.NOTHING);
+
+        db.update(TABLE_NOTE, values, "id = ?", new String[]{"" + id});
+    }
+
+    public int deleteAllNotes() {
+        ContentValues values = new ContentValues();
+        values.put(SYN_STATUS, SynStatusUtils.FORGET);
+        values.put(DELETED, SynStatusUtils.TRUE);
+
+        return db.update(TABLE_NOTE, values, null, null);
+    }
+
     /**
      *----------------------------------table_notebook----------------------------------------------
      */
-    public void saveNoteBook(NoteBook noteBook) {
+    // 初次建立数据库时调用，使得第一个笔记本的id为0
+    public void saveNoteBook_initDB(NoteBook noteBook) {
+        if (noteBook != null) {
+            ContentValues values = new ContentValues();
+            values.put(ID, 0);// 默认笔记本为“简记”，id为0
+            values.put(NAME, noteBook.getName());
+            values.put(SYN_STATUS, noteBook.getSynStatus());
+            values.put(NOTEBOOK_GUID, noteBook.getNotebookGuid());
+            values.put(DELETED, noteBook.getDeleted());
+            values.put(NOTES_NUM, noteBook.getNotesNum());
+            values.put(USER_ID, AccountUtils.getUserId());
+
+            db.insert(TABLE_NOTEBOOK, null, values);
+        }
+    }
+
+    public int insertNoteBook(NoteBook noteBook) {
         if (noteBook != null) {
             ContentValues values = new ContentValues();
             values.put(NAME, noteBook.getName());
@@ -275,10 +259,52 @@ public class NoteDB {
             values.put(NOTEBOOK_GUID, noteBook.getNotebookGuid());
             values.put(DELETED, noteBook.getDeleted());
             values.put(NOTES_NUM, noteBook.getNotesNum());
+            values.put(USER_ID, AccountUtils.getUserId());
 
-            db.insert(TABLE_NOTEBOOK, null, values);
+            return (int)db.insert(TABLE_NOTEBOOK, null, values);
         }
+        return -1;
     }
+
+    public List<NoteBook> loadNoteBooks() {
+        Cursor cursor = db.query(TABLE_NOTEBOOK, null, DELETED + " != ?" + " and " + USER_ID + " = ?",
+                new String[]{"" + SynStatusUtils.TRUE, "" + AccountUtils.getUserId()}, null, null, null);
+        return loadRawNoteBooks(cursor);
+    }
+
+    public List<NoteBook> loadSynNoteBooks() {
+        Cursor cursor = db.query(TABLE_NOTEBOOK, null, SYN_STATUS + " > ?" + " and " + USER_ID + " = ?",
+                new String[]{"" + SynStatusUtils.NOTHING, "" + AccountUtils.getUserId()}, null, null, null);
+        return loadRawNoteBooks(cursor);
+    }
+
+    public List<NoteBook> loadRawNoteBook() {
+        Cursor cursor = db.query(TABLE_NOTEBOOK, null, null, null, null, null, null);
+        return loadRawNoteBooks(cursor);
+    }
+
+    public List<NoteBook> loadRawNoteBooks(Cursor cursor) {
+        List<NoteBook> list = new ArrayList<NoteBook>();
+        if (cursor.moveToFirst()) {
+            do {
+                NoteBook noteBook = new NoteBook();
+                noteBook.setId(cursor.getInt(cursor.getColumnIndex(ID)));
+                noteBook.setName(cursor.getString(cursor.getColumnIndex(NAME)));
+                noteBook.setSynStatus(cursor.getInt(cursor.getColumnIndex(SYN_STATUS)));
+                noteBook.setNotebookGuid(cursor.getLong(cursor.getColumnIndex(NOTEBOOK_GUID)));
+                noteBook.setDeleted(cursor.getInt(cursor.getColumnIndex(DELETED)));
+                noteBook.setNotesNum(cursor.getInt(cursor.getColumnIndex(NOTES_NUM)));
+                noteBook.setUserId(cursor.getLong(cursor.getColumnIndex("user_id")));
+
+                list.add(noteBook);
+            } while (cursor.moveToNext());
+        }
+        if (cursor != null) {
+            cursor.close();
+        }
+        return list;
+    }
+
 
     public boolean updateNoteBook(NoteBook noteBook) {
         ContentValues values = new ContentValues();
@@ -292,36 +318,50 @@ public class NoteDB {
                 == 1;
     }
 
-    public boolean deleteNoteBook(NoteBook noteBook) {
-        return db.delete(TABLE_NOTEBOOK, "id = ?", new String[]{"" + noteBook.getId()}) == 1;
+    public void updateNoteBook(int id, long guid) {
+        ContentValues values = new ContentValues();
+        values.put(SYN_STATUS, SynStatusUtils.NOTHING);
+        values.put(NOTEBOOK_GUID, guid);
+        db.update(TABLE_NOTEBOOK, values, "id = ?", new String[]{"" + id});
     }
 
-    public List<NoteBook> loadNoteBooks() {
-        List<NoteBook> list = new ArrayList<NoteBook>();
-        Cursor cursor = db.query(TABLE_NOTEBOOK, null, DELETED + " != ?", new
-                String[]{"" + NoteBook.TRUE}, null, null, null);
-        if (cursor.moveToFirst()) {
-            do {
-                NoteBook noteBook = new NoteBook();
-                noteBook.setId(cursor.getInt(cursor.getColumnIndex(ID)));
-                noteBook.setName(cursor.getString(cursor.getColumnIndex(NAME)));
-                noteBook.setSynStatus(cursor.getInt(cursor.getColumnIndex(SYN_STATUS)));
-                noteBook.setNotebookGuid(cursor.getLong(cursor.getColumnIndex(NOTEBOOK_GUID)));
-                noteBook.setDeleted(cursor.getInt(cursor.getColumnIndex(DELETED)));
-                noteBook.setNotesNum(cursor.getInt(cursor.getColumnIndex(NOTES_NUM)));
+    public void updateNoteBook(int id) {
+        ContentValues values = new ContentValues();
+        values.put(SYN_STATUS, SynStatusUtils.NOTHING);
+        db.update(TABLE_NOTEBOOK, values, "id = ?", new String[]{"" + id});
+    }
 
-                list.add(noteBook);
-            } while (cursor.moveToNext());
+    public int deleteAllNoteBooks() {
+        ContentValues values = new ContentValues();
+        values.put(SYN_STATUS, SynStatusUtils.FORGET);
+        values.put(DELETED, SynStatusUtils.TRUE);
+        return db.update(TABLE_NOTEBOOK, values, null, null);
+    }
+
+    public long getDefaultBookGuid() {
+        Cursor cursor = db.query(TABLE_NOTEBOOK, null, NAME + " = ?" + " and " + USER_ID + " = ?",
+                new String[]{"简记", "" + AccountUtils.getUserId()}, null, null, null);
+        long guid = 0L;
+        if (cursor.moveToFirst()) {
+            guid = cursor.getInt(cursor.getColumnIndex(ID));
+            return guid;
         }
         if (cursor != null) {
             cursor.close();
         }
-        return list;
+        return guid;
     }
 
+//
+//    public boolean deleteNoteBook(NoteBook noteBook) {
+//        return db.delete(TABLE_NOTEBOOK, "id = ?", new String[]{"" + noteBook.getId()}) == 1;
+//    }
+
+
+
     public NoteBook getNoteBookById(int id) {
-        Cursor cursor = db.query(TABLE_NOTEBOOK, null, "id = ?", new String[]{"" + id}, null,
-                null, null);
+        Cursor cursor = db.query(TABLE_NOTEBOOK, null, ID + " = ? and " + USER_ID + " = ?",
+                new String[]{"" + id, "" + AccountUtils.getUserId()}, null, null, null);
         if (cursor.moveToFirst()) {
             NoteBook noteBook = new NoteBook();
             noteBook.setId(cursor.getInt(cursor.getColumnIndex(ID)));
@@ -339,21 +379,6 @@ public class NoteDB {
         return null;
     }
 
-    // 初次建立数据库时调用，使得第一个笔记本的id为0
-    public void saveNoteBook_initDB(NoteBook noteBook) {
-        if (noteBook != null) {
-            ContentValues values = new ContentValues();
-            values.put(ID, 0);// 默认笔记本为“简记”，id为0
-            values.put(NAME, noteBook.getName());
-            values.put(SYN_STATUS, noteBook.getSynStatus());
-            values.put(NOTEBOOK_GUID, noteBook.getNotebookGuid());
-            values.put(DELETED, noteBook.getDeleted());
-            values.put(NOTES_NUM, noteBook.getNotesNum());
-
-            db.insert(TABLE_NOTEBOOK, null, values);
-        }
-    }
-
     /**
      *-----------------------------------------通用函数----------------------------------------------
      * 注意：NoteProvider对id做了别名处理
@@ -364,7 +389,7 @@ public class NoteDB {
         note.setSynStatus(cursor.getInt(cursor.getColumnIndex(SYN_STATUS)));
         note.setContent(cursor.getString(cursor.getColumnIndex(CONTENT)));
         note.setCreateTime(cursor.getLong(cursor.getColumnIndex(CREATE_TIME)));
-        note.setUpdTime(cursor.getLong(cursor.getColumnIndex(UPD_TIME)));
+        note.setEditTime(cursor.getLong(cursor.getColumnIndex(EDIT_TIME)));
         note.setNoteBookId(cursor.getInt(cursor.getColumnIndex(NOTEBOOK_ID)));
         note.setDeleted(cursor.getInt(cursor.getColumnIndex(DELETED)));
         note.setGuid(cursor.getLong(cursor.getColumnIndex(GUID)));

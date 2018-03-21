@@ -72,7 +72,6 @@ public class ChangeBgFragment extends Fragment {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            // TODO Auto-generated method stub
             String path = ((BgPic) mBgPicAdapter.getItem(position)).path;
 
             systemUtils = new SystemUtils(getActivity());

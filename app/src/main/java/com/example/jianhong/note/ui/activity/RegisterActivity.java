@@ -14,7 +14,8 @@ import android.widget.ImageButton;
 import com.example.jianhong.note.R;
 import com.example.jianhong.note.entity.HttpCallbackListener;
 import com.example.jianhong.note.entity.Response;
-import com.example.jianhong.note.entity.User;
+import com.example.jianhong.note.data.model.User;
+import com.example.jianhong.note.utils.LogUtils;
 import com.example.jianhong.note.utils.PhoneUtils;
 import com.example.jianhong.note.utils.HttpUtils;
 import com.example.jianhong.note.utils.JSONUtils;
@@ -26,6 +27,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class RegisterActivity extends AppCompatActivity {
+
+    public static final String TAG = RegisterActivity.class.getSimpleName();
 
     @BindView(R.id.et_username)
     EditText accountEt;
@@ -92,9 +95,10 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onFinish(String response) {
                 Response res = JSONUtils.handleResponse(response);
+                LogUtils.d(TAG, res.getReturnCode()+"");
                 if (!res.getReturnCode()) {
                     progress.dismiss();
-                    Snackbar.make(registerBtn,"注册失败:",Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(registerBtn,"注册失败",Snackbar.LENGTH_LONG).show();
                 }
                 else {
                     progress.dismiss();
