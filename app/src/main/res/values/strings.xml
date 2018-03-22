@@ -56,8 +56,9 @@
     <string name="action_setting">设置</string>
     <string name="action_about">关于</string>
 
-    <string name="tip1">人生苦短，想做的事如果不迅速付诸行动，99% 都会无疾而终哦(・8・)</string>
-    <string name="tip2">我信了你的邪，红的像个番茄</string>
+    <string name="tip1">If winter comes, can spring be far behind?</string>
+    <string name="tip2">明德尚行，学贯中西</string>
+    <string name="search_note">搜点什么</string>
 
     <string name="notebook_data">笔记本</string>
     <string name="note_data">笔记信息</string>

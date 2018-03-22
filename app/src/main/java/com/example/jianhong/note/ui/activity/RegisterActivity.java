@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -38,19 +40,27 @@ public class RegisterActivity extends AppCompatActivity {
     EditText twicePwdEt;
     @BindView(R.id.btn_register)
     Button registerBtn;
-    @BindView(R.id.img_back)
-    ImageButton imgBtnBack;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         ButterKnife.bind(this);
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(R.string.register_account);
+        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
-    @OnClick(R.id.img_back)
-    public void back() {
-        finish();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+            default:
+                break;
+        }
+        return true;
     }
 
 
