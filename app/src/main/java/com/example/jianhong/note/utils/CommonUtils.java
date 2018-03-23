@@ -31,7 +31,7 @@ public class CommonUtils {
         }
 
         // 计算 字数 = 英文单词 + 中文字
-        boolean finding = false;//是否正在寻找单词结尾
+        boolean finding = false; //是否正在寻找单词结尾
         int engCnt = 0;
         int gbkCnt = 0;
         int spaceCnt = 0;//空白字符
@@ -45,6 +45,7 @@ public class CommonUtils {
                 } else {
                     finding = true;
                 }
+
             } else if (Character.isSpaceChar(c)) {
                 if (finding) {
                     finding = false;
@@ -70,30 +71,8 @@ public class CommonUtils {
         }
 
         res[2] = str.length();
-        res[1] = res[2] - spaceCnt;
-        res[0] = engCnt + gbkCnt;
-    }
-
-    public static int getVersionCode(Context context) {
-        try {
-            PackageManager pm = context.getPackageManager();
-            PackageInfo pi = pm.getPackageInfo(context.getPackageName(), PackageManager.GET_ACTIVITIES);
-            return pi.versionCode;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return 1;
-    }
-
-    public static String getVersionName(Context ctx) {
-        try {
-            PackageManager pm = ctx.getPackageManager();
-            PackageInfo pi = pm.getPackageInfo(ctx.getPackageName(), PackageManager.GET_ACTIVITIES);
-            return pi.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return "1.0.0";
+        res[1] = res[2] - spaceCnt; // 总字符数减去空格数
+        res[0] = engCnt + gbkCnt; // 英文单词加上中文汉字
     }
 
     /**

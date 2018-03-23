@@ -1,10 +1,10 @@
 package com.example.jianhong.note.entity;
 
-public class Memo {
+public class SnapShot {
     private String content;
     private int selectionEnd;
 
-    public Memo(String content, int selectionEnd) {
+    public SnapShot(String content, int selectionEnd) {
         this.content = content;
         this.selectionEnd = selectionEnd;
     }

@@ -20,9 +20,8 @@ import java.lang.reflect.Field;
 
 import com.example.jianhong.note.R;
 import com.example.jianhong.note.data.model.Note;
-import com.example.jianhong.note.data.db.NoteDB;
-import com.example.jianhong.note.entity.Originator;
-import com.example.jianhong.note.entity.Memo;
+import com.example.jianhong.note.entity.Keeper;
+import com.example.jianhong.note.entity.SnapShot;
 import com.example.jianhong.note.utils.CommonUtils;
 import com.example.jianhong.note.utils.LogUtils;
 import com.example.jianhong.note.utils.PreferencesUtils;
@@ -54,14 +53,13 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
 
     private int mode;
     private Note note;
-    private NoteDB db;
     private android.support.v7.app.ActionBar actionBar;
     private Context mContext;
 
     /**
      * 数据解析器，备忘录模式，轻松实现撤消、重做
      */
-    private Originator mDataParser;
+    private Keeper keeper;
     /**
      * TextWatcher 中使用，标注是否是使用undo或redo引起的内容改变
      */
@@ -168,13 +166,13 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
 
     private void undo() {
         isUndoOrRedo = true;
-        mDataParser.undo();
+        keeper.undo();
         setDataToNoteContent();
     }
 
     private void redo() {
         isUndoOrRedo = true;
-        mDataParser.redo();
+        keeper.redo();
         setDataToNoteContent();
     }
 
@@ -182,13 +180,12 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
         mContext = this;
         note = getIntent().getParcelableExtra("note_data");
         LogUtils.d(TAG, note.toString());
-        mDataParser = new Originator(new Memo(note.getContent(), 0));
+        keeper = new Keeper(new SnapShot(note.getContent(), 0));
         isUndoOrRedo = false;
-        db = NoteDB.getInstance(this);
 
         editText = (EditText) findViewById(R.id.et_note_edit);
         editText.setHint(R.string.write_something);
-        initMode(mDataParser.getState().getContent());
+        initMode(keeper.getState().getContent());
         editText.addTextChangedListener(this);
 
         if (mode == MODE_NEW) {
@@ -228,8 +225,8 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
     }
 
     private void setDataToNoteContent() {
-        String content = mDataParser.getState().getContent();
-        int selectionEnd = mDataParser.getState().getSelectionEnd();
+        String content = keeper.getState().getContent();
+        int selectionEnd = keeper.getState().getSelectionEnd();
         setNoteContent(content, selectionEnd);
     }
 
@@ -257,13 +254,14 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
 
     @Override
     public void afterTextChanged(Editable s) {
-        if (!isUndoOrRedo) {
+        if (!isUndoOrRedo) { // 如果之前没有过撤销或者重做操作
             int selectionLocation = editText.getSelectionEnd();
             if (-1 == selectionLocation) {
                 selectionLocation = 0;
             }
-            mDataParser.newState(new Memo(s.toString(), selectionLocation));
+            keeper.newState(new SnapShot(s.toString(), selectionLocation));
         } else {
+            // 如果是撤销或者重做引起的文本内容变化
             isUndoOrRedo = false;
         }
 
@@ -271,8 +269,8 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
     }
 
     private void updateUndoAndRedo() {
-        undoItem.setEnabled(mDataParser.lastSize() > 0);
-        redoItem.setEnabled(mDataParser.nextSize() > 0);
+        undoItem.setEnabled(keeper.lastSize() > 0);
+        redoItem.setEnabled(keeper.nextSize() > 0);
     }
 
     /**
@@ -285,7 +283,7 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
         String text = editText.getText().toString();
         intent.putExtra(Intent.EXTRA_TEXT, text);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(Intent.createChooser(intent, "Share"));
+        startActivity(Intent.createChooser(intent, getString(R.string.share)));
     }
 
     /**
