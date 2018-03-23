@@ -1,7 +1,7 @@
 package com.example.jianhong.note.utils;
 
 public class UrlUtils {
-	private static String IP = "192.168.202.97";
+	private static String IP = "10.173.200.54";
 	private static String port = "8086";
 	private static String Address = "http://" + IP + ":" + port;
 	private static String URLHead = Address + "/note/index.php/Home/User/";

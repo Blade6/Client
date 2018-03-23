@@ -2,6 +2,8 @@ package com.example.jianhong.note.ui.activity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.SearchManager;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.content.Context;
@@ -16,14 +18,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -41,6 +46,7 @@ import com.example.jianhong.note.data.net.NotesData;
 import com.example.jianhong.note.entity.HttpCallbackListener;
 import com.example.jianhong.note.entity.Response;
 import com.example.jianhong.note.ui.fragment.NoteBookFragment;
+import com.example.jianhong.note.ui.fragment.SearchFragment;
 import com.example.jianhong.note.ui.widget.MySwipeRefreshLayout;
 import com.example.jianhong.note.utils.AccountUtils;
 import com.example.jianhong.note.utils.CommonUtils;
@@ -56,6 +62,7 @@ import com.example.jianhong.note.ui.fragment.ChangeBgFragment;
 import com.example.jianhong.note.ui.fragment.NoteRVFragment;
 import com.example.jianhong.note.utils.UrlUtils;
 
+import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.List;
 
@@ -69,7 +76,7 @@ public class MainActivity extends AppCompatActivity
     private Context mContext;
     private Calendar today;
 
-    //private FiltratePage filtratePage;
+    private SearchFragment searchFragment;
     private NoteRVFragment noteRVFragment;
 
     public DrawerLayout drawer;
@@ -81,6 +88,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setOverflowShowingAlways();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -96,6 +104,11 @@ public class MainActivity extends AppCompatActivity
         today = Calendar.getInstance();
         mContext = MainActivity.this;
         versionCode = CommonUtils.getVersionCode(mContext);
+
+        LogUtils.d(TAG, "以防忘记，这里打印一下，告诉你，此为本地版本，无服务器");
+        LogUtils.d(TAG, "带服务器方式：增加105-108行注释；更改WelcomeActivity为authLogin");
+        AccountUtils.setUserId(1000);
+        AccountUtils.setUserName("hjh");
         first_use(AccountUtils.getUserName());
 
         initBgPic(); // 感觉这个要废掉
@@ -130,6 +143,53 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        MenuItem searchItem = menu.findItem(R.id.menu_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        ComponentName componentName = getComponentName();
+
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(componentName));
+        searchView.setQueryHint(getString(R.string.search_note));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                LogUtils.d(TAG, "search:"+s);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                //recyclerAdapter.getFilter().filter(s);
+                if (null != searchFragment) {
+                    if (0 != s.length()) {
+                        searchFragment.startSearch(new String[]{"%" + s + "%"});
+                    } else {
+                        searchFragment.clearResult();
+                    }
+                }
+                return true;
+            }
+        });
+        MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                // Do something when collapsed
+                goToNoteRVFragment();
+                return true;  // Return true to collapse action view
+            }
+
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                // Do something when expanded
+                searchFragment = new SearchFragment();
+                changeFragment(searchFragment);
+                return true;  // Return true to expand action view
+            }
+        });
+
         return true;
     }
 
@@ -137,14 +197,14 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.menu_search) {
-
-        } else if (id == R.id.action_sync) {
+        if (id == R.id.action_sync) {
             onRefresh();
         } else if (id == R.id.action_setting) {
             SettingsActivity.actionStart(mContext);
         } else if (id == R.id.action_about) {
             AboutActivity.activityStart(mContext);
+        } else if (id == R.id.menu_search) {
+
         }
 
         return true;
@@ -161,11 +221,11 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_mgr_note) {
             setTitle(R.string.mgr_note);
             NoteBookFragment noteBookFragment = new NoteBookFragment();
-            changeFragment(noteBookFragment, item);
+            changeFragment(noteBookFragment);
         } else if (id == R.id.nav_change_bg) {
             setTitle(R.string.change_bg);
             ChangeBgFragment changeBgFragment = new ChangeBgFragment();
-            changeFragment(changeBgFragment, item);
+            changeFragment(changeBgFragment);
         } else if (id == R.id.nav_exit) {
             logout();
         }
@@ -180,7 +240,7 @@ public class MainActivity extends AppCompatActivity
         //System.exit(0);
     }
 
-    private void changeFragment(Fragment fragment, MenuItem item)
+    private void changeFragment(Fragment fragment)
     {
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
@@ -194,6 +254,21 @@ public class MainActivity extends AppCompatActivity
 
         navigationView.getMenu().getItem(0).setChecked(true); // 修改导航栏选中项
     }
+
+    /**
+     * 令Overflow菜单永远显示
+     */
+    private void setOverflowShowingAlways() {
+        try {
+            ViewConfiguration config = ViewConfiguration.get(this);
+            Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
+            menuKeyField.setAccessible(true);
+            menuKeyField.setBoolean(config, false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
 //    /**
 //     * 返回键方法，切换更换壁纸或者笔记管理时，点击返回键会返回主页
@@ -227,6 +302,14 @@ public class MainActivity extends AppCompatActivity
 //        toggle.setDrawerIndicatorEnabled(false);
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 //    }
+
+    public void lockDrawerLock() {
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);//关闭手势滑动
+    }
+
+    public void unlockDrawerLock() {
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);//关闭手势滑动
+    }
 
     private void initBgPic()
     {

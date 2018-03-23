@@ -11,9 +11,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,31 +27,29 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.example.jianhong.note.R;
-import com.example.jianhong.note.ui.activity.MainActivity;
-import com.example.jianhong.note.ui.activity.NoteActivity;
-import com.example.jianhong.note.ui.adapter.NoteRVAdapter;
 import com.example.jianhong.note.data.db.NoteDB;
 import com.example.jianhong.note.data.model.NoteBook;
 import com.example.jianhong.note.data.provider.NoteProvider;
+import com.example.jianhong.note.ui.activity.MainActivity;
+import com.example.jianhong.note.ui.adapter.NoteRVAdapter;
 import com.example.jianhong.note.ui.view.FloatingActionButton;
-import com.example.jianhong.note.ui.widget.MySwipeRefreshLayout;
 import com.example.jianhong.note.utils.PreferencesUtils;
-import com.example.jianhong.note.utils.SynStatusUtils;
 
 import java.util.List;
 
-public class NoteRVFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
+public class SearchFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
         NoteRVAdapter.ItemLongPressedListener, NoteRVAdapter.OnItemSelectListener {
-    public static final String TAG = NoteRVFragment.class.getSimpleName();
+    public static final String TAG = SearchFragment.class.getSimpleName();
 
-    private static final int LOADER_ID = 113;
+    private static final int LOADER_ID = 113 + 1;//以示区分
+    //MODE_LIST相关
+    private Context mContext;
     private LoaderManager loaderManager;
 
-    private Context mContext;
-
-    private RecyclerView mRecyclerView;
+    //nice FloatingButton
+    private FloatingActionButton fabButton;
     private NoteRVAdapter mAdapter;
-    private MySwipeRefreshLayout refreshLayout;
+    private RecyclerView recyclerView;
 
     private void initValues() {
         mContext = getActivity();
@@ -62,16 +60,8 @@ public class NoteRVFragment extends Fragment implements LoaderManager.LoaderCall
         if (PreferencesUtils.getBoolean(PreferencesUtils.ONE_COLUMN)) {
             columnNum = 1;
         }
-        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(columnNum,
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(columnNum,
                 StaggeredGridLayoutManager.VERTICAL));
-    }
-
-    public void notifyDataSetChanged() {
-        mAdapter.notifyDataSetChanged();
-    }
-
-    public MySwipeRefreshLayout getRefreshLayout() {
-        return refreshLayout;
     }
 
     @Override
@@ -84,57 +74,44 @@ public class NoteRVFragment extends Fragment implements LoaderManager.LoaderCall
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
             savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_note_recycler, container, false);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_notes);
+        recyclerView = (RecyclerView) view.findViewById(R.id.rv_notes);
         configLayoutManager();
-        mAdapter = new NoteRVAdapter(mContext, null, this, this);
-        mRecyclerView.setAdapter(mAdapter);
+
+        mAdapter = new NoteRVAdapter(mContext, null, null, null);
+        recyclerView.setAdapter(mAdapter);
 
         loaderManager = getLoaderManager();
-        loaderManager.initLoader(LOADER_ID, null, this);
 
-        refreshLayout = (MySwipeRefreshLayout) view.findViewById(R.id.refresher);
-        refreshLayout.setOnRefreshListener((MainActivity) mContext);
+        // We don't need it begin load immediately when we enter SearchMode
+        // loaderManager.initLoader(LOADER_ID, null, this);
 
-        getActivity().setTitle(PreferencesUtils.getString(PreferencesUtils.NOTEBOOK_NAME));
+        fabButton = (FloatingActionButton) view.findViewById(R.id.fab);
+        fabButton.setVisibility(View.GONE);
 
-        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                NoteActivity.writeNewNote(getActivity());
-            }
-        });
-
+        // In this fragment,we don't need it
+        view.findViewById(R.id.refresher).setEnabled(false);
         return view;
     }
 
-    public boolean setRefresherEnabled(boolean b) {
-        if (null == refreshLayout) {
-            return false;
-        }
-        refreshLayout.setEnabled(b);
-        return true;
+    public void clearResult() {
+        if (null == mAdapter) return;
+        mAdapter.swapCursor(null);
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
+    public static final String SELECTION = NoteDB.CONTENT + " LIKE ?";
+    private String selection;
+    private String[] selectionArgs;
 
-    /**
-     *-----------------------------------------Loader---------------------------------------------
-     */
+    public void startSearch(String[] selectionArgs) {
+        this.selection = SELECTION;
+        this.selectionArgs = selectionArgs;
+        refreshUI();
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        int bookId = PreferencesUtils.getInt(PreferencesUtils.NOTEBOOK_ID);
-        String selection = NoteDB.NOTEBOOK_ID + " = ?";
-        String[] selectionArgs = {"" + bookId};
-
-        String sortOrder = NoteProvider.STANDARD_SORT_ORDER;
-
         CursorLoader cursorLoader = new CursorLoader(mContext, NoteProvider.BASE_URI,
-                NoteProvider.STANDARD_PROJECTION, selection, selectionArgs, sortOrder);
+                NoteProvider.STANDARD_PROJECTION, selection, selectionArgs, NoteProvider.STANDARD_SORT_ORDER);
         return cursorLoader;
     }
 
@@ -148,13 +125,25 @@ public class NoteRVFragment extends Fragment implements LoaderManager.LoaderCall
         mAdapter.swapCursor(null);
     }
 
+    public void refreshUI() {
+        loaderManager.restartLoader(LOADER_ID, null, this);
+    }
+
+    @Override
+    public void onDestroy() {
+//        if (null != mAdapter && null != mAdapter.getCursor()) {
+//            mAdapter.getCursor().close();
+//        }
+        super.onDestroy();
+    }
+
     /**
      *-----------------------------------------选中行为管理---------------------------------------------
      */
 
     private Menu mContextMenu;
-    private int tmpNoteBookId;
     private ActionMode mActionMode;
+    private int tmpNoteBookId;
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
 
         @Override
@@ -177,41 +166,41 @@ public class NoteRVFragment extends Fragment implements LoaderManager.LoaderCall
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            //menu.clear();
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.context_menu, menu);
             return true;
         }
 
         @Override
-        public boolean onPrepareActionMode(ActionMode arg0, Menu menu) {
-            mContextMenu = menu;
-            updateActionMode();
+        public void onDestroyActionMode(ActionMode arg0) {
+            ((MainActivity) mContext).unlockDrawerLock();
 
-            setRefresherEnabled(false);
-            return false;
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            mContextMenu.clear();
-            MenuInflater inflater = mode.getMenuInflater();
-            inflater.inflate(R.menu.main, mContextMenu);
+            showFAB();
 
             mActionMode = null;
             mContextMenu = null;
             mAdapter.setCheckMode(false);
         }
 
+        @Override
+        public boolean onPrepareActionMode(ActionMode arg0, Menu menu) {
+            ((MainActivity) mContext).lockDrawerLock();
+
+            dismissFAB();
+
+            mContextMenu = menu;
+            updateActionMode();
+            return false;
+        }
+
     };
 
     @Override
     public void startActionMode() {
-        // mActionMode 在Destroy中重赋为了 null
         if (mActionMode != null) {
             return;
         }
-        mActionMode = ((MainActivity) mContext).startSupportActionMode(mActionModeCallback);
+        mActionMode = ((MainActivity) mContext).startActionMode(mActionModeCallback);
     }
 
     public void updateActionMode() {
@@ -236,6 +225,18 @@ public class NoteRVFragment extends Fragment implements LoaderManager.LoaderCall
 
     private void selectAll() {
         mAdapter.selectAllNotes();
+    }
+
+    /**
+     *-----------------------------------------FAB管理---------------------------------------------
+     */
+
+    public void dismissFAB() {
+        fabButton.hide(true);
+    }
+
+    public void showFAB() {
+        fabButton.hide(false);
     }
 
     /**
@@ -314,19 +315,17 @@ public class NoteRVFragment extends Fragment implements LoaderManager.LoaderCall
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
             builder.setMessage(R.string.delete_all_confirm)
                     .setPositiveButton(android.R.string.ok, new
-                            DialogInterface.OnClickListener() {
+                        DialogInterface.OnClickListener() {
 
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    mAdapter.deleteSelectedNotes();
-                                    if (mActionMode != null) {
-                                        mActionMode.finish();
-                                    }
-
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mAdapter.deleteSelectedNotes();
+                                if (mActionMode != null) {
+                                    mActionMode.finish();
                                 }
-                            })
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .create().show();
+
+                            }
+                        }).setNegativeButton(android.R.string.cancel, null).create().show();
         }
     }
 
