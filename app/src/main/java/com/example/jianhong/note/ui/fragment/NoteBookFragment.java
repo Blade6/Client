@@ -179,8 +179,7 @@ public class NoteBookFragment extends Fragment implements LoaderManager.LoaderCa
                     PreferencesUtils.putInt(PreferencesUtils.LIGHTNING_EXTRACT_SAVE_LOCATION, 0);
                 }
                 if (noteBookId == PreferencesUtils.getInt(PreferencesUtils.NOTEBOOK_ID)) {
-                    changeToBook(PreferencesUtils.getInt(PreferencesUtils.JIAN_LOCAL_ID),
-                            getString(R.string.default_notebook), NoteDB.getInstance(mContext).getDefaultBookGuid());
+                    changeToBook(0, getString(R.string.default_notebook), NoteDB.getInstance(mContext).getDefaultBookGuid());
                 }
                 noteBookAdapter.deleteNoteBook(noteBook);
             }

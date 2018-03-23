@@ -337,9 +337,8 @@ public class MainActivity extends AppCompatActivity
         noteBook.setName(getString(R.string.default_notebook));
         noteBook.setNotesNum(2);
         noteBook.setNotebookGuid(0L);
-        NoteDB.getInstance(mContext).saveNoteBook_initDB(noteBook);
+        NoteDB.getInstance(mContext).insertDefaultNoteBook(noteBook);
         PreferencesUtils.putInt(PreferencesUtils.JIAN_NUM, 2);
-        PreferencesUtils.putInt(PreferencesUtils.JIAN_LOCAL_ID, 0);
 
         // 然后在数据库中添加note
         Note one = new Note();

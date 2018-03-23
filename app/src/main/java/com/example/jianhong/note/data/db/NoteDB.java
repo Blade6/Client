@@ -236,7 +236,7 @@ public class NoteDB {
      *----------------------------------table_notebook----------------------------------------------
      */
     // 初次建立数据库时调用，使得第一个笔记本的id为0
-    public void saveNoteBook_initDB(NoteBook noteBook) {
+    public int insertDefaultNoteBook(NoteBook noteBook) {
         if (noteBook != null) {
             ContentValues values = new ContentValues();
             values.put(ID, 0);// 默认笔记本为“简记”，id为0
@@ -247,8 +247,9 @@ public class NoteDB {
             values.put(NOTES_NUM, noteBook.getNotesNum());
             values.put(USER_ID, AccountUtils.getUserId());
 
-            db.insert(TABLE_NOTEBOOK, null, values);
+            return (int)db.insert(TABLE_NOTEBOOK, null, values);
         }
+        return -1;
     }
 
     public int insertNoteBook(NoteBook noteBook) {
@@ -335,7 +336,7 @@ public class NoteDB {
         ContentValues values = new ContentValues();
         values.put(SYN_STATUS, SynStatusUtils.FORGET);
         values.put(DELETED, SynStatusUtils.TRUE);
-        return db.update(TABLE_NOTEBOOK, values, null, null);
+        return db.update(TABLE_NOTEBOOK, values, "id != ?", new String[]{"0"});
     }
 
     public long getDefaultBookGuid() {

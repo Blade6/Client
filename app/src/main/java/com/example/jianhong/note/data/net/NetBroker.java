@@ -75,13 +75,14 @@ public class NetBroker {
                 nb.setNotebookGuid(server_id);
                 nb.setUserId(uid);
 
-                int android_id = NoteDB.getInstance(context).insertNoteBook(nb);
-                booksMap.put(server_id, android_id);
-
+                int android_id;
                 if (name.equals("简记")) {
-                    PreferencesUtils.putInt(PreferencesUtils.JIAN_LOCAL_ID, android_id);
                     PreferencesUtils.putInt(PreferencesUtils.JIAN_NUM, count);
+                    android_id = NoteDB.getInstance(context).insertDefaultNoteBook(nb);
+                } else {
+                    android_id = NoteDB.getInstance(context).insertNoteBook(nb);
                 }
+                booksMap.put(server_id, android_id);
             }
         } catch (JSONException e) {
             LogUtils.d(TAG, "handleDownloadResult JSONException in books");

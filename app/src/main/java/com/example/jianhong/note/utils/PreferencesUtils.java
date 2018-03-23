@@ -26,7 +26,6 @@ public class PreferencesUtils extends BaseLitePrefs {
     public static final String NOTEBOOK_GUID = "notebook_guid"; // 当前文件夹的guid
 
     public static final String JIAN_NUM = "jian_num"; // 简记文件夹的笔记数目
-    public static final String JIAN_LOCAL_ID = "jian_local_id"; // 简记文件夹的本地编号
 
     /** 用户自定义数据 **/
     public static final String ONE_COLUMN = "one_column"; // 是否单列显示

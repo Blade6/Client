@@ -15,7 +15,7 @@ public class NoteBookUtils {
         int num = noteBook.getNotesNum();
         noteBook.setNotesNum(num + diff);
         noteBook.setSynStatus(SynStatusUtils.UPDATE);
-        if (id == PreferencesUtils.getInt(PreferencesUtils.JIAN_LOCAL_ID)) {
+        if (id == 0) {
             PreferencesUtils.putInt(PreferencesUtils.JIAN_NUM, num+diff);
         }
         ProviderUtils.updateNoteBook(mContext, noteBook);

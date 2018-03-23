@@ -258,7 +258,7 @@ public class SearchFragment extends Fragment implements LoaderManager.LoaderCall
             NoteDB db = NoteDB.getInstance(mContext);
             List<NoteBook> list = db.loadNoteBooks();
             for (final NoteBook noteBook : list) {
-                if (noteBook.getId() == PreferencesUtils.getInt(PreferencesUtils.JIAN_LOCAL_ID)) {
+                if (noteBook.getId() == 0) {
                     // ignore
                 } else {
                     RadioButton tempButton = new RadioButton(mContext);
