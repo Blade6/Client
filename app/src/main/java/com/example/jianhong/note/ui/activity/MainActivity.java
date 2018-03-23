@@ -32,6 +32,7 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.jianhong.note.R;
@@ -71,8 +72,6 @@ public class MainActivity extends AppCompatActivity
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
-    // version code
-    private int versionCode;
     private Context mContext;
     private Calendar today;
 
@@ -103,7 +102,6 @@ public class MainActivity extends AppCompatActivity
 
         today = Calendar.getInstance();
         mContext = MainActivity.this;
-        versionCode = CommonUtils.getVersionCode(mContext);
 
         LogUtils.d(TAG, "以防忘记，这里打印一下，告诉你，此为本地版本，无服务器");
         LogUtils.d(TAG, "带服务器方式：增加105-108行注释；更改WelcomeActivity为authLogin");
@@ -156,13 +154,11 @@ public class MainActivity extends AppCompatActivity
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                LogUtils.d(TAG, "search:"+s);
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
-                //recyclerAdapter.getFilter().filter(s);
                 if (null != searchFragment) {
                     if (0 != s.length()) {
                         searchFragment.startSearch(new String[]{"%" + s + "%"});
@@ -201,9 +197,7 @@ public class MainActivity extends AppCompatActivity
             onRefresh();
         } else if (id == R.id.action_setting) {
             SettingsActivity.actionStart(mContext);
-        } else if (id == R.id.action_about) {
-            AboutActivity.activityStart(mContext);
-        } else if (id == R.id.menu_search) {
+        }  else if (id == R.id.menu_search) {
 
         }
 
@@ -321,13 +315,6 @@ public class MainActivity extends AppCompatActivity
                 drawer.setBackgroundDrawable(new BitmapDrawable(getResources(), bitmap));
             }
         }
-    }
-
-    /*
-    标注版本号
-     */
-    private void setVersionCode() {
-        PreferencesUtils.putInt(PreferencesUtils.VERSION_CODE, versionCode);
     }
 
     private void firstLaunch() {
@@ -617,7 +604,6 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences sp = this.getSharedPreferences("note", Context.MODE_PRIVATE);
         if(sp.getBoolean(user_name + " first_use", true)) {
             firstLaunch();
-            setVersionCode();
 
             Editor editor = sp.edit();
             editor.putBoolean(user_name + " first_use", false);

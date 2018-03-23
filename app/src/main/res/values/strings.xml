@@ -22,11 +22,6 @@
     <string name="register_account">注册帐号</string>
 
     <string name="proudly">Copyright © 2018 简道笔记\nMade with love by Jianhong</string>
-    <string name="author">作者：@hjh</string>
-    <string name="donate_developer">捐赠作者</string>
-    <string name="use_feedback">使用反馈</string>
-    <string name="comment">评价应用</string>
-    <string name="how_to_use">如何使用</string>
     <string name="slogan">大道至简 记下您此刻的灵感</string>
 
     <string name="before_minute" formatted="false">%d\u0020分钟\u0020前</string>

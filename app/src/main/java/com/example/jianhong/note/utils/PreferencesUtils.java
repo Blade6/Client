@@ -19,8 +19,6 @@ public class PreferencesUtils extends BaseLitePrefs {
     public static final String USER_PWD = "user_pwd";
     public static final String USER_HEAD_URL = "user_head_url";
 
-    public static final String VERSION_CODE = "version_code";
-
     public static final String NOTEBOOK_ID = "notebook_id"; // 当前选中文件夹，默认为 简记
     public static final String NOTEBOOK_NAME = "notebook_name"; // 当前文件夹名字
     public static final String NOTEBOOK_GUID = "notebook_guid"; // 当前文件夹的guid

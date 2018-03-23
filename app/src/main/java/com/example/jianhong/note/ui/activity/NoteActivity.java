@@ -43,7 +43,6 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
 
     public static final int MODE_NEW = 0;
     public static final int MODE_EDIT = 2;
-    public static final int MODE_TODAY = 3;
 
     /**
      * 退出时应对数据库进行操作的标志位
@@ -130,7 +129,7 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (mode == MODE_NEW || MODE_TODAY == mode) {
+        if (mode == MODE_NEW) {
             getMenuInflater().inflate(R.menu.new_note_menu, menu);
         } else if (mode == MODE_EDIT) {
             getMenuInflater().inflate(R.menu.edit_note_menu, menu);
@@ -204,19 +203,12 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
                     }
                 }
             });
-        } else if (mode == MODE_TODAY) {
-            note.setCreateTime(TimeUtils.getCurrentTimeInLong());
-            note.setNoteBookId(PreferencesUtils.getInt(PreferencesUtils.NOTEBOOK_ID));
-            editText.requestFocus();
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
     }
 
     private void initMode(String content) {
         mode = getIntent().getIntExtra("mode", 0);
-        if (mode == MODE_NEW || mode == MODE_EDIT || MODE_TODAY == mode) {
-            setNoteContent(content, content.length());
-        }
+        setNoteContent(content, content.length());
     }
 
     public static void writeNewNote(Context mContext) {
@@ -310,7 +302,7 @@ public class NoteActivity extends AppCompatActivity implements TextWatcher {
     private void exitOperation() {
         String tmp = editText.getText().toString();
 
-        if (mode == MODE_NEW || MODE_TODAY == mode) {
+        if (mode == MODE_NEW) {
             if (tmp.length() > 0) {
                 dbFlag = DB_SAVE;
             }

@@ -96,17 +96,6 @@ public class CommonUtils {
         return "1.0.0";
     }
 
-    public static void feedback(Context mContext) {
-        // 必须明确使用mailto前缀来修饰邮件地址
-        Uri uri = Uri.parse("mailto:hjh<893426994@qq.com>");
-        Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
-        intent.putExtra(Intent.EXTRA_SUBJECT, "PureNote用户反馈" + " Version:" + getVersionName(mContext));
-        // 主题
-        intent.putExtra(Intent.EXTRA_TEXT, "Manufacturer:" + Build.MANUFACTURER +
-                " - Device name: " + Build.MODEL + " - SDK Version: " + Build.VERSION.SDK_INT + "  "); // 正文
-        mContext.startActivity(Intent.createChooser(intent, "Select email client"));
-    }
-
     /**
      * 判断某个服务是否正在运行的方法
      *
