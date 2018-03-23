@@ -177,7 +177,7 @@ public class NoteRVFragment extends Fragment implements LoaderManager.LoaderCall
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            //menu.clear();
+            menu.clear();
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.context_menu, menu);
             return true;

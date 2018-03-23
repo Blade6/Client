@@ -2,16 +2,11 @@ package com.example.jianhong.note.utils;
 
 import android.text.TextUtils;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.example.jianhong.note.data.net.BooksData;
-import com.example.jianhong.note.data.net.NetNoteBook;
 import com.example.jianhong.note.entity.Response;
 import com.google.gson.Gson;
-
-import java.util.List;
 
 public class JSONUtils {
 

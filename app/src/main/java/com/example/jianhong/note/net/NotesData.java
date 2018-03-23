@@ -1,4 +1,4 @@
-package com.example.jianhong.note.data.net;
+package com.example.jianhong.note.net;
 
 import java.util.ArrayList;
 import java.util.List;

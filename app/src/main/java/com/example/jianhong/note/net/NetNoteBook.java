@@ -1,6 +1,5 @@
-package com.example.jianhong.note.data.net;
+package com.example.jianhong.note.net;
 
-import com.example.jianhong.note.data.model.NoteBook;
 import com.example.jianhong.note.utils.SynStatusUtils;
 
 /**

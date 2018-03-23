@@ -4,11 +4,11 @@ import android.content.Context;
 
 import com.example.jianhong.note.data.model.Note;
 import com.example.jianhong.note.data.model.NoteBook;
-import com.example.jianhong.note.data.net.NetBroker;
-import com.example.jianhong.note.data.net.BooksData;
-import com.example.jianhong.note.data.net.NetNote;
-import com.example.jianhong.note.data.net.NetNoteBook;
-import com.example.jianhong.note.data.net.NotesData;
+import com.example.jianhong.note.net.NetBroker;
+import com.example.jianhong.note.net.BooksData;
+import com.example.jianhong.note.net.NetNote;
+import com.example.jianhong.note.net.NetNoteBook;
+import com.example.jianhong.note.net.NotesData;
 
 import java.util.ArrayList;
 import java.util.List;

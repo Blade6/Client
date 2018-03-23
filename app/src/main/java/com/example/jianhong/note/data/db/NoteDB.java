@@ -236,7 +236,7 @@ public class NoteDB {
      *----------------------------------table_notebook----------------------------------------------
      */
     // 初次建立数据库时调用，使得第一个笔记本的id为0
-    public int insertDefaultNoteBook(NoteBook noteBook) {
+    public void insertDefaultNoteBook(NoteBook noteBook) {
         if (noteBook != null) {
             ContentValues values = new ContentValues();
             values.put(ID, 0);// 默认笔记本为“简记”，id为0
@@ -247,9 +247,8 @@ public class NoteDB {
             values.put(NOTES_NUM, noteBook.getNotesNum());
             values.put(USER_ID, AccountUtils.getUserId());
 
-            return (int)db.insert(TABLE_NOTEBOOK, null, values);
+            db.insert(TABLE_NOTEBOOK, null, values);
         }
-        return -1;
     }
 
     public int insertNoteBook(NoteBook noteBook) {
@@ -307,7 +306,7 @@ public class NoteDB {
     }
 
 
-    public boolean updateNoteBook(NoteBook noteBook) {
+    public boolean updateDefaultNoteBook(NoteBook noteBook) {
         ContentValues values = new ContentValues();
         values.put(NAME, noteBook.getName());
         values.put(SYN_STATUS, noteBook.getSynStatus());
@@ -315,8 +314,7 @@ public class NoteDB {
         values.put(DELETED, noteBook.getDeleted());
         values.put(NOTES_NUM, noteBook.getNotesNum());
 
-        return db.update(TABLE_NOTEBOOK, values, "id = ?", new String[]{"" + noteBook.getId()})
-                == 1;
+        return db.update(TABLE_NOTEBOOK, values, "id = ?", new String[]{"0"}) == 1;
     }
 
     public void updateNoteBook(int id, long guid) {
@@ -340,8 +338,8 @@ public class NoteDB {
     }
 
     public long getDefaultBookGuid() {
-        Cursor cursor = db.query(TABLE_NOTEBOOK, null, NAME + " = ?" + " and " + USER_ID + " = ?",
-                new String[]{"简记", "" + AccountUtils.getUserId()}, null, null, null);
+        Cursor cursor = db.query(TABLE_NOTEBOOK, null, ID + " = ?" + " and " + USER_ID + " = ?",
+                new String[]{"0", "" + AccountUtils.getUserId()}, null, null, null);
         long guid = 0L;
         if (cursor.moveToFirst()) {
             guid = cursor.getInt(cursor.getColumnIndex(ID));

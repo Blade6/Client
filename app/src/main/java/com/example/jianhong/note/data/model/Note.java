@@ -5,7 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.example.jianhong.note.data.db.NoteDB;
-import com.example.jianhong.note.data.net.NetNote;
+import com.example.jianhong.note.net.NetNote;
 import com.example.jianhong.note.utils.SynStatusUtils;
 
 /**

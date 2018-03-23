@@ -1,14 +1,13 @@
-package com.example.jianhong.note.data.net;
+package com.example.jianhong.note.net;
 
 import android.content.Context;
 
 import com.example.jianhong.note.data.db.NoteDB;
 import com.example.jianhong.note.data.model.Note;
 import com.example.jianhong.note.data.model.NoteBook;
-import com.example.jianhong.note.entity.Response;
+import com.example.jianhong.note.litepreferences.model.Pref;
 import com.example.jianhong.note.utils.LogUtils;
 import com.example.jianhong.note.utils.PreferencesUtils;
-import com.example.jianhong.note.utils.ProviderUtils;
 import com.example.jianhong.note.utils.SynStatusUtils;
 
 import org.json.JSONArray;
@@ -16,9 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by jianhong on 2018/3/19.
@@ -56,6 +53,9 @@ public class NetBroker {
     public static void handleDownloadResult(Context context, JSONObject jsonObject, long uid) {
         NoteDB.getInstance(context).deleteAllNoteBooks();
         NoteDB.getInstance(context).deleteAllNotes();
+        PreferencesUtils.putInt(PreferencesUtils.NOTEBOOK_ID, 0);
+        PreferencesUtils.putString(PreferencesUtils.NOTEBOOK_NAME, "简记");
+
 
         HashMap<Long, Integer> booksMap = new HashMap<>();
         try {
@@ -78,7 +78,8 @@ public class NetBroker {
                 int android_id;
                 if (name.equals("简记")) {
                     PreferencesUtils.putInt(PreferencesUtils.JIAN_NUM, count);
-                    android_id = NoteDB.getInstance(context).insertDefaultNoteBook(nb);
+                    NoteDB.getInstance(context).updateDefaultNoteBook(nb);
+                    android_id = 0;
                 } else {
                     android_id = NoteDB.getInstance(context).insertNoteBook(nb);
                 }
@@ -87,7 +88,8 @@ public class NetBroker {
         } catch (JSONException e) {
             LogUtils.d(TAG, "handleDownloadResult JSONException in books");
         } finally {
-
+            long guid = NoteDB.getInstance(context).getDefaultBookGuid();
+            PreferencesUtils.putLong(PreferencesUtils.NOTEBOOK_GUID, guid);
         }
 
         try {

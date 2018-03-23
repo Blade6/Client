@@ -1,4 +1,4 @@
-package com.example.jianhong.note.data.net;
+package com.example.jianhong.note.net;
 
 /**
  * Created by jianhong on 2018/3/19.
