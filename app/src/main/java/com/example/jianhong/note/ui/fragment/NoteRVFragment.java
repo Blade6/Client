@@ -253,15 +253,21 @@ public class NoteRVFragment extends Fragment implements LoaderManager.LoaderCall
 
             final RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id
                     .rg_dialog);
-            RadioButton note = (RadioButton) view.findViewById(R.id.rb_note);
+            RadioButton radioButton = (RadioButton) view.findViewById(R.id.rb_note);
             NoteDB db = NoteDB.getInstance(mContext);
             List<NoteBook> list = db.loadNoteBooks();
             for (final NoteBook noteBook : list) {
                 if (noteBook.getId() == 0) {
-                    // ignore
+                    if (0 == PreferencesUtils.getInt(PreferencesUtils.NOTEBOOK_ID)) {
+                        radioButton.setChecked(true);
+                    }
                 } else {
                     RadioButton tempButton = new RadioButton(mContext);
                     tempButton.setText(noteBook.getName());
+                    if (noteBook.getId() == PreferencesUtils.getInt(PreferencesUtils.NOTEBOOK_ID)) {
+                        tempButton.setChecked(true);
+                    }
+
                     radioGroup.addView(tempButton, LinearLayout.LayoutParams
                             .MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
@@ -278,9 +284,9 @@ public class NoteRVFragment extends Fragment implements LoaderManager.LoaderCall
                 }
             }
 
-            note.setChecked(true);
+
             tmpNoteBookId = 0;
-            note.setOnCheckedChangeListener(new CompoundButton
+            radioButton.setOnCheckedChangeListener(new CompoundButton
                     .OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {

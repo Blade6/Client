@@ -121,7 +121,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onError(Exception e) {
                 progress.dismiss();
-                Snackbar.make(registerBtn,"网络错误:",Snackbar.LENGTH_LONG).show();
+                Snackbar.make(registerBtn,"网络错误",Snackbar.LENGTH_LONG).show();
             }
         });
 
