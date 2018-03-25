@@ -59,6 +59,9 @@ public class SynStatusUtils {
             case UPDATE:
                 note.setSynStatus_inside(UPDATE + add);
                 break;
+            case N_UPDATE:
+                if (add == DELETE) note.setSynStatus_inside(N_UPDATE + add);
+                break;
             default:
                 //ignore
                 break;
@@ -76,6 +79,9 @@ public class SynStatusUtils {
                 break;
             case UPDATE:
                 noteBook.setSynStatus_inside(UPDATE + add);
+                break;
+            case N_UPDATE:
+                if (add == DELETE) noteBook.setSynStatus_inside(N_UPDATE + add);
                 break;
             default:
                 //ignore

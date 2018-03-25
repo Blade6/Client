@@ -38,7 +38,7 @@ public class JSONUtils {
                 if (info == 0) {
                     // ignore
                 } else if (info == 4) {
-                    Long syn_uid = jsonObject.getLong("syn_uid");
+                    Long syn_uid = jsonObject.getLong("data");
                     res.setSynUid(syn_uid);
                 } else {
                     JSONObject data = jsonObject.getJSONObject("data");

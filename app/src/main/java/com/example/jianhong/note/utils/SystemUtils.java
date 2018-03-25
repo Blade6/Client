@@ -24,21 +24,11 @@ public class SystemUtils {
 
     private Context context;
     private  String PREF_NAME = "creativelocker.pref";
-    public  final String KEY_NOTE_DRAFT = "KEY_NOTE_DRAFT";
     private  final String BG_PIC_PATH ="bg_pic_path";
 
     public SystemUtils(Context context)
     {
         this.context=context;
-    }
-
-    public  String getNoteDraft() {
-        return getPreferences().getString(
-                KEY_NOTE_DRAFT , "");
-    }
-
-    public  void setNoteDraft(String draft) {
-        set(KEY_NOTE_DRAFT , draft);
     }
 
     public  void set(String key, String value) {
@@ -53,56 +43,10 @@ public class SystemUtils {
         return pre;
     }
 
-    public boolean isFirstUse()
-    {
-       if(getString("isFirstUse")==null)
-       {
-           return true;
-       }
-       return false;
-    }
-
-    public  boolean isTarn()
-{
-   return getBoolean("isTran");
-}
-
     public String getString(String str)
     {
         SharedPreferences share= getPreferences();
         return share.getString(str,null);
-    }
-    public boolean getBoolean(String str)
-    {
-        SharedPreferences share= getPreferences();
-        return share.getBoolean(str,false);
-    }
-    public void setBoolean(String str,boolean bool)
-    {
-        SharedPreferences.Editor editor = getPreferences().edit();
-        editor.putBoolean(str,bool);
-        editor.commit();
-    }
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public SharedPreferences getPreferences(String prefName) {
-        return context.getSharedPreferences(prefName,
-                Context.MODE_MULTI_PROCESS);
-    }
-
-    /**
-     * 获取屏幕宽度
-     */
-    public static int getScreenW(Context aty) {
-        DisplayMetrics dm = aty.getResources().getDisplayMetrics();
-        return dm.widthPixels;
-    }
-
-    /**
-     * 获取屏幕高度
-     */
-    public static int getScreenH(Context aty) {
-        DisplayMetrics dm = aty.getResources().getDisplayMetrics();
-        return dm.heightPixels;
     }
 
     /**
@@ -132,84 +76,4 @@ public class SystemUtils {
         return bitmap;
     }
 
-    public  static void shareApp(Activity mActivity)
-    {
-        String shareAppContent="各位亲爱的小伙伴们，这个APP福利多多哦！";
-
-        new File(mActivity.getFilesDir(), "share.jpg").deleteOnExit();
-        FileOutputStream fileOutputStream=null;
-        try {
-            fileOutputStream = mActivity.openFileOutput(
-                    "share.jpg", 1);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        Bitmap pic=BitmapFactory.decodeResource(mActivity.getResources(),R.mipmap.app_icon);
-        pic.compress(Bitmap.CompressFormat.JPEG, 100,fileOutputStream);
-
-
-        Intent intent = new Intent("android.intent.action.SEND");
-        intent.setType("image/*");
-        intent.putExtra("sms_body", shareAppContent);
-        intent.putExtra("android.intent.extra.TEXT",shareAppContent);
-        intent.putExtra("android.intent.extra.STREAM",
-                Uri.fromFile(new File(mActivity.getFilesDir(), "share.jpg")));
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        mActivity.startActivity(Intent.createChooser(intent,"好东西要与小伙伴们一起分享"));
-    }
-
-    public  static void shareNote(Activity mActivity,String noteContent)
-    {
-
-//        new File(mActivity.getFilesDir(), "share.jpg").deleteOnExit();
-//        FileOutputStream fileOutputStream=null;
-//        try {
-//            fileOutputStream = mActivity.openFileOutput(
-//                    "share.jpg", 1);
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//
-//        Bitmap pic=BitmapFactory.decodeResource(mActivity.getResources(),R.mipmap.app_icon);
-//        pic.compress(Bitmap.CompressFormat.JPEG, 100,fileOutputStream);
-
-
-        Intent intent = new Intent("android.intent.action.SEND");
-      //  intent.setType("image/*");
-        intent.setType("text/plain");
-      //  intent.putExtra("sms_body", noteContent);
-        intent.putExtra("android.intent.extra.TEXT",noteContent);
-//        intent.putExtra("android.intent.extra.STREAM",
-//                Uri.fromFile(new File(mActivity.getFilesDir(), "share.jpg")));
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        mActivity.startActivity(Intent.createChooser(intent,"好东西要与小伙伴们一起分享"));
-    }
-    /**
-     * 分享功能
-     * @param msgTitle
-     *            消息标题
-     * @param msgText
-     *            消息内容
-     * @param imgPath
-     *            图片路径，不分享图片则传null
-     */
-    public static void shareMsg(Activity mActivity, String msgTitle, String msgText,
-                         String imgPath) {
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        if (imgPath == null || imgPath.equals("")) {
-            intent.setType("text/plain"); // 纯文本
-        } else {
-            File f = new File(imgPath);
-            if (f != null && f.exists() && f.isFile()) {
-                intent.setType("image/jpg");
-                Uri u = Uri.fromFile(f);
-                intent.putExtra(Intent.EXTRA_STREAM, u);
-            }
-        }
-        intent.putExtra(Intent.EXTRA_SUBJECT, msgTitle);
-        intent.putExtra(Intent.EXTRA_TEXT, msgText);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mActivity.startActivity(Intent.createChooser(intent,"好东西要与小伙伴们一起分享"));
-    }
 }

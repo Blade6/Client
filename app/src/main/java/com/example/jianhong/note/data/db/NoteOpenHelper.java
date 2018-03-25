@@ -24,7 +24,7 @@ public class NoteOpenHelper extends SQLiteOpenHelper {
                     + "deleted integer,"
                     + "guid text,"
                     + "book_guid text,"
-                    + "user_id long"
+                    + "user_id integer"
                     + ")";
 
     public static final String CREATE_TABLE_NOTEBOOK =
@@ -35,7 +35,7 @@ public class NoteOpenHelper extends SQLiteOpenHelper {
                     + "num integer,"
                     + "deleted integer,"
                     + "notebook_guid text,"
-                    + "user_id long"
+                    + "user_id integer"
                     + ")";
 
     public NoteOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory,

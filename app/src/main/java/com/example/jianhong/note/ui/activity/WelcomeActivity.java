@@ -30,8 +30,8 @@ public class WelcomeActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                //autoLogin();
-                goToHomeActivity();
+                autoLogin();
+                //goToHomeActivity();
             }
         }, 2000);
     }

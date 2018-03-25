@@ -103,10 +103,10 @@ public class MainActivity extends AppCompatActivity
         today = Calendar.getInstance();
         mContext = MainActivity.this;
 
-        LogUtils.d(TAG, "以防忘记，这里打印一下，告诉你，此为本地版本，无服务器");
-        LogUtils.d(TAG, "带服务器方式：增加105-108行注释；更改WelcomeActivity为authLogin");
-        AccountUtils.setUserId(1000);
-        AccountUtils.setUserName("hjh");
+//        LogUtils.d(TAG, "以防忘记，这里打印一下，告诉你，此为本地版本，无服务器");
+//        LogUtils.d(TAG, "带服务器方式：增加105-108行注释；更改WelcomeActivity为authLogin");
+//        AccountUtils.setUserId(1000);
+//        AccountUtils.setUserName("hjh");
         first_use(AccountUtils.getUserName());
 
         initBgPic(); // 感觉这个要废掉
